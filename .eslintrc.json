@@ -1,0 +1,47 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "tsconfig.json",
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint/eslint-plugin"],
+  "env": {
+    "node": true
+  },
+  "extends": [
+    "airbnb",
+    "airbnb-typescript",
+    "airbnb/hooks",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
+    "plugin:consistent-default-export-name/fixed"
+  ],
+  "settings": {
+    "import/resolver": {
+      "typescript": {}
+    }
+  },
+  "rules": {
+    "import/prefer-default-export": "off",
+    "react/require-default-props": "off",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "consistent-default-export-name/default-import-match-filename": "off",
+    "react/jsx-props-no-spreading": "off",
+    "consistent-return": "off",
+    "react/prop-types": "off",
+    "react/destructuring-assignment": "off",
+    "import/no-cycle": "warn",
+    "react/no-unstable-nested-components": "off",
+    "react/jsx-curly-newline": ["error", {
+      "multiline": "consistent",
+      "singleline": "consistent"
+    }],
+    "@typescript-eslint/no-use-before-define": ["error", { "variables": false }]
+  },
+  "ignorePatterns": [
+    "babel.config.js",
+    "metro.config.js",
+    "lib"
+  ]
+}

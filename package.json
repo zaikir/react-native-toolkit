@@ -1,0 +1,50 @@
+{
+  "name": "@zaidulin_kirill/react-native-toolkit",
+  "version": "0.0.1",
+  "private": true,
+  "main": "lib/commonjs/index",
+  "module": "lib/module/index",
+  "types": "lib/typescript/index.d.ts",
+  "files": [
+    "src",
+    "lib",
+    "scripts"
+  ],
+  "scripts": {
+    "typescript": "tsc --noEmit",
+    "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "prepare": "bob build"
+  },
+  "peerDependencies": {
+    "react": "18",
+    "react-native": "0.70"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.16.10",
+    "@babel/runtime": "^7.12.5",
+    "@types/react": "^18.0.21",
+    "@types/react-native": "^0.70.6",
+    "@typescript-eslint/eslint-plugin": "^5.40.0",
+    "@typescript-eslint/parser": "^5.40.0",
+    "eslint": "^8.25.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-import-resolver-typescript": "^2.7.1",
+    "eslint-plugin-consistent-default-export-name": "^0.0.15",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsx-a11y": "^6.6.1",
+    "eslint-plugin-react": "^7.31.10",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "react-native-builder-bob": "^0.20.3",
+    "typescript": "^4.8.4"
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      "typescript"
+    ]
+  }
+}
