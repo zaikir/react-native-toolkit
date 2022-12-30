@@ -1,7 +1,6 @@
 {
   "name": "@zaidulin_kirill/react-native-toolkit",
   "version": "0.0.1",
-  "private": true,
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/index.d.ts",
