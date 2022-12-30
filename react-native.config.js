@@ -6,7 +6,7 @@ const { spawnSync } = require('child_process');
 module.exports = {
   commands: [
     {
-      name: 'generate-bootsplash',
+      name: 'generate-splash-screen',
       description: 'Generate a launch screen using info from app.json',
       options: [],
       func: () => {

@@ -1,29 +1,27 @@
 {
   "name": "@zaidulin_kirill/react-native-toolkit",
-  "version": "0.0.1",
+  "version": "0.0.1-3",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/index.d.ts",
   "files": [
-    "src",
     "lib",
-    "scripts"
+    "react-native.config.js"
   ],
   "scripts": {
     "typescript": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
-    "prepare": "bob build"
+    "prepare": "bob build",
+    "release": "npm publish --access public"
   },
   "peerDependencies": {
-    "react": "18",
-    "react-native": "0.70",
-    "react-native-bootsplash": "4"
+    "react": "~18.1.0",
+    "react-native": "~0.70.6",
+    "react-native-bootsplash": ">=4.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.16.10",
     "@babel/runtime": "^7.12.5",
-    "@types/react": "^18.0.21",
-    "@types/react-native": "^0.70.6",
     "@typescript-eslint/eslint-plugin": "^5.40.0",
     "@typescript-eslint/parser": "^5.40.0",
     "eslint": "^8.25.0",
@@ -35,6 +33,8 @@
     "eslint-plugin-jsx-a11y": "^6.6.1",
     "eslint-plugin-react": "^7.31.10",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "react": "^18.1.0",
+    "react-native": "^0.70.6",
     "react-native-bootsplash": "^4.4.0",
     "react-native-builder-bob": "^0.20.3",
     "typescript": "^4.8.4"
