@@ -30,7 +30,8 @@ module.exports = {
           process.exit(1);
         }
 
-        spawnSync('npx', ['react-native', 'generate-bootsplash',
+        spawnSync('npx', [
+          'react-native', 'generate-bootsplash',
           appFile.splash.icon,
           '--logo-width', appFile.splash.width || 100,
           '--background-color', appFile.splash.background || '#fff',
