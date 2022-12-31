@@ -21,41 +21,41 @@ module.exports = () => {
   
       const [fontFamily, fontWeight] = res.postScriptName.split('-')
       
-      const italic = fontWeight.toLowerCase().endsWith('italic')
+      // const italic = fontWeight.toLowerCase().endsWith('italic')
   
-      const weight = (() => {
-        let weight = fontWeight.toLowerCase()
-        if (italic) {
-          weight = weight.replace(/italic$/, '')
-        }
+      // const weight = (() => {
+      //   let weight = fontWeight.toLowerCase()
+      //   if (italic) {
+      //     weight = weight.replace(/italic$/, '')
+      //   }
   
-        switch (weight) {
-          case 'hairline': 
-          case 'thin': 
-            return '100'
-          case 'extralight':
-          case 'ultralight':
-            return '200'
-          case 'light':
-            return '300'
-          case 'normal':
-          case 'regular':
-            return '400'
-          case 'medium':
-            return '500'
-          case 'semibold':
-          case 'demibold':
-            return '600'
-          case 'bold':
-            return '700'
-          case 'extrabold':
-          case 'ultrabold':
-            return '800'
-          case 'black':
-          case 'heavy':
-            return '900'
-        }
-      })()
+      //   switch (weight) {
+      //     case 'hairline': 
+      //     case 'thin': 
+      //       return '100'
+      //     case 'extralight':
+      //     case 'ultralight':
+      //       return '200'
+      //     case 'light':
+      //       return '300'
+      //     case 'normal':
+      //     case 'regular':
+      //       return '400'
+      //     case 'medium':
+      //       return '500'
+      //     case 'semibold':
+      //     case 'demibold':
+      //       return '600'
+      //     case 'bold':
+      //       return '700'
+      //     case 'extrabold':
+      //     case 'ultrabold':
+      //       return '800'
+      //     case 'black':
+      //     case 'heavy':
+      //       return '900'
+      //   }
+      // })()
       
       return {
         path: pathToFile,
@@ -63,7 +63,7 @@ module.exports = () => {
         extension,
         postScriptName: res.postScriptName,
         family: fontFamily,
-        weight: `${weight}${italic ? 'i' : ''}`,
+        weight: fontWeight,
         newPath: path.join(pathToFonts, `${res.postScriptName}${extension}`)
       }
     })
@@ -86,11 +86,12 @@ module.exports = () => {
   
     const newContent = themeContent.replace(/fonts: *\{[^}]*\},/gm, `fonts: ${
       Object.entries(groupedFonts).reduce((acc, [family, items]) => {
-        return acc + `    ${family}: [${items.map(x => `'${x.weight}'`).join(', ')}],\n`
+        return acc + `    ${family}: [${items.map(x => `'${x.weight}'`).sort((a,b) => a.localeCompare(b)).join(', ')}],\n`
       }, '{\n') + '  },'
     }`)
   
-  
+    fs.writeFileSync(pathToTheme, newContent, 'utf-8')
+
     spawnSync('npx', ['react-native-asset', '--assets', ...fonts.map(x => x.newPath)]);
   });
 }

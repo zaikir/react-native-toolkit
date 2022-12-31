@@ -16,7 +16,7 @@ module.exports = {
 
         if (!fs.existsSync(pathToAppInfo)) {
           console.log(
-            '❌  File `app.json` not found. Exiting…\n',
+            '❌ File `app.json` not found. Exiting…\n',
           );
 
           process.exit(1);
@@ -25,7 +25,7 @@ module.exports = {
         const appFile = JSON.parse(fs.readFileSync(pathToAppInfo));
         if (!appFile.splash) {
           console.log(
-            '⚠️  Missing `splash` info. Skipping generation…\n',
+            '⚠️ Missing `splash` info. Skipping generation…\n',
           );
 
           process.exit(1);
@@ -47,7 +47,7 @@ module.exports = {
         loadFonts();
 
         console.log(
-          '✅  Fonts loaded successfully\n',
+          '✅ Fonts loaded successfully',
         );
       },
     },
