@@ -81,7 +81,7 @@ module.exports = () => {
       return acc
     }, {})
   
-    const pathToTheme = path.join(workingPath, 'src', 'theme.ts')
+    const pathToTheme = path.join(workingPath, 'src', 'theme', 'theme.ts')
     const themeContent = fs.readFileSync(pathToTheme, 'utf-8')
   
     const newContent = themeContent.replace(/fonts: *\{[^}]*\},/gm, `fonts: ${
