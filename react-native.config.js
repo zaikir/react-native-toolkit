@@ -2,6 +2,7 @@
 const path = require('path');
 const fs = require('fs');
 const { spawnSync } = require('child_process');
+const loadFonts = require('./scripts/load-fonts');
 
 module.exports = {
   commands: [
@@ -36,6 +37,18 @@ module.exports = {
           '--logo-width', appFile.splash.width || 100,
           '--background-color', appFile.splash.background || '#fff',
         ]);
+      },
+    },
+    {
+      name: 'load-fonts',
+      description: 'Load fonts from assets/fonts and initialize fonts in theme',
+      options: [],
+      func: () => {
+        loadFonts();
+
+        console.log(
+          '✅  Fonts loaded successfully\n',
+        );
       },
     },
   ],
