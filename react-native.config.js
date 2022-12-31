@@ -2,7 +2,7 @@
 const path = require('path');
 const fs = require('fs');
 const { spawnSync } = require('child_process');
-const loadFonts = require('./scripts/load-fonts');
+const loadFonts = require('./scripts/loadFonts');
 
 module.exports = {
   commands: [
