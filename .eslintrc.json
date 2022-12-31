@@ -42,6 +42,7 @@
   "ignorePatterns": [
     "babel.config.js",
     "metro.config.js",
-    "lib"
+    "lib",
+    "scripts"
   ]
 }

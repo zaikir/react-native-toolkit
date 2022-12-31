@@ -1,4 +1,3 @@
-import { hide } from 'react-native-bootsplash';
-
-export const hideSplash = hide;
-export type Test = 'Hello' | 'World';
+export { hide as hideSplash } from 'react-native-bootsplash';
+export * from './theme';
+export { Text } from './components/Text';
