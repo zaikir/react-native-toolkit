@@ -1,4 +1,4 @@
-import type { TextVariant } from '../../theme';
+import type { TextVariant } from 'theme';
 
 type Props = {
   variant: TextVariant
