@@ -11,7 +11,7 @@ export class SentryPlugin implements Plugin {
   ) {}
 
   async init() {
-    if (!process.env.SENTRY_DSN && !this.options.dsn) {
+    if (!process.env.SENTRY_DSN && !this.options?.dsn) {
       console.warn('Sentry DSN not found. Initialization skipped');
       return;
     }

@@ -4,6 +4,7 @@ const fs = require('fs');
 const { spawnSync } = require('child_process');
 const loadFonts = require('./scripts/load-fonts');
 const tsStart = require('./scripts/ts-start');
+const installPeers = require('./scripts/install-peers');
 
 module.exports = {
   commands: [
@@ -64,6 +65,18 @@ module.exports = {
       ],
       func: () => {
         tsStart();
+      },
+    },
+    {
+      name: 'install-peers',
+      description: 'Install peer dependencies',
+      options: [],
+      func: () => {
+        installPeers();
+
+        console.log(
+          '✅ Dependencies installed',
+        );
       },
     },
   ],
