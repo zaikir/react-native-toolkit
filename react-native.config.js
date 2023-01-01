@@ -2,7 +2,8 @@
 const path = require('path');
 const fs = require('fs');
 const { spawnSync } = require('child_process');
-const loadFonts = require('./scripts/loadFonts');
+const loadFonts = require('./scripts/load-fonts');
+const tsStart = require('./scripts/ts-start');
 
 module.exports = {
   commands: [
@@ -49,6 +50,20 @@ module.exports = {
         console.log(
           '✅ Fonts loaded successfully',
         );
+      },
+    },
+    {
+      name: 'ts-start',
+      description: 'Start metro bundle with typescript compiler',
+      options: [
+        {
+          name: '--reset-cache',
+          description:
+            'Reset cache',
+        },
+      ],
+      func: () => {
+        tsStart();
       },
     },
   ],
