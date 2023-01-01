@@ -1,7 +1,7 @@
 import React, {
   PropsWithChildren, useEffect, useRef, useState,
 } from 'react';
-import { StyleSheet, Animated } from 'react-native';
+import { Animated } from 'react-native';
 import { hide as hideNativeSplash } from 'react-native-bootsplash';
 
 export type AppSplashScreenProps = PropsWithChildren<{
@@ -13,7 +13,6 @@ export type AppSplashScreenProps = PropsWithChildren<{
 export default function AppSplashScreen({
   visible, SplashScreen, children, fadeDuration = 220,
 }: AppSplashScreenProps) {
-  console.log(fadeDuration);
   const [isFadeFinished, setIsFadeFinished] = useState(false);
   const opacityAnim = useRef(new Animated.Value(1)).current;
 
@@ -44,25 +43,26 @@ export default function AppSplashScreen({
     }
   }, [SplashScreen]);
 
-  if (visible && !SplashScreen) {
-    return null;
-  }
-
-  if (!visible && !SplashScreen) {
-    return children as JSX.Element;
+  if (!SplashScreen) {
+    return visible ? null : children as JSX.Element;
   }
 
   return (
     <>
+      {children}
       {!isFadeFinished && (
-        <Animated.View style={[StyleSheet.absoluteFill, {
+        <Animated.View style={[{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
           opacity: opacityAnim,
         }]}
         >
           {SplashScreen}
         </Animated.View>
       )}
-      {children}
     </>
   );
 }
