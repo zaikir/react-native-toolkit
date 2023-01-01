@@ -3,13 +3,12 @@ import React, { useCallback, useState } from 'react';
 import { hide as hideNativeSplash } from 'react-native-bootsplash';
 import useAsyncEffect from 'use-async-effect';
 import { AppSplashScreen } from 'components/AppSplashScreen';
-import type { OmitStrict } from 'type-zoo';
 import type { AppSplashScreenProps } from 'components/AppSplashScreen/AppSplashScreen';
 
 type Props = {
   children?: React.ReactNode,
   plugins?: Plugin[],
-  splashScreenProps?: OmitStrict<AppSplashScreenProps, 'visible' | 'children'>
+  splashScreenProps?: Omit<AppSplashScreenProps, 'visible' | 'children'>
 };
 
 export default function AppBootstrapper({ children, plugins, splashScreenProps }: Props) {
