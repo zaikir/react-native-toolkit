@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",
+    "baseUrl": "./src",
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "esModuleInterop": true,
@@ -16,10 +16,15 @@
     "noStrictGenericChecks": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": false,
     "target": "esnext",
+    // "paths": {
+    //   "theme": ["./src/theme/*"],
+    //   "theme/*": ["./src/theme/*"],
+    //   "components/*": ["./src/components/*"],
+    //   "plugins/*": ["./src/plugins/*"]
+    // }
   },
   "exclude": [
     "scripts"

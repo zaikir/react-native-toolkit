@@ -1,6 +1,6 @@
 {
   "name": "@kirz/react-native-toolkit",
-  "version": "0.0.8-2",
+  "version": "0.0.0-beta.1",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/index.d.ts",
@@ -12,7 +12,7 @@
   "scripts": {
     "typescript": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
-    "prepare": "bob build",
+    "prepare": "bob build && npx tsc-alias -p tsconfig.build.json",
     "release": "npm publish --access public"
   },
   "peerDependencies": {
@@ -31,6 +31,7 @@
     "@types/react-native": "^0.70.8",
     "@typescript-eslint/eslint-plugin": "^5.40.0",
     "@typescript-eslint/parser": "^5.40.0",
+    "@zerollup/ts-transform-paths": "^1.7.18",
     "eslint": "^8.25.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.0.0",
@@ -44,6 +45,7 @@
     "react-native": "^0.70.6",
     "react-native-bootsplash": "^4.4.0",
     "react-native-builder-bob": "^0.20.3",
+    "tsc-alias": "^1.8.2",
     "type-zoo": "^3.4.1",
     "typescript": "^4.8.4"
   },
