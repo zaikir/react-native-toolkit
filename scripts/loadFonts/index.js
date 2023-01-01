@@ -92,6 +92,6 @@ module.exports = () => {
   
     fs.writeFileSync(pathToTheme, newContent, 'utf-8')
 
-    spawnSync('npx', ['react-native-asset', '--assets', ...fonts.map(x => x.newPath)]);
+    spawnSync('npx', ['react-native-asset']);
   });
 }
