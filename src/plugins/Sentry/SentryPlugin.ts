@@ -12,11 +12,9 @@ export class SentryPlugin implements Plugin {
 
   async init() {
     if (!process.env.SENTRY_DSN && !this.options?.dsn) {
-      console.warn('Sentry DSN not found. Initialization skipped');
-      return;
+      throw new Error('Sentry DSN required. Pass it using SENTRY_DSN env variable or via constructor');
     }
 
-    await new Promise((resolve) => { setTimeout(resolve, 1000); });
     Sentry.init({
       dsn: process.env.SENTRY_DSN,
       integrations: [new CaptureConsole({ levels: ['warn', 'error'] })],
