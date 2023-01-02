@@ -6,7 +6,7 @@ import type { InitializedPlugin, Plugin, PluginFeature } from 'plugins/Plugin';
 export class SentryPlugin implements Plugin {
   readonly name = SentryPlugin.name;
 
-  readonly features: PluginFeature[] = ['Sentry'];
+  readonly features: PluginFeature[] = ['ErrorTracking'];
 
   constructor(
     readonly options?: ReactNativeOptions,

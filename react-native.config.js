@@ -5,6 +5,7 @@ const { spawnSync } = require('child_process');
 const loadFonts = require('./scripts/load-fonts');
 const tsStart = require('./scripts/ts-start');
 const installPeers = require('./scripts/install-peers');
+const initPlugins = require('./scripts/init-plugins');
 
 module.exports = {
   commands: [
@@ -73,6 +74,18 @@ module.exports = {
       options: [],
       func: () => {
         installPeers();
+
+        console.log(
+          '✅ Dependencies installed',
+        );
+      },
+    },
+    {
+      name: 'init-plugins',
+      description: 'Initialize plugins',
+      options: [],
+      func: () => {
+        initPlugins();
 
         console.log(
           '✅ Dependencies installed',
