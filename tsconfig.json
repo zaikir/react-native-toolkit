@@ -17,7 +17,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "skipLibCheck": true,
-    "strict": false,
+    "strict": true,
     "target": "esnext",
     // "paths": {
     //   "theme": ["./src/theme/*"],

@@ -3,6 +3,8 @@ import React, {
 } from 'react';
 import DropdownAlert from 'react-native-dropdownalert';
 
+export const DropdownAlertRef: { ref: DropdownAlert } = { ref: null } as any;
+
 export type AlertsContextType = {
   showAlert: DropdownAlert['alertWithType'],
   hideAlert: DropdownAlert['closeAction'],
@@ -17,15 +19,24 @@ export function AlertsProvider({
 
   const contextData = useMemo<AlertsContextType>(() => ({
     showAlert: (...args) => {
+      if (!dropdownRef.current) {
+        return;
+      }
+
       if (dropdownRef.current.getQueueSize() > 0) {
         dropdownRef.current.closeAction('programmatic', () => {
-          dropdownRef.current.alertWithType(...args);
+          dropdownRef.current!.alertWithType(...args);
         });
       } else {
         dropdownRef.current.alertWithType(...args);
       }
+
+      if ((args[0] === 'error' || args[0] === 'warn') && args[2]) {
+        // eslint-disable-next-line no-console
+        console[args[0]](args[2]);
+      }
     },
-    hideAlert: (...args) => dropdownRef.current.closeAction(...args),
+    hideAlert: (...args) => dropdownRef.current?.closeAction(...args),
   }), []);
 
   return (
@@ -35,7 +46,8 @@ export function AlertsProvider({
         updateStatusBar={false}
         isInteraction={false}
         ref={(ref) => {
-          dropdownRef.current = ref;
+          dropdownRef.current = ref as any;
+          DropdownAlertRef.ref = ref as any;
         }}
       />
     </AlertsContext.Provider>

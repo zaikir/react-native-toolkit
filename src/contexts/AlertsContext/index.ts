@@ -1,1 +1,1 @@
-export { AlertsContext, AlertsProvider } from './AlertsContext';
+export { AlertsContext, AlertsProvider, DropdownAlertRef as DropdownAlert } from './AlertsContext';

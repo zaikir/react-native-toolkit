@@ -15,6 +15,10 @@ export default function AppBootstrapper({ children, plugins, splashScreenProps }
   const [isInitialized, setIsInitialized] = useState(false);
 
   const initialize = useCallback(async () => {
+    if (!plugins) {
+      return;
+    }
+
     for (let i = 0; i < plugins.length; i += 1) {
       const plugin = plugins[i];
 
