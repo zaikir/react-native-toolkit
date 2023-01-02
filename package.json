@@ -1,6 +1,6 @@
 {
   "name": "@kirz/react-native-toolkit",
-  "version": "0.1.0-beta.17",
+  "version": "0.1.0-beta.18",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/index.d.ts",
@@ -16,8 +16,6 @@
     "release": "npm publish --access public"
   },
   "peerDependencies": {
-    "@sentry/integrations": "^7.28.1",
-    "@sentry/react-native": "^5.0.0-alpha.10",
     "react": "~18.1.0",
     "react-native": "~0.70.6",
     "react-native-bootsplash": "^4.4.0"
