@@ -11,26 +11,22 @@ const pluginsFilename = path.join(__dirname, 'plugins.json')
 const rootFilename = path.join(workingPath, 'src', 'Root.tsx')
 
 module.exports = () => {
+  const { name: appName } = JSON.parse(fs.readFileSync(path.join(workingPath, 'app.json')))
+
   // fetch names of previously installed plugins (from temp folder in node_modules)
   let installedPlugins = []
   if(fs.existsSync(pluginsFilename)) {
     installedPlugins = JSON.parse(fs.readFileSync(pluginsFilename))
   }
 
-  console.log({ installedPlugins })
-
   // find list of current plugins
   const rootFile = fs.readFileSync(rootFilename, 'utf-8').replace(/\/\*[\s\S]*?\*\/|\/\/.*/g,'');
   const currentPlugins = allPluginNames.filter(name => rootFile.includes(`new ${name}(`))
-
-  console.log({ currentPlugins })
 
   // find names of plugins to delete and plugins to add
   const pluginsToDelete = installedPlugins.filter(name => !currentPlugins.includes(name))
   const pluginsToAdd = currentPlugins.filter(name => !installedPlugins.includes(name))
   
-  console.log({ pluginsToDelete, pluginsToAdd })
-
   // for every deleted plugin:
   const dependenciesToDelete = []
   pluginsToDelete.forEach(name => {
@@ -44,13 +40,14 @@ module.exports = () => {
     dependenciesToDelete.push(...pluginInfo.dependencies || [])
 
     //// execute "delete" action
-    if (pluginInfo.delete) {
-      pluginInfo.delete()
-      console.log(`❌ [${name}]: deleted`)
-    }
-  })
+    console.log(`⏳ [${name}] removing...`)
 
-  console.log({dependenciesToDelete})
+    if (pluginInfo.delete) {
+      pluginInfo.delete(appName)
+    }
+
+    console.log(`❌ [${name}] done`)
+  })
 
   // for every added plugin:
   const dependenciesToAdd = []
@@ -65,13 +62,14 @@ module.exports = () => {
     dependenciesToAdd.push(...pluginInfo.dependencies || [])
 
     //// execute "add" action
-    if (pluginInfo.add) {
-      pluginInfo.add()
-      console.log(`✅ [${name}]: installed`)
-    }
-  })
+    console.log(`⏳ [${name}] preparing...`)
 
-  console.log({dependenciesToAdd})
+    if (pluginInfo.add) {
+      pluginInfo.add(appName)
+    }
+
+    console.log(`✅ [${name}] done`)
+  })
 
   const { dependencies: projectDependencies } = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'))
   const projectDependenciesNames = Object.keys(projectDependencies)
@@ -79,26 +77,20 @@ module.exports = () => {
   // execute "npm r" if needed using delete list
   const resultDependenciesToDelete = dependenciesToDelete.filter(x => projectDependenciesNames.includes(x))
   if (resultDependenciesToDelete.length) {
+    console.log(`🔧 npm r ${resultDependenciesToDelete.join(' ')}`)
     spawnSync('npm', ['r', ...resultDependenciesToDelete])
-    console.log(`npm r ${resultDependenciesToDelete.join(' ')}`)
   }
-
-  console.log({resultDependenciesToDelete})
 
   // execute "npm i" if needed using add list
   const resultDependenciesToAdd = dependenciesToAdd.filter(x => !projectDependenciesNames.includes(x))
   if (resultDependenciesToAdd.length) {
     const packages = resultDependenciesToAdd.map(x => `${x}@${devDependencies[x]}`)
 
+    console.log(`🔧 npm i ${packages.join(' ')}`)
     spawnSync('npm', ['i', ...packages])  
-    console.log(`npm i ${packages.join(' ')}`)
   }
-
-  console.log({resultDependenciesToAdd})
 
   // save plugins to a file
   const resultPluginsList = currentPlugins
   fs.writeFileSync(pluginsFilename, JSON.stringify(resultPluginsList))
-
-  console.log({ resultPluginsList })
 }

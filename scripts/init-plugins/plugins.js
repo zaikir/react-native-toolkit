@@ -3,7 +3,6 @@ const fs = require('fs');
 
 const label = `react-native-tooklit`
 const workingPath = process.cwd();
-const { name: appName } = JSON.parse(fs.readFileSync(path.join(workingPath, 'app.json')))
 
 const placeholders = {
   android: {
@@ -30,14 +29,18 @@ const addLines = (filename, placeholder, lines) => {
   const content = fs.readFileSync(pathToFile, 'utf-8')
   const contentLines = content.split('\n')
   const sectionStartIndex = contentLines.findIndex(x => x.includes(`[${label}] ${placeholder}`))
-  const sectionEndIndex = contentLines.findIndex(x => x.includes(`[${label}] placeholder`))
+  const sectionEndIndex = contentLines.findIndex(x => x.includes(`[${label}-end] ${placeholder}`))
 
   const currentLines = contentLines.slice(sectionStartIndex, sectionEndIndex)
   const linesToAdd = (typeof lines === 'string' ? [lines]: lines)
     .filter(line => !currentLines.find(y => y.includes(line)))
 
-  content.replace(`// [${label}] ${placeholder}`, `// [${label}] ${placeholder}\n${linesToAdd.join('\n')}\n`)
-  fs.writeFileSync(pathToFile, content, 'utf-8')
+  if (linesToAdd.length) {
+    const newContent = content.replace(`// [${label}] ${placeholder}`, `// [${label}] ${placeholder}\n${linesToAdd.join('\n')}`)
+    fs.writeFileSync(pathToFile, newContent, 'utf-8')
+  
+    console.log(`➕ ${filename}`)
+  }
 }
 
 
@@ -47,7 +50,7 @@ const deleteLines = (filename, placeholder, lines) => {
   const content = fs.readFileSync(pathToFile, 'utf-8')
   const contentLines = content.split('\n')
   const sectionStartIndex = contentLines.findIndex(x => x.includes(`[${label}] ${placeholder}`))
-  const sectionEndIndex = contentLines.findIndex(x => x.includes(`[${label}] placeholder`))
+  const sectionEndIndex = contentLines.findIndex(x => x.includes(`[${label}-end] ${placeholder}`))
 
   const linesToDelete = []
   for (var i = sectionStartIndex + 1; i < sectionEndIndex; i++) {
@@ -60,6 +63,8 @@ const deleteLines = (filename, placeholder, lines) => {
   if (linesToDelete.length) {
     const newContent = contentLines.filter((x, idx) => !linesToDelete.includes(idx)).join('\n')
     fs.writeFileSync(pathToFile, newContent, 'utf-8')
+
+    console.log(`➖ ${filename}`)
   }
 }
 
@@ -69,23 +74,23 @@ module.exports = {
   },
   FirebaseRemoteConfig: {
     dependencies: ["@react-native-firebase/app"],
-    add() {
+    add(appName) {
       // Android
       addLines('android/build.gradle', placeholders.android.gradle.buildscriptDependencies, '        classpath("com.google.gms:google-services:4.3.14")')
       addLines('android/app/build.gradle', placeholders.android.appGradle.applyPlugin, `apply plugin: 'com.google.gms.google-services'`)
 
       // iOS
       addLines(`ios/${appName}/AppDelegate.mm`, placeholders.ios.appDelegate.import, `#import <Firebase.h>`)
-      addLines(`ios/${appName}/AppDelegate.mm`, placeholders.ios.appDelegate.didFinishLaunchingWithOptions, `  [FIRApp configure];`)
+      addLines(`ios/${appName}/AppDelegate.mm`, placeholders.ios.appDelegate.didFinishLaunchingWithOptions.start, `  [FIRApp configure];`)
     },
-    delete() {
+    delete(appName) {
       // Android
       deleteLines('android/build.gradle', placeholders.android.gradle.buildscriptDependencies, '        classpath("com.google.gms:google-services:4.3.14")')
       deleteLines('android/app/build.gradle', placeholders.android.appGradle.applyPlugin, `apply plugin: 'com.google.gms.google-services'`)
 
       // iOS
       deleteLines(`ios/${appName}/AppDelegate.mm`, placeholders.ios.appDelegate.import, `#import <Firebase.h>`)
-      deleteLines(`ios/${appName}/AppDelegate.mm`, placeholders.ios.appDelegate.didFinishLaunchingWithOptions, `  [FIRApp configure];`)
+      deleteLines(`ios/${appName}/AppDelegate.mm`, placeholders.ios.appDelegate.didFinishLaunchingWithOptions.start, `  [FIRApp configure];`)
     },
   },
 };
