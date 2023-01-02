@@ -12,13 +12,13 @@ export class SentryPlugin implements Plugin {
   ) {}
 
   async init() {
-    if (!process.env.SENTRY_DSN && !this.options?.dsn) {
-      DropdownAlert.ref.alertWithType('error', 'Error', 'Sentry DSN required. Use SENTRY_DSN env variable or pass it in the constructor');
+    if (!this.options?.dsn) {
+      DropdownAlert.ref.alertWithType('error', 'Error', 'Sentry DSN is missing');
       return false;
     }
 
     Sentry.init({
-      dsn: this.options?.dsn || process.env.SENTRY_DSN,
+      dsn: this.options.dsn,
       // @ts-ignore
       integrations: [new CaptureConsole({ levels: ['warn', 'error'] })],
       ...this.options,
