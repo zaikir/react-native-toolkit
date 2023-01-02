@@ -86,10 +86,6 @@ module.exports = {
       options: [],
       func: () => {
         initPlugins();
-
-        console.log(
-          '✅ Dependencies installed',
-        );
       },
     },
   ],

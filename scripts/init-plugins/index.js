@@ -46,6 +46,7 @@ module.exports = () => {
     //// execute "delete" action
     if (pluginInfo.delete) {
       pluginInfo.delete()
+      console.log(`❌ [${name}]: deleted`)
     }
   })
 
@@ -66,6 +67,7 @@ module.exports = () => {
     //// execute "add" action
     if (pluginInfo.add) {
       pluginInfo.add()
+      console.log(`✅ [${name}]: installed`)
     }
   })
 
@@ -77,7 +79,8 @@ module.exports = () => {
   // execute "npm r" if needed using delete list
   const resultDependenciesToDelete = dependenciesToDelete.filter(x => projectDependenciesNames.includes(x))
   if (resultDependenciesToDelete.length) {
-    spawnSync('npm', ['r', ...resultDependenciesToDelete])  
+    spawnSync('npm', ['r', ...resultDependenciesToDelete])
+    console.log(`npm r ${resultDependenciesToDelete.join(' ')}`)
   }
 
   console.log({resultDependenciesToDelete})
@@ -85,7 +88,10 @@ module.exports = () => {
   // execute "npm i" if needed using add list
   const resultDependenciesToAdd = dependenciesToAdd.filter(x => !projectDependenciesNames.includes(x))
   if (resultDependenciesToAdd.length) {
-    spawnSync('npm', ['i', ...resultDependenciesToAdd])  
+    const packages = resultDependenciesToAdd.map(x => `${x}@${devDependencies[x]}`)
+
+    spawnSync('npm', ['i', ...packages])  
+    console.log(`npm i ${packages.join(' ')}`)
   }
 
   console.log({resultDependenciesToAdd})
