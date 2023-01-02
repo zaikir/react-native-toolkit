@@ -1,20 +1,20 @@
 import * as Sentry from '@sentry/react-native';
 import { CaptureConsole } from '@sentry/integrations';
 import type { ReactNativeOptions } from '@sentry/react-native';
-import type { Plugin } from 'plugins/Plugin';
-import { DropdownAlert } from 'contexts/AlertsContext';
+import type { InitializedPlugin, Plugin, PluginFeature } from 'plugins/Plugin';
 
 export class SentryPlugin implements Plugin {
   readonly name = SentryPlugin.name;
+
+  readonly features: PluginFeature[] = ['Sentry'];
 
   constructor(
     readonly options?: ReactNativeOptions,
   ) {}
 
-  async init() {
+  async init(): Promise<InitializedPlugin | string> {
     if (!this.options?.dsn) {
-      DropdownAlert.ref.alertWithType('error', 'Error', 'Sentry DSN is missing');
-      return false;
+      return 'Sentry DSN is missing';
     }
 
     Sentry.init({
@@ -24,6 +24,9 @@ export class SentryPlugin implements Plugin {
       ...this.options,
     });
 
-    return true;
+    return {
+      instance: this,
+      data: null,
+    };
   }
 }
