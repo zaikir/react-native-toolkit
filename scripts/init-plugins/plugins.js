@@ -28,7 +28,15 @@ const addLines = (filename, placeholder, lines) => {
   const pathToFile = path.join(workingPath, filename)
 
   const content = fs.readFileSync(pathToFile, 'utf-8')
-  content.replace(`// [${label}] ${placeholder}`, `// [${label}] ${placeholder}\n${(typeof lines === 'string' ? [lines]: lines).join('\n')}\n`)
+  const contentLines = content.split('\n')
+  const sectionStartIndex = contentLines.findIndex(x => x.includes(`[${label}] ${placeholder}`))
+  const sectionEndIndex = contentLines.findIndex(x => x.includes(`[${label}] placeholder`))
+
+  const currentLines = contentLines.slice(sectionStartIndex, sectionEndIndex)
+  const linesToAdd = (typeof lines === 'string' ? [lines]: lines)
+    .filter(line => !currentLines.find(y => y.includes(line)))
+
+  content.replace(`// [${label}] ${placeholder}`, `// [${label}] ${placeholder}\n${linesToAdd.join('\n')}\n`)
   fs.writeFileSync(pathToFile, content, 'utf-8')
 }
 
@@ -71,7 +79,13 @@ module.exports = {
       addLines(`ios/${appName}/AppDelegate.mm`, placeholders.ios.appDelegate.didFinishLaunchingWithOptions, `  [FIRApp configure];`)
     },
     delete() {
+      // Android
+      deleteLines('android/build.gradle', placeholders.android.gradle.buildscriptDependencies, '        classpath("com.google.gms:google-services:4.3.14")')
+      deleteLines('android/app/build.gradle', placeholders.android.appGradle.applyPlugin, `apply plugin: 'com.google.gms.google-services'`)
 
+      // iOS
+      deleteLines(`ios/${appName}/AppDelegate.mm`, placeholders.ios.appDelegate.import, `#import <Firebase.h>`)
+      deleteLines(`ios/${appName}/AppDelegate.mm`, placeholders.ios.appDelegate.didFinishLaunchingWithOptions, `  [FIRApp configure];`)
     },
   },
 };

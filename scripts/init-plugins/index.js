@@ -7,7 +7,7 @@ const PluginsDef = require('./plugins');
 const allPluginNames = Object.keys(PluginsDef)
 const workingPath = process.cwd();
 const packageJsonPath = path.join(workingPath, 'package.json')
-const pluginsFilename = path.resolve('plugins.json')
+const pluginsFilename = path.join(__dirname, 'plugins.json')
 const rootFilename = path.join(workingPath, 'src', 'Root.tsx')
 
 module.exports = () => {
@@ -20,7 +20,7 @@ module.exports = () => {
   console.log({ installedPlugins })
 
   // find list of current plugins
-  const rootFile = fs.readFileSync(rootFilename, 'utf-8')
+  const rootFile = fs.readFileSync(rootFilename, 'utf-8').replace(/\/\*[\s\S]*?\*\/|\/\/.*/g,'');
   const currentPlugins = allPluginNames.filter(name => rootFile.includes(`new ${name}(`))
 
   console.log({ currentPlugins })
@@ -41,7 +41,7 @@ module.exports = () => {
     }
 
     //// add dependencies to delete list
-    dependenciesToDelete.push(...pluginInfo.deps || [])
+    dependenciesToDelete.push(...pluginInfo.dependencies || [])
 
     //// execute "delete" action
     if (pluginInfo.delete) {
@@ -61,7 +61,7 @@ module.exports = () => {
     }
 
     //// add dependencies to add list
-    dependenciesToAdd.push(...pluginInfo.deps || [])
+    dependenciesToAdd.push(...pluginInfo.dependencies || [])
 
     //// execute "add" action
     if (pluginInfo.add) {
@@ -71,7 +71,7 @@ module.exports = () => {
 
   console.log({dependenciesToAdd})
 
-  const { dependencies: projectDependencies } = fs.readFileSync(packageJsonPath, 'utf-8')
+  const { dependencies: projectDependencies } = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'))
   const projectDependenciesNames = Object.keys(projectDependencies)
 
   // execute "npm r" if needed using delete list
