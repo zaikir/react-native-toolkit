@@ -36,6 +36,7 @@ export default function AppBootstrapper({ children, plugins, splashScreenProps }
         throw new Error(result);
       }
 
+      console.log(result);
       pluginBundle.current.push(result);
     }
   }, [plugins]);

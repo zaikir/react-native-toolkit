@@ -73,7 +73,11 @@ module.exports = {
     dependencies: ["@sentry/integrations", "@sentry/react-native"],
   },
   FirebaseRemoteConfig: {
-    dependencies: ["@react-native-firebase/app"],
+    dependencies: [
+      "@react-native-firebase/app",
+      "@react-native-firebase/analytics",
+      "@react-native-firebase/remote-config"
+    ],
     add(appName) {
       // Android
       addLines('android/build.gradle', placeholders.android.gradle.buildscriptDependencies, '        classpath("com.google.gms:google-services:4.3.14")')

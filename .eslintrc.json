@@ -24,6 +24,7 @@
   },
   "rules": {
     "import/prefer-default-export": "off",
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
     "react/require-default-props": "off",
     "@typescript-eslint/no-unused-vars": "warn",
     "consistent-default-export-name/default-import-match-filename": "off",
