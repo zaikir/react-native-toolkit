@@ -14,3 +14,4 @@ export { FirebaseRemoteConfig } from './plugins/FirebaseRemoteConfig';
 
 // hooks
 export { default as useAlerts } from './hooks/useAlerts';
+export { default as useRemoteConfig } from './hooks/useRemoteConfig';

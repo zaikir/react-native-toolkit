@@ -1,11 +1,12 @@
 import type { InitializedPlugin, Plugin } from 'plugins/Plugin';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { hide as hideNativeSplash } from 'react-native-bootsplash';
 import useAsyncEffect from 'use-async-effect';
 import { AppSplashScreen } from 'components/AppSplashScreen';
 import type { AppSplashScreenProps } from 'components/AppSplashScreen/AppSplashScreen';
 import useAlerts from 'hooks/useAlerts';
 import { Button, Text, View } from 'react-native';
+import { PluginsBundleProvider } from 'contexts/PluginsBundleContext/PluginsBundleContext';
 
 type Props = {
   children?: React.ReactNode,
@@ -18,27 +19,28 @@ export default function AppBootstrapper({ children, plugins, splashScreenProps }
   const [isInitialized, setIsInitialized] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
   const [initializationError, setInitializationError] = useState<string | null>(null);
-  const pluginBundle = useRef<InitializedPlugin[]>([]);
+  const [pluginsBundle, setPluginsBundle] = useState<InitializedPlugin[]>([]);
 
   const initialize = useCallback(async () => {
     if (!plugins) {
       return;
     }
 
-    pluginBundle.current = [];
+    const currentPluginBundle: InitializedPlugin[] = [];
 
     for (let i = 0; i < plugins.length; i += 1) {
       const plugin = plugins[i];
 
       // eslint-disable-next-line no-await-in-loop
-      const result = await plugin.init(pluginBundle.current);
+      const result = await plugin.init(currentPluginBundle);
       if (typeof result === 'string') {
         throw new Error(result);
       }
 
-      console.log(result);
-      pluginBundle.current.push(result);
+      currentPluginBundle.push(result);
     }
+
+    setPluginsBundle(currentPluginBundle);
   }, [plugins]);
 
   useAsyncEffect(async () => {
@@ -59,7 +61,11 @@ export default function AppBootstrapper({ children, plugins, splashScreenProps }
       {...splashScreenProps}
     >
       {!initializationError
-        ? children
+        ? (
+          <PluginsBundleProvider plugins={pluginsBundle}>
+            {children}
+          </PluginsBundleProvider>
+        )
         : (
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             <Text>{initializationError}</Text>

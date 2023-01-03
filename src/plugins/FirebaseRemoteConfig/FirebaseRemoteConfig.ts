@@ -8,7 +8,7 @@ export class FirebaseRemoteConfig implements Plugin {
   readonly features: PluginFeature[] = ['RemoteConfig'];
 
   constructor(
-    readonly parameters: Partial<RemoteConfig>,
+    readonly parameters: RemoteConfig,
   ) {}
 
   async init(): Promise<InitializedPlugin | string> {
