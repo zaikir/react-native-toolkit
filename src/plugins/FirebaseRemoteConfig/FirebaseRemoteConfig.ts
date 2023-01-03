@@ -38,9 +38,11 @@ export class FirebaseRemoteConfig implements Plugin {
                 return [key, config.getNumber(key)];
               }
 
-              // @ts-ignore
-              // eslint-disable-next-line no-underscore-dangle
-              return [x.key, JSON.parse(config.getValue(x.key)._value)];
+              return [key, JSON.parse(
+                // @ts-ignore
+                // eslint-disable-next-line no-underscore-dangle
+                config.getValue(key)._value,
+              )];
             }),
           ),
         },
