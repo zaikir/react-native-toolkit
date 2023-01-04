@@ -1,0 +1,1 @@
+export { FacebookAnalytics } from './FacebookAnalytics';

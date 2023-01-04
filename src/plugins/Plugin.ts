@@ -1,4 +1,4 @@
-export type PluginFeature = 'ErrorTracking' | 'RemoteConfig';
+export type PluginFeature = 'ErrorTracking' | 'RemoteConfig' | 'Analytics';
 
 export type InitializedPlugin = {
   instance: Plugin,
