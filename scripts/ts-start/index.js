@@ -5,7 +5,7 @@ const args = process.argv.slice(3).join(' ')
 module.exports = () => {
   concurrently([
     'tsc -p tsconfig.json --watch --preserveWatchOutput',
-    'npm:clear-watchman && react-native start ' + args
+    'npm run watchman watch-del-all > /dev/null && react-native start ' + args
   ], {
     raw: true,
   });
