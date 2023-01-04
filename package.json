@@ -1,6 +1,6 @@
 {
   "name": "@kirz/react-native-toolkit",
-  "version": "0.1.1-beta.5",
+  "version": "0.1.1-beta.6",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/index.d.ts",
@@ -46,6 +46,7 @@
     "react-native": "^0.70.6",
     "react-native-bootsplash": "^4.4.0",
     "react-native-builder-bob": "^0.20.3",
+    "react-native-fbsdk-next": "^11.1.0",
     "tsc-alias": "^1.8.2",
     "typescript": "^4.8.4"
   },
