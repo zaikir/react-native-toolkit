@@ -1,14 +1,26 @@
 {
   "name": "@kirz/react-native-toolkit",
-  "version": "0.1.2-beta.2",
-  "main": "lib/commonjs/index",
-  "module": "lib/module/index",
-  "types": "lib/typescript/index.d.ts",
+  "version": "0.1.2-beta.3",
   "files": [
     "lib",
     "react-native.config.js",
     "scripts"
   ],
+  "main": "lib/commonjs/index.js",
+  "module": "lib/module/index.js",
+  "types": "lib/typescript/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/typescript/index.d.ts",
+      "import": "./lib/module/index.js",
+      "default": "./lib/commonjs/index.js"
+    },
+    "./sentry": {
+      "types": "./lib/typescript/plugins/Sentry/index.d.ts",
+      "import": "./lib/module/plugins/Sentry/index.js",
+      "default": "./lib/commonjs/plugins/Sentry/index.js"
+    }
+  },
   "scripts": {
     "typescript": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
