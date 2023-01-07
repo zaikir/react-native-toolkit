@@ -8,7 +8,7 @@ export class FirebaseRemoteConfig implements Plugin {
   readonly features: PluginFeature[] = ['RemoteConfig'];
 
   constructor(
-    readonly parameters: RemoteConfig,
+    readonly defaultParameters: RemoteConfig,
   ) {}
 
   async init(): Promise<InitializedPlugin | string> {
@@ -16,7 +16,7 @@ export class FirebaseRemoteConfig implements Plugin {
       const config = remoteConfig();
 
       await config.setConfigSettings({ minimumFetchIntervalMillis: 0 });
-      await config.setDefaults({ ...this.parameters });
+      await config.setDefaults({ ...this.defaultParameters });
 
       await config.fetch(0);
       await config.activate();
@@ -25,7 +25,7 @@ export class FirebaseRemoteConfig implements Plugin {
         instance: this,
         data: {
           parameters: Object.fromEntries(
-            Object.entries(this.parameters).map(([key, defaultValue]) => {
+            Object.entries(this.defaultParameters).map(([key, defaultValue]) => {
               if (typeof defaultValue === 'string') {
                 return [key, config.getString(key)];
               }

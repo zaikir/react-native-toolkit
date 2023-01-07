@@ -1,0 +1,5 @@
+{
+  "main": "../lib/commonjs/plugins/Sentry/index.js",
+  "module": "../lib/module/plugins/Sentry/index.js",
+  "types": "../lib/typescript/plugins/Sentry/index.d.ts"
+}

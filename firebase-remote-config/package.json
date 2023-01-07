@@ -1,0 +1,5 @@
+{
+  "main": "../lib/commonjs/plugins/FirebaseRemoteConfig/index.js",
+  "module": "../lib/module/plugins/FirebaseRemoteConfig/index.js",
+  "types": "../lib/typescript/plugins/FirebaseRemoteConfig/index.d.ts"
+}
