@@ -85,7 +85,7 @@ module.exports = {
   SentryPlugin: {
     dependencies: ["@sentry/integrations", "@sentry/react-native"],
   },
-  FirebaseRemoteConfig: {
+  FirebasePlugin: {
     dependencies: [
       "@react-native-firebase/app",
       "@react-native-firebase/analytics",
@@ -117,12 +117,12 @@ module.exports = {
     add(appName) {
       // Android
       addLines('android/app/src/main/res/values/strings.xml', placeholders.android.res.strings, '    <string name="facebook_app_id">${FACEBOOK_APP_ID}</string>\n    <string name="facebook_client_token">${FACEBOOK_CLIENT_TOKEN}</string>', 'xml')
-      addLines('android/app/src/main/AndroidManifest.xml', placeholders.android.manifest['meta-data'], `<meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>\n      <meta-data android:name="com.facebook.sdk.ClientToken" android:value="@string/facebook_client_token"/>`, 'xml')
+      addLines('android/app/src/main/AndroidManifest.xml', placeholders.android.manifest['meta-data'], `      <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>\n      <meta-data android:name="com.facebook.sdk.ClientToken" android:value="@string/facebook_client_token"/>`, 'xml')
 
       // iOS
       addLines(`ios/${appName}/Info.plist`, placeholders.ios.info.BundleURLSchemes, `					<string>fb$(FACEBOOK_APP_ID)</string>`, 'xml')
-      addLines(`ios/${appName}/Info.plist`, placeholders.ios.info.dict, `<key>FacebookAppID</key>\n		<string>$(FACEBOOK_APP_ID)</string>\n		<key>FacebookClientToken</key>\n		<string>$(FACEBOOK_CLIENT_TOKEN)</string>\n		<key>FacebookDisplayName</key>\n		<string>$(APP_DISPLAY_NAME)</string>`, 'xml')
-      addLines(`ios/${appName}/AppDelegate.mm`, placeholders.ios.appDelegate.import, `#import <FBSDKCoreKit/FBSDKCoreKit.h>`)
+      addLines(`ios/${appName}/Info.plist`, placeholders.ios.info.dict, `		<key>FacebookAppID</key>\n		<string>$(FACEBOOK_APP_ID)</string>\n		<key>FacebookClientToken</key>\n		<string>$(FACEBOOK_CLIENT_TOKEN)</string>\n		<key>FacebookDisplayName</key>\n		<string>$(APP_DISPLAY_NAME)</string>`, 'xml')
+      addLines(`ios/${appName}/AppDelegate.mm`, placeholders.ios.appDelegate.import, `#import <FBSDKCoreKit/FBSDKCoreKit-Swift.h>`)
       addLines(`ios/${appName}/AppDelegate.mm`, placeholders.ios.appDelegate.didFinishLaunchingWithOptions.start, `  [[FBSDKApplicationDelegate sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];\n  [FBSDKApplicationDelegate.sharedInstance initializeSDK];`)
     },
     delete(appName) {
@@ -133,7 +133,7 @@ module.exports = {
       // iOS
       deleteLines(`ios/${appName}/Info.plist`, placeholders.ios.info.BundleURLSchemes, `<string>fb$(FACEBOOK_APP_ID)</string>`)
       deleteLines(`ios/${appName}/Info.plist`, placeholders.ios.info.dict, [`<key>FacebookAppID</key>`, `<string>$(FACEBOOK_APP_ID)</string>`, `<key>FacebookClientToken</key>`, `<string>$(FACEBOOK_CLIENT_TOKEN)</string>`, `<key>FacebookDisplayName</key>`, `<string>$(APP_DISPLAY_NAME)</string>`], 'xml')
-      deleteLines(`ios/${appName}/AppDelegate.mm`, placeholders.ios.appDelegate.import, `#import <FBSDKCoreKit/FBSDKCoreKit.h>`)
+      deleteLines(`ios/${appName}/AppDelegate.mm`, placeholders.ios.appDelegate.import, `#import <FBSDKCoreKit/FBSDKCoreKit-Swift.h>`)
       deleteLines(`ios/${appName}/AppDelegate.mm`, placeholders.ios.appDelegate.didFinishLaunchingWithOptions.start, [`[[FBSDKApplicationDelegate sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];`, `[FBSDKApplicationDelegate.sharedInstance initializeSDK];`])
     },
   },

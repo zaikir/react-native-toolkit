@@ -11,7 +11,7 @@ export class FirebasePlugin implements Plugin {
 
   constructor(options: {
     remoteConfig?: RemoteConfig
-  }) {
+  } = {}) {
     this.remoteConfig = options.remoteConfig;
   }
 

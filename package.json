@@ -1,12 +1,13 @@
 {
   "name": "@kirz/react-native-toolkit",
-  "version": "0.1.2-beta.7",
+  "version": "0.1.2-beta.8",
   "files": [
     "react-native.config.js",
     "lib",
     "scripts",
     "sentry",
-    "firebase-remote-config"
+    "firebase",
+    "facebook"
   ],
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
