@@ -10,7 +10,7 @@ export default function useRemoteConfig() {
 
   const parameters = Object.assign(
     {},
-    ...features.RemoteConfig.map((x) => x.data.parameters),
+    ...features.RemoteConfig.map((x) => x.data.remoteConfig),
   ) as RemoteConfig;
 
   return parameters;

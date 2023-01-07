@@ -1,0 +1,1 @@
+export { FacebookPlugin } from './FacebookPlugin';

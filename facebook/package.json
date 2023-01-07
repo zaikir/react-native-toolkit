@@ -1,0 +1,5 @@
+{
+  "main": "../lib/commonjs/plugins/FacebookPlugin/index.js",
+  "module": "../lib/module/plugins/FacebookPlugin/index.js",
+  "types": "../lib/typescript/plugins/FacebookPlugin/index.d.ts"
+}

@@ -1,0 +1,5 @@
+{
+  "main": "../lib/commonjs/plugins/FirebasePlugin/index.js",
+  "module": "../lib/module/plugins/FirebasePlugin/index.js",
+  "types": "../lib/typescript/plugins/FirebasePlugin/index.d.ts"
+}

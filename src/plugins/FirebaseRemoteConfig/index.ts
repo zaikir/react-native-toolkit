@@ -1,1 +1,0 @@
-export { FirebaseRemoteConfig } from './FirebaseRemoteConfig';

@@ -1,6 +1,6 @@
 {
   "name": "@kirz/react-native-toolkit",
-  "version": "0.1.2-beta.5",
+  "version": "0.1.2-beta.7",
   "files": [
     "react-native.config.js",
     "lib",
@@ -22,10 +22,15 @@
       "import": "./lib/module/plugins/Sentry/index.js",
       "default": "./lib/commonjs/plugins/Sentry/index.js"
     },
-    "./firebase-remote-config": {
-      "types": "./lib/typescript/plugins/FirebaseRemoteConfig/index.d.ts",
-      "import": "./lib/module/plugins/FirebaseRemoteConfig/index.js",
-      "default": "./lib/commonjs/plugins/FirebaseRemoteConfig/index.js"
+    "./firebase": {
+      "types": "./lib/typescript/plugins/FirebasePlugin/index.d.ts",
+      "import": "./lib/module/plugins/FirebasePlugin/index.js",
+      "default": "./lib/commonjs/plugins/FirebasePlugin/index.js"
+    },
+    "./facebook": {
+      "types": "./lib/typescript/plugins/FacebookPlugin/index.d.ts",
+      "import": "./lib/module/plugins/FacebookPlugin/index.js",
+      "default": "./lib/commonjs/plugins/FacebookPlugin/index.js"
     }
   },
   "scripts": {

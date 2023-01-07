@@ -1,0 +1,1 @@
+export { FirebasePlugin } from './FirebasePlugin';

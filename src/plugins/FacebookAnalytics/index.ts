@@ -1,1 +1,0 @@
-export { FacebookAnalytics } from './FacebookAnalytics';
