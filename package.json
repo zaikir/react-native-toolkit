@@ -7,7 +7,8 @@
     "scripts",
     "sentry",
     "firebase",
-    "facebook"
+    "facebook",
+    "appsflyer"
   ],
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
@@ -32,6 +33,11 @@
       "types": "./lib/typescript/plugins/FacebookPlugin/index.d.ts",
       "import": "./lib/module/plugins/FacebookPlugin/index.js",
       "default": "./lib/commonjs/plugins/FacebookPlugin/index.js"
+    },
+    "./appsflyer": {
+      "types": "./lib/typescript/plugins/AppsFlyerPlugin/index.d.ts",
+      "import": "./lib/module/plugins/AppsFlyerPlugin/index.js",
+      "default": "./lib/commonjs/plugins/AppsFlyerPlugin/index.js"
     }
   },
   "scripts": {
@@ -69,6 +75,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "react": "^18.1.0",
     "react-native": "^0.70.6",
+    "react-native-appsflyer": "^6.9.4",
     "react-native-bootsplash": "^4.4.0",
     "react-native-builder-bob": "^0.20.3",
     "react-native-fbsdk-next": "^11.1.0",

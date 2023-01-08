@@ -137,4 +137,9 @@ module.exports = {
       deleteLines(`ios/${appName}/AppDelegate.mm`, placeholders.ios.appDelegate.didFinishLaunchingWithOptions.start, [`[[FBSDKApplicationDelegate sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];`, `[FBSDKApplicationDelegate.sharedInstance initializeSDK];`])
     },
   },
+  AppsFlyerPlugin: {
+    dependencies: [
+      "react-native-appsflyer",
+    ],
+  },
 };

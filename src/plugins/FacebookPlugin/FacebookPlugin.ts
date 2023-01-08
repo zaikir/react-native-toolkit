@@ -11,7 +11,7 @@ export class FacebookPlugin implements Plugin {
     return {
       instance: this,
       data: {
-        logEvent(event, parameters) {
+        async logEvent(event, parameters) {
           AppEventsLogger.logEvent(event, parameters as any);
         },
       } as AnalyticsProvider,

@@ -1,0 +1,1 @@
+export { AppsFlyerPlugin } from './AppsFlyerPlugin';
