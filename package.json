@@ -1,6 +1,6 @@
 {
   "name": "@kirz/react-native-toolkit",
-  "version": "0.1.2-beta.8",
+  "version": "0.1.2-beta.9",
   "files": [
     "react-native.config.js",
     "lib",
@@ -8,7 +8,8 @@
     "sentry",
     "firebase",
     "facebook",
-    "appsflyer"
+    "appsflyer",
+    "revenue-cat"
   ],
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
@@ -38,6 +39,11 @@
       "types": "./lib/typescript/plugins/AppsFlyerPlugin/index.d.ts",
       "import": "./lib/module/plugins/AppsFlyerPlugin/index.js",
       "default": "./lib/commonjs/plugins/AppsFlyerPlugin/index.js"
+    },
+    "./revenue-cat": {
+      "types": "./lib/typescript/plugins/RevenueCatPlugin/index.d.ts",
+      "import": "./lib/module/plugins/RevenueCatPlugin/index.js",
+      "default": "./lib/commonjs/plugins/RevenueCatPlugin/index.js"
     }
   },
   "scripts": {
@@ -79,6 +85,7 @@
     "react-native-bootsplash": "^4.4.0",
     "react-native-builder-bob": "^0.20.3",
     "react-native-fbsdk-next": "^11.1.0",
+    "react-native-purchases": "^5.4.0",
     "tsc-alias": "^1.8.2",
     "typescript": "^4.8.4"
   },

@@ -16,7 +16,8 @@ const placeholders = {
       strings: 'strings'
     },
     manifest: {
-      'meta-data': 'meta-data'
+      'meta-data': 'meta-data',
+      'uses-permission': 'uses-permission'
     }
   },
   ios: {
@@ -142,4 +143,20 @@ module.exports = {
       "react-native-appsflyer",
     ],
   },
+  RevenueCatPlugin: {
+    dependencies: [
+      "react-native-purchases",
+    ],
+    add(appName) {
+      // Android
+      addLines('android/app/src/main/AndroidManifest.xml', placeholders.android.manifest['uses-permission'], '    <uses-permission android:name="com.android.vending.BILLING" />', 'xml')
+
+      // iOS
+      // In-App Purchase capability enabled in a @kirz/react-native-template by default
+    },
+    delete(appName) {
+      // Android
+      deleteLines('android/app/src/main/AndroidManifest.xml', placeholders.android.manifest['uses-permission'], ' <uses-permission android:name="com.android.vending.BILLING" />', 'xml')
+    },
+  }
 };
