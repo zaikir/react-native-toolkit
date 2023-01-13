@@ -18,21 +18,15 @@ export class RevenueCatPlugin implements Plugin {
     Purchases.setDebugLogsEnabled(this.options.verbose || false);
     Purchases.configure({ apiKey: this.options.apiKey });
 
-    const [subscriptions, products] = await Promise.all([
-      this.options.products.some((x) => x.type === 'subscription') ? Purchases.getProducts(
-        this.options.products.map((x) => x.id),
-        Purchases.PURCHASE_TYPE.SUBS,
-      ) : Promise.resolve([]),
-      this.options.products.some((x) => x.type === 'product') ? Purchases.getProducts(
-        this.options.products.map((x) => x.id),
-        Purchases.PURCHASE_TYPE.INAPP,
-      ) : Promise.resolve([]),
-    ]);
+    const products = await Purchases.getProducts(
+      this.options.products.map((x) => x.id),
+      Purchases.PURCHASE_TYPE.SUBS,
+    );
 
     return {
       instance: this,
       data: {
-        products: [...subscriptions, ...products],
+        products,
         isSubscribed: () => false,
         getSubscription: () => null,
         purchaseProduct: () => true,
