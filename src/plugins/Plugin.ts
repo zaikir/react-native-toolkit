@@ -1,4 +1,5 @@
-export type PluginFeature = 'ErrorTracking' | 'RemoteConfig' | 'Analytics' | 'InAppPurchases';
+export type PluginFeature = 'ErrorTracking' | 'RemoteConfig' | 'Analytics' | 'InAppPurchase' |
+'IAPReceiptValidator';
 
 export type InitializedPlugin = {
   instance: Plugin,

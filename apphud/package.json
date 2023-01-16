@@ -1,0 +1,5 @@
+{
+  "main": "../lib/commonjs/plugins/ApphudPlugin/index.js",
+  "module": "../lib/module/plugins/ApphudPlugin/index.js",
+  "types": "../lib/typescript/plugins/ApphudPlugin/index.d.ts"
+}

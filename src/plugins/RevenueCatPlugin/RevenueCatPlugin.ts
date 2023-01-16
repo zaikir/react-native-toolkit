@@ -4,7 +4,7 @@ import Purchases from 'react-native-purchases';
 export class RevenueCatPlugin implements Plugin {
   readonly name = RevenueCatPlugin.name;
 
-  readonly features: PluginFeature[] = ['InAppPurchases'];
+  readonly features: PluginFeature[] = ['InAppPurchase'];
 
   constructor(
     readonly options: {

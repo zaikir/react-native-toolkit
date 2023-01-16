@@ -7,10 +7,12 @@ const workingPath = process.cwd();
 const placeholders = {
   android: {
     gradle: {
-      buildscriptDependencies: 'buildscript/dependencies'
+      'buildscript/ext': 'buildscript/ext',
+      'buildscript/dependencies': 'buildscript/dependencies',
     }, 
     appGradle: {
-      applyPlugin: 'apply-plugin'
+      applyPlugin: 'apply-plugin',
+      'defaultConfig': 'defaultConfig'
     },
     res: {
       strings: 'strings'
@@ -82,6 +84,17 @@ const deleteLines = (filename, placeholder, lines) => {
   }
 }
 
+const setGradleMinSdkVersion = (version) => {
+  const pathToFile = path.join(workingPath, '/android/build.gradle')
+  let content = fs.readFileSync(pathToFile, 'utf-8')
+
+  const currentVersion = /minSdkVersion *= *(\d*)/.exec(content)[1]
+  if (parseFloat(currentVersion) < parseFloat(version)) {
+    content = content.replace(/minSdkVersion *= *(\d*)/, `minSdkVersion = ${version}`)
+    fs.writeFileSync(pathToFile, newContent, 'utf-8')
+  }
+}
+
 module.exports = {
   SentryPlugin: {
     dependencies: ["@sentry/integrations", "@sentry/react-native"],
@@ -94,7 +107,7 @@ module.exports = {
     ],
     add(appName) {
       // Android
-      addLines('android/build.gradle', placeholders.android.gradle.buildscriptDependencies, '        classpath("com.google.gms:google-services:4.3.14")')
+      addLines('android/build.gradle', placeholders.android.gradle['buildscript/dependencies'], '        classpath("com.google.gms:google-services:4.3.14")')
       addLines('android/app/build.gradle', placeholders.android.appGradle.applyPlugin, `apply plugin: 'com.google.gms.google-services'`)
 
       // iOS
@@ -103,7 +116,7 @@ module.exports = {
     },
     delete(appName) {
       // Android
-      deleteLines('android/build.gradle', placeholders.android.gradle.buildscriptDependencies, '        classpath("com.google.gms:google-services:4.3.14")')
+      deleteLines('android/build.gradle', placeholders.android.gradle['buildscript/dependencies'], '        classpath("com.google.gms:google-services:4.3.14")')
       deleteLines('android/app/build.gradle', placeholders.android.appGradle.applyPlugin, `apply plugin: 'com.google.gms.google-services'`)
 
       // iOS
@@ -158,5 +171,28 @@ module.exports = {
       // Android
       deleteLines('android/app/src/main/AndroidManifest.xml', placeholders.android.manifest['uses-permission'], ' <uses-permission android:name="com.android.vending.BILLING" />', 'xml')
     },
+  },
+  InAppPurchasePlugin: {
+    dependencies: [
+      "react-native-iap",
+    ],
+    add(appName) {
+      // Android
+      setGradleMinSdkVersion(24)
+      addLines('android/build.gradle', placeholders.android.gradle['buildscript/ext'], '        androidXAnnotation = "1.1.0"        androidXBrowser = "1.0.0"        kotlinVersion = "1.5.0"')
+      addLines('android/build.gradle', placeholders.android.gradle['buildscript/dependencies'], '        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"')
+      addLines('android/app/build.gradle', placeholders.android.appGradle.defaultConfig, `        missingDimensionStrategy ('store', 'play')`)
+    },
+    delete(appName) {
+      // Android
+      deleteLines('android/build.gradle', placeholders.android.gradle['buildscript/ext'], ['androidXAnnotation = "1.1.0"', 'androidXBrowser = "1.0.0"', 'kotlinVersion = "1.5.0"'])
+      deleteLines('android/build.gradle', placeholders.android.gradle['buildscript/dependencies'], 'classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"')
+      deleteLines('android/app/build.gradle', placeholders.android.appGradle.defaultConfig, `missingDimensionStrategy ('store', 'play')`)
+    },
+  },
+  ApphudPlugin: {
+    dependencies: [
+      "@kirz/react-native-apphud-sdk",
+    ]
   }
 };
