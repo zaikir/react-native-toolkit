@@ -1,5 +1,4 @@
 import type { InitializedPlugin, Plugin, PluginFeature } from 'plugins/Plugin';
-import type { AnalyticsProvider } from 'plugins/types';
 import ApphudSdk, { type StartProperties } from '@kirz/react-native-apphud-sdk';
 
 export class ApphudPlugin implements Plugin {
