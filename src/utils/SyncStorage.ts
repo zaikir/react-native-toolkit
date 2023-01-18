@@ -4,6 +4,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 type OnEndCallback = (err?: string) => void;
 type KeyValuePair = [string, any];
 
+const wrapPromise = (promise: Promise<void>, onEnd?: OnEndCallback) => {
+  if (!onEnd) {
+    return;
+  }
+
+  promise
+    .then(() => onEnd())
+    .catch((err) => onEnd((err as Error).message));
+};
+
 export class CSyncStorage {
   keys: string[] = [];
 
@@ -39,13 +49,13 @@ export class CSyncStorage {
   setItem(key: string, value: any, onEnd?: OnEndCallback) {
     this.data[key] = value;
 
-    this.#wrapPromise(AsyncStorage.setItem(key, JSON.stringify(value)), onEnd);
+    wrapPromise(AsyncStorage.setItem(key, JSON.stringify(value)), onEnd);
   }
 
   removeItem(key: string, onEnd?: OnEndCallback) {
     delete this.data[key];
 
-    this.#wrapPromise(AsyncStorage.removeItem(key), onEnd);
+    wrapPromise(AsyncStorage.removeItem(key), onEnd);
   }
 
   getAllKeys() {
@@ -55,18 +65,7 @@ export class CSyncStorage {
   clear(onEnd?: OnEndCallback) {
     this.data = {};
 
-    this.#wrapPromise(AsyncStorage.clear(), onEnd);
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  #wrapPromise(promise: Promise<void>, onEnd?: OnEndCallback) {
-    if (!onEnd) {
-      return;
-    }
-
-    promise
-      .then(() => onEnd())
-      .catch((err) => onEnd((err as Error).message));
+    wrapPromise(AsyncStorage.clear(), onEnd);
   }
 }
 
