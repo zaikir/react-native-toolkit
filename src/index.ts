@@ -7,6 +7,7 @@ export { AppBootstrapper } from './components/AppBootstrapper';
 export { AlertsProvider, DropdownAlert } from './contexts/AlertsContext';
 export { ThemeProvider } from './contexts/ThemeContext';
 export { StorageProvider } from './contexts/StorageContext';
+export { ColorSchemeProvider } from './contexts/ColorSchemeContext';
 
 // plugins
 export { Plugin } from './plugins/Plugin';
@@ -19,3 +20,4 @@ export { useStorage, useStoredState } from './hooks/useStorage';
 
 // other
 export { scale as scaleX, verticalScale as scaleY } from 'react-native-size-matters';
+export { default as SyncStorage } from './utils/SyncStorage';

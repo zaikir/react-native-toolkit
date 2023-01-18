@@ -7,8 +7,9 @@ export function createTheme<
   Color extends string,
   TextFont extends Font,
 >(props: {
-  typography: Record<TextVariant, Omit<TextStyle, 'fontFamily'> & {
-    fontFamily?: TextFont
+  typography: Record<TextVariant, Omit<TextStyle, 'fontFamily' | 'color'> & {
+    fontFamily?: TextFont,
+    color?: ThemeColor
   }>,
   fonts: Record<Font, string[]>,
   colors: Record<Color, ThemeColor>,

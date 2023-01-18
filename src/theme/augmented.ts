@@ -1,11 +1,15 @@
+import type { ThemeColor } from './index';
+
 export type Theme = {
-  mode?: 'dark' | 'light',
   typography: TextVariants,
   fonts: FontFamilies,
   colors: Colors
 };
 
-export interface TextVariants {}
+export interface TextVariants extends Record<string, Omit<string, 'fontFamily' | 'color'> & {
+  fontFamily?: string,
+  color?: ThemeColor
+}> {}
 export interface FontFamilies {}
 export interface Colors {}
 
