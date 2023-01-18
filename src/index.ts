@@ -5,10 +5,17 @@ export { hide as hideSplash } from 'react-native-bootsplash';
 export { Text } from './components/Text';
 export { AppBootstrapper } from './components/AppBootstrapper';
 export { AlertsProvider, DropdownAlert } from './contexts/AlertsContext';
+export { ThemeProvider } from './contexts/ThemeContext';
+export { StorageProvider } from './contexts/StorageContext';
 
 // plugins
 export { Plugin } from './plugins/Plugin';
 
 // hooks
-export { default as useAlerts } from './hooks/useAlerts';
-export { default as useRemoteConfig } from './hooks/useRemoteConfig';
+export { useAlerts } from './hooks/useAlerts';
+export { useRemoteConfig } from './hooks/useRemoteConfig';
+export { useTheme } from './hooks/useTheme';
+export { useStorage, useStoredState } from './hooks/useStorage';
+
+// other
+export { scale as scaleX, verticalScale as scaleY } from 'react-native-size-matters';

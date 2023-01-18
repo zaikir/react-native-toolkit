@@ -1,4 +1,5 @@
 export type Theme = {
+  mode?: 'dark' | 'light',
   typography: TextVariants,
   fonts: FontFamilies,
   colors: Colors

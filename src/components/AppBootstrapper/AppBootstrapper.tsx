@@ -4,7 +4,7 @@ import { hide as hideNativeSplash } from 'react-native-bootsplash';
 import useAsyncEffect from 'use-async-effect';
 import { AppSplashScreen } from 'components/AppSplashScreen';
 import type { AppSplashScreenProps } from 'components/AppSplashScreen/AppSplashScreen';
-import useAlerts from 'hooks/useAlerts';
+import { useAlerts } from 'hooks/useAlerts';
 import { Button, Text, View } from 'react-native';
 import { PluginsBundleProvider } from 'contexts/PluginsBundleContext/PluginsBundleContext';
 
