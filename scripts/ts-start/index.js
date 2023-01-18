@@ -1,4 +1,5 @@
 const concurrently = require('concurrently')
+const declareAssets = require('../declare-assets')
 
 const args = process.argv.slice(3).join(' ')
 
@@ -10,6 +11,7 @@ const clear =  function (isSoft) {
 
 module.exports = () => {
   clear()
+  declareAssets()
 
   concurrently([
     'tsc -p tsconfig.json --watch --preserveWatchOutput',
