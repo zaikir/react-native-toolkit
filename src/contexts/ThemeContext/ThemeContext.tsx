@@ -3,8 +3,14 @@ import React, { createContext, PropsWithChildren, useMemo } from 'react';
 import type { TextStyle } from 'react-native';
 import type { Theme, ThemeColor } from 'theme';
 
+export type UseTheme<T extends Theme> = {
+  typography: Record<keyof T['typography'], TextStyle>,
+  fonts: T['fonts'],
+  colors: Record<keyof T['colors'], string>
+};
+
 export type ThemeContextType = {
-  theme: Theme,
+  theme: UseTheme<Theme>,
 };
 
 export const ThemeContext = createContext<ThemeContextType>({} as any);
