@@ -5,6 +5,7 @@ const { spawnSync } = require('child_process');
 const loadFonts = require('./scripts/load-fonts');
 const tsStart = require('./scripts/ts-start');
 const initPlugins = require('./scripts/init-plugins');
+const declareAssets = require('./scripts/declare-assets');
 
 module.exports = {
   commands: [
@@ -73,6 +74,14 @@ module.exports = {
       options: [],
       func: () => {
         initPlugins();
+      },
+    },
+    {
+      name: 'declare-assets',
+      description: 'Generate TypeScript definitions for icons and images from the assets folder',
+      options: [],
+      func: () => {
+        declareAssets();
       },
     },
   ],
