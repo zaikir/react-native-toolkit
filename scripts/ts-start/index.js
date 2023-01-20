@@ -11,7 +11,7 @@ const clear =  function (isSoft) {
 
 module.exports = () => {
   clear()
-  declareAssets()
+  // declareAssets()
 
   concurrently([
     'tsc -p tsconfig.json --watch --preserveWatchOutput',
