@@ -76,7 +76,18 @@ declare module '${moduleName}' {
 
   modules.push(...images)
 
-  const declaration = modules.join('\n\n')
+  // const declaration = modules.join('\n\n')
+  const declaration = `
+declare module '*.svg' {
+  import type { SvgProps } from 'react-native-svg';
+
+  const svg: React.FC<SvgProps>;
+  export default svg;
+}
+
+declare module '*.png' { const img: any; export default img; }
+declare module '*.jpg' { const img: any; export default img; }
+declare module '*.jpeg' { const img: any; export default img; }`.trim()
 
   fs.writeFileSync(declarationFilename, declaration, 'utf-8')
 }
