@@ -1,38 +1,47 @@
 import React, { useMemo } from 'react';
-import { StyleProp, Text as TextBase } from 'react-native';
-import type { TextStyle } from 'react-native';
+import { StyleProp, StyleSheet, Text as TextBase } from 'react-native';
+import type { TextProps as TextPropsBase, TextStyle } from 'react-native';
 import { useTheme } from 'index';
+import type { FontFamily } from 'theme/augmented';
 import { getFontWeightName } from './utils/getFontWeightName';
 
-type TextProps = TextStyle & {
+type TextProps = Omit<TextPropsBase, 'style'> & {
   variant?: 'default',
-  style?: StyleProp<TextStyle>
+  style?: Omit<StyleProp<TextStyle>, 'fontFamily'> & {
+    fontFamily?: FontFamily
+  }
 };
 
 export default function Text(props: TextProps) {
   const theme = useTheme();
 
+  const flattenStyles = StyleSheet.flatten(props.style);
+  const { fontFamily } = flattenStyles;
+
   const fontAssetName = useMemo(() => {
+    if (!fontFamily) {
+      return null;
+    }
+
     // @ts-ignore
-    const weights = theme.fonts[props.fontFamily];
-    const names = getFontWeightName(props.fontWeight);
+    const weights = theme.fonts[fontFamily] as string[];
+    const names = getFontWeightName(fontFamily);
 
     const name = weights.find((x: string) => names.includes(x.toLowerCase()));
     if (!name) {
-      throw new Error(`Unknown font weight "${name}" for font family "${props.fontFamily}"`);
+      throw new Error(`Unknown font weight "${name}" for font family "${fontFamily}"`);
     }
 
-    return `${props.fontFamily}-${name}`;
-  }, [theme, props.fontWeight, props.fontFamily]);
-
-  const style = props.style && 'length' in props.style
-    ? [...props.style, { fontFamily: fontAssetName }]
-    : { ...props.style && props.style as any, fontFamily: fontAssetName };
+    return `${fontFamily}-${name}`;
+  }, [fontFamily, theme.fonts]);
 
   return (
     <TextBase
       {...props}
-      style={style}
+      style={[
+        flattenStyles,
+        ...fontAssetName ? [{ fontFamily: fontAssetName }] : [],
+      ]}
     />
   );
 }
