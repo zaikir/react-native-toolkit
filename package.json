@@ -1,6 +1,6 @@
 {
   "name": "@kirz/react-native-toolkit",
-  "version": "0.1.3-beta.9",
+  "version": "0.1.3-beta.11",
   "files": [
     "react-native.config.js",
     "lib",
@@ -59,10 +59,10 @@
     "release": "npm publish --access public"
   },
   "peerDependencies": {
+    "@react-native-async-storage/async-storage": "^1.17.11",
     "react": "~18.1.0",
     "react-native": "~0.70.6",
-    "react-native-bootsplash": "^4.4.0",
-    "@react-native-async-storage/async-storage": "^1.17.11"
+    "react-native-bootsplash": "^4.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.16.10",
@@ -110,7 +110,6 @@
   },
   "dependencies": {
     "react-native-dropdownalert": "^4.5.1",
-    "react-native-size-matters": "^0.4.0",
     "use-async-effect": "^2.2.7"
   }
 }

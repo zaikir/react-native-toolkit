@@ -19,5 +19,5 @@ export { useTheme } from './hooks/useTheme';
 export { useStorage, useStoredState } from './hooks/useStorage';
 
 // other
-export { scale as scaleX, verticalScale as scaleY } from 'react-native-size-matters';
 export { default as SyncStorage } from './utils/SyncStorage';
+export { ScaleReference, scaleX, scaleY } from './utils/scale';
