@@ -15,7 +15,7 @@ type TextProps = Omit<TextPropsBase, 'style'> & {
 export default function Text(props: TextProps) {
   const theme = useTheme();
 
-  const flattenStyles = StyleSheet.flatten(props.style);
+  const flattenStyles = StyleSheet.flatten(props.style) || {};
   const { fontFamily } = flattenStyles;
 
   const fontAssetName = useMemo(() => {
@@ -38,10 +38,10 @@ export default function Text(props: TextProps) {
   return (
     <TextBase
       {...props}
-      style={[
-        flattenStyles,
-        ...fontAssetName ? [{ fontFamily: fontAssetName }] : [],
-      ]}
+      style={{
+        ...flattenStyles,
+        ...fontAssetName && { fontFamily: fontAssetName },
+      }}
     />
   );
 }
