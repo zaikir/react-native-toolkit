@@ -22,8 +22,8 @@ export function useStoredState<T>(key: string, initialState?: T): [T, Dispatch<S
       return;
     }
 
-    setValue(value);
-    storage.setItem(key, value);
+    setValue(newValue);
+    storage.setItem(key, newValue);
   }, [key, value, setValue, storage]);
 
   return [value, setter];
