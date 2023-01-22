@@ -9,9 +9,9 @@ export function useStorage() {
   return storage;
 }
 
-export function useStoredState<T>(key: string): [T, Dispatch<SetStateAction<T>>] {
+export function useStoredState<T>(key: string, initialState?: T): [T, Dispatch<SetStateAction<T>>] {
   const storage = useStorage();
-  const [value, setValue] = useState<T>(storage.getItem(key));
+  const [value, setValue] = useState<T>(storage.getItem(key) ?? initialState);
 
   const setter = useCallback((newValue: T | ((prevState: T) => T)) => {
     if (typeof newValue === 'function') {

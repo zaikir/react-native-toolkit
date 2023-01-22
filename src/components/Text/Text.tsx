@@ -5,9 +5,9 @@ import { useTheme } from 'index';
 import type { FontFamily } from 'theme/augmented';
 import { getFontWeightName } from './utils/getFontWeightName';
 
-type TextProps = Omit<TextPropsBase, 'style'> & {
+type TextProps = TextPropsBase & {
   variant?: 'default',
-  style?: Omit<StyleProp<TextStyle>, 'fontFamily'> & {
+  style?: StyleProp<TextStyle> & {
     fontFamily?: FontFamily
   }
 };
@@ -16,7 +16,7 @@ export default function Text(props: TextProps) {
   const theme = useTheme();
 
   const flattenStyles = StyleSheet.flatten(props.style) || {};
-  const { fontFamily } = flattenStyles;
+  const { fontFamily, fontWeight } = flattenStyles;
 
   const fontAssetName = useMemo(() => {
     if (!fontFamily) {
@@ -25,20 +25,23 @@ export default function Text(props: TextProps) {
 
     // @ts-ignore
     const weights = theme.fonts[fontFamily] as string[];
-    const names = getFontWeightName(fontFamily);
 
-    const name = weights.find((x: string) => names.includes(x.toLowerCase()));
+    const names = fontWeight && getFontWeightName(fontWeight);
+    const name = names
+      ? weights.find((x: string) => names.includes(x.toLowerCase()))
+      : weights[0];
     if (!name) {
-      throw new Error(`Unknown font weight "${name}" for font family "${fontFamily}"`);
+      throw new Error(`Unknown font weight "${fontWeight}" for font family "${fontFamily}"`);
     }
 
     return `${fontFamily}-${name}`;
-  }, [fontFamily, theme.fonts]);
+  }, [fontFamily, fontWeight, theme.fonts]);
 
   return (
     <TextBase
       {...props}
       style={{
+        color: theme.colors.text,
         ...flattenStyles,
         ...fontAssetName && { fontFamily: fontAssetName },
       }}

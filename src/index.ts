@@ -17,6 +17,7 @@ export { useAlerts } from './hooks/useAlerts';
 export { useRemoteConfig } from './hooks/useRemoteConfig';
 export { useTheme } from './hooks/useTheme';
 export { useStorage, useStoredState } from './hooks/useStorage';
+export { useColorScheme } from './hooks/useColorScheme';
 
 // other
 export { default as SyncStorage } from './utils/SyncStorage';

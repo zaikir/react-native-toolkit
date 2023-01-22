@@ -19,9 +19,10 @@ export function ThemeProvider({
   children,
   theme,
 }: PropsWithChildren<{ theme: Theme }>) {
-  const colorScheme = useColorScheme();
+  const { colorScheme } = useColorScheme();
   const contextData = useMemo<ThemeContextType>(
     () => {
+      // @ts-ignore
       const colorsDef = theme.colors as Record<string, ThemeColor>;
       const colors = Object.fromEntries(Object.entries(colorsDef).map(([name, color]) => {
         if (typeof color === 'object') {
@@ -44,7 +45,7 @@ export function ThemeProvider({
       return {
         theme: {
           ...theme,
-          colors,
+          colors: colors as any,
           typography,
         },
       };

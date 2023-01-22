@@ -2,7 +2,7 @@ import { ColorSchemeContext } from 'contexts/ColorSchemeContext/ColorSchemeConte
 import { useContext } from 'react';
 
 export function useColorScheme() {
-  const { colorScheme } = useContext(ColorSchemeContext);
+  const { colorScheme, setColorScheme } = useContext(ColorSchemeContext);
 
-  return colorScheme;
+  return { colorScheme, setColorScheme };
 }

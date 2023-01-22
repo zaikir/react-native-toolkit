@@ -12,7 +12,10 @@ export function createTheme<
     color?: ThemeColor
   }>,
   fonts: Record<Font, string[]>,
-  colors: Record<Color, ThemeColor>,
+  colors: {
+    text: ThemeColor,
+    background: ThemeColor
+  } & Record<Color, ThemeColor>,
 }) {
   return props;
 }
