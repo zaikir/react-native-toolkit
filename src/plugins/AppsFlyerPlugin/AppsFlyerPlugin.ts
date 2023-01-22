@@ -9,25 +9,53 @@ export class AppsFlyerPlugin implements Plugin {
 
   constructor(
     readonly options: InitSDKOptions,
-    readonly successCallback?: (result?: any) => any,
-    readonly errorCallback?: (error?: any) => any,
+    readonly callbacks?: {
+      onAppOpenAttribution?: Parameters<typeof appsFlyer.onAppOpenAttribution>[0],
+      onAttributionFailure?: Parameters<typeof appsFlyer.onAttributionFailure>[0],
+      onDeepLink?: Parameters<typeof appsFlyer.onDeepLink>[0],
+      onInstallConversionData?: Parameters<typeof appsFlyer.onInstallConversionData>[0],
+      onInstallConversionFailure?: Parameters<typeof appsFlyer.onInstallConversionFailure>[0],
+      onInitSuccess?: (result?: any) => any,
+      onInitFailure?: (error?: any) => any,
+    },
   ) {}
 
   async init(): Promise<InitializedPlugin | string> {
+    if (this.callbacks?.onAppOpenAttribution) {
+      appsFlyer.onAppOpenAttribution(this.callbacks.onAppOpenAttribution);
+    }
+
+    if (this.callbacks?.onAttributionFailure) {
+      appsFlyer.onAttributionFailure(this.callbacks.onAttributionFailure);
+    }
+
+    if (this.callbacks?.onDeepLink) {
+      appsFlyer.onDeepLink(this.callbacks.onDeepLink);
+    }
+
+    if (this.callbacks?.onInstallConversionData) {
+      appsFlyer.onInstallConversionData(this.callbacks.onInstallConversionData);
+    }
+
+    if (this.callbacks?.onInstallConversionFailure) {
+      appsFlyer.onInstallConversionFailure(this.callbacks.onInstallConversionFailure);
+    }
+
     appsFlyer.initSdk(
       {
         isDebug: false,
         onInstallConversionDataListener: true,
+        onDeepLinkListener: true,
         timeToWaitForATTUserAuthorization: 10, // for iOS 14.5
         ...this.options,
       },
       (result) => {
-        this.successCallback?.(result);
+        this.callbacks?.onInitSuccess?.(result);
       },
       (error) => {
         console.error(error);
 
-        this.errorCallback?.(error);
+        this.callbacks?.onInitFailure?.(error);
       },
     );
 
