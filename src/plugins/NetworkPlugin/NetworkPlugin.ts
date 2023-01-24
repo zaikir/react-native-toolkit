@@ -1,8 +1,5 @@
-import NetInfo from '@react-native-community/netinfo';
-import { CaptureConsole } from '@sentry/integrations';
-import * as Sentry from '@sentry/react-native';
-
 import { InitializationOptions, Plugin, PluginFeature } from 'plugins/Plugin';
+import type { NetworkPluginData } from 'plugins/types';
 
 export class NetworkPlugin extends Plugin {
   readonly name = NetworkPlugin.name;
@@ -20,14 +17,27 @@ export class NetworkPlugin extends Plugin {
   async init() {
     if (
       !(this.options?.offlineMode ?? true) &&
-      (await NetInfo.fetch()).isInternetReachable
+      !(await this.isInternetReachable())
     ) {
       return { error: 'No internet connection', code: 'offline' as const };
     }
 
     return {
       instance: this,
-      data: null,
+      data: {
+        isInternetReachable() {
+          return this.isInternetReachable();
+        },
+      } as NetworkPluginData,
     };
+  }
+
+  async isInternetReachable() {
+    try {
+      await fetch('https://google.com');
+      return true;
+    } catch {
+      return false;
+    }
   }
 }
