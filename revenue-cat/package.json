@@ -1,5 +1,0 @@
-{
-  "main": "../lib/commonjs/plugins/RevenueCatPlugin/index.js",
-  "module": "../lib/module/plugins/RevenueCatPlugin/index.js",
-  "types": "../lib/typescript/plugins/RevenueCatPlugin/index.d.ts"
-}

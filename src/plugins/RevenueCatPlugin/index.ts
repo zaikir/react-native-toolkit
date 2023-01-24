@@ -1,1 +1,0 @@
-export { RevenueCatPlugin } from './RevenueCatPlugin';
