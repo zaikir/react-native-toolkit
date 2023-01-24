@@ -1,19 +1,18 @@
 import { AppEventsLogger } from 'react-native-fbsdk-next';
 
-import type {
-  InitializationError,
-  InitializedPlugin,
-  Plugin,
-  PluginFeature,
-} from 'plugins/Plugin';
+import { InitializationOptions, Plugin, PluginFeature } from 'plugins/Plugin';
 import type { AnalyticsProvider } from 'plugins/types';
 
-export class FacebookPlugin implements Plugin {
+export class FacebookPlugin extends Plugin {
   readonly name = FacebookPlugin.name;
 
   readonly features: PluginFeature[] = ['Analytics'];
 
-  async init(): Promise<InitializedPlugin | InitializationError> {
+  constructor(options: InitializationOptions = {}) {
+    super(options);
+  }
+
+  async init() {
     return {
       instance: this,
       data: {

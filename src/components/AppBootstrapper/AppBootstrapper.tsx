@@ -56,7 +56,7 @@ export default function AppBootstrapper({
 
       if ('error' in result) {
         setInitializationError(result);
-        setErrorFallbackScreen(plugin.)
+        setErrorFallbackScreen(plugin.fallbackScreen);
         throw new Error(result.error);
       }
 
@@ -90,6 +90,29 @@ export default function AppBootstrapper({
     }
   }, []);
 
+  const renderError = useCallback(() => {
+    if (!initializationError) {
+      return null;
+    }
+
+    if (errorFallbackScreen) {
+      return typeof errorFallbackScreen === 'function'
+        ? errorFallbackScreen({
+            error: initializationError,
+            isRetrying,
+            retry: retryInitialization,
+          })
+        : errorFallbackScreen;
+    }
+
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <Text>{initializationError.error}</Text>
+        <Button disabled={isRetrying} onPress={async () => {}} title="Retry" />
+      </View>
+    );
+  }, [errorFallbackScreen, isRetrying, retryInitialization]);
+
   return (
     <AppSplashScreen visible={!isInitialized} {...splashScreenProps}>
       {!initializationError ? (
@@ -97,16 +120,7 @@ export default function AppBootstrapper({
           {children}
         </PluginsBundleProvider>
       ) : (
-        <View
-          style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
-        >
-          <Text>{initializationError}</Text>
-          <Button
-            disabled={isRetrying}
-            onPress={async () => {}}
-            title="Retry"
-          />
-        </View>
+        renderError()
       )}
     </AppSplashScreen>
   );

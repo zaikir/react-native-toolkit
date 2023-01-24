@@ -1,17 +1,12 @@
 import { Platform } from 'react-native';
 import * as IAP from 'react-native-iap';
 
-import type {
-  InitializationError,
-  InitializedPlugin,
-  Plugin,
-  PluginFeature,
-} from 'plugins/Plugin';
+import { InitializationOptions, Plugin, PluginFeature } from 'plugins/Plugin';
 
 import { transformProduct } from './utils/transformProduct';
 import { transformSubscription } from './utils/transformSubscription';
 
-export class InAppPurchasePlugin implements Plugin {
+export class InAppPurchasePlugin extends Plugin {
   readonly name = InAppPurchasePlugin.name;
 
   readonly features: PluginFeature[] = ['InAppPurchase'];
@@ -20,10 +15,12 @@ export class InAppPurchasePlugin implements Plugin {
     readonly options: {
       products: { productId: string; type: 'subscription' | 'product' }[];
       verbose?: boolean;
-    },
-  ) {}
+    } & InitializationOptions,
+  ) {
+    super(options);
+  }
 
-  async init(): Promise<InitializedPlugin | InitializationError> {
+  async init() {
     try {
       /*
       1. initialization

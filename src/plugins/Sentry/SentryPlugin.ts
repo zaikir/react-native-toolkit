@@ -2,21 +2,18 @@ import { CaptureConsole } from '@sentry/integrations';
 import * as Sentry from '@sentry/react-native';
 import type { ReactNativeOptions } from '@sentry/react-native';
 
-import type {
-  InitializationError,
-  InitializedPlugin,
-  Plugin,
-  PluginFeature,
-} from 'plugins/Plugin';
+import { InitializationOptions, Plugin, PluginFeature } from 'plugins/Plugin';
 
-export class SentryPlugin implements Plugin {
+export class SentryPlugin extends Plugin {
   readonly name = SentryPlugin.name;
 
   readonly features: PluginFeature[] = ['ErrorTracking'];
 
-  constructor(readonly options?: ReactNativeOptions) {}
+  constructor(readonly options?: ReactNativeOptions & InitializationOptions) {
+    super(options);
+  }
 
-  async init(): Promise<InitializedPlugin | InitializationError> {
+  async init() {
     if (!this.options?.dsn) {
       return { error: 'Sentry DSN is missing' };
     }

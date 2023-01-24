@@ -26,11 +26,17 @@ export type InitializedPlugin = {
   data: any;
 };
 
-export interface Plugin {
-  readonly name: string;
-  readonly features: PluginFeature[];
+export abstract class Plugin {
+  abstract get name(): string;
+  abstract get features(): PluginFeature[];
 
-  init: (
+  get fallbackScreen(): InitializationOptions['fallbackScreen'] | null {
+    return this.options?.fallbackScreen ?? null;
+  }
+
+  constructor(readonly options?: InitializationOptions) {}
+
+  abstract init(
     bundle: InitializedPlugin[],
-  ) => Promise<InitializedPlugin | InitializationError>;
+  ): Promise<InitializedPlugin | InitializationError>;
 }

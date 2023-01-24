@@ -1,20 +1,15 @@
 import appsFlyer, { InitSDKOptions } from 'react-native-appsflyer';
 
-import type {
-  InitializationError,
-  InitializedPlugin,
-  Plugin,
-  PluginFeature,
-} from 'plugins/Plugin';
+import { InitializationOptions, Plugin, PluginFeature } from 'plugins/Plugin';
 import type { AnalyticsProvider } from 'plugins/types';
 
-export class AppsFlyerPlugin implements Plugin {
+export class AppsFlyerPlugin extends Plugin {
   readonly name = AppsFlyerPlugin.name;
 
   readonly features: PluginFeature[] = ['Analytics'];
 
   constructor(
-    readonly options: InitSDKOptions,
+    readonly options: InitSDKOptions & InitializationOptions,
     readonly callbacks?: {
       onAppOpenAttribution?: Parameters<
         typeof appsFlyer.onAppOpenAttribution
@@ -32,9 +27,11 @@ export class AppsFlyerPlugin implements Plugin {
       onInitSuccess?: (result?: any) => any;
       onInitFailure?: (error?: any) => any;
     },
-  ) {}
+  ) {
+    super(options);
+  }
 
-  async init(): Promise<InitializedPlugin | InitializationError> {
+  async init() {
     if (this.callbacks?.onAppOpenAttribution) {
       appsFlyer.onAppOpenAttribution(this.callbacks.onAppOpenAttribution);
     }

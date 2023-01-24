@@ -1,1 +1,1 @@
-@react-native-community/netinfo
+export { NetworkPlugin } from './NetworkPlugin';

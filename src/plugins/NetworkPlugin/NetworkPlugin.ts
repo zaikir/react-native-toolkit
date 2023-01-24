@@ -1,32 +1,29 @@
-import * as Sentry from '@sentry/react-native';
+import NetInfo from '@react-native-community/netinfo';
 import { CaptureConsole } from '@sentry/integrations';
-import type { ReactNativeOptions } from '@sentry/react-native';
-import type {
-  InitializationError, InitializationOptions, InitializedPlugin, Plugin, PluginFeature,
-} from 'plugins/Plugin';
+import * as Sentry from '@sentry/react-native';
 
-export class NetworkPlugin implements Plugin {
+import { InitializationOptions, Plugin, PluginFeature } from 'plugins/Plugin';
+
+export class NetworkPlugin extends Plugin {
   readonly name = NetworkPlugin.name;
 
   readonly features: PluginFeature[] = ['Network'];
 
   constructor(
     readonly options?: {
-      offlineMode?: boolean,
+      offlineMode?: boolean;
     } & InitializationOptions,
-  ) {}
+  ) {
+    super(options);
+  }
 
-  async init(): Promise<InitializedPlugin | InitializationError> {
-    if (!) {
-      return { error: 'No internet connection', code: 'offline' };
+  async init() {
+    if (
+      !(this.options?.offlineMode ?? true) &&
+      (await NetInfo.fetch()).isInternetReachable
+    ) {
+      return { error: 'No internet connection', code: 'offline' as const };
     }
-
-    Sentry.init({
-      dsn: this.options.dsn,
-      // @ts-ignore
-      integrations: [new CaptureConsole({ levels: ['warn', 'error'] })],
-      ...this.options,
-    });
 
     return {
       instance: this,

@@ -1,20 +1,20 @@
 import ApphudSdk, { type StartProperties } from '@kirz/react-native-apphud-sdk';
 
-import type {
-  InitializationError,
-  InitializedPlugin,
-  Plugin,
-  PluginFeature,
-} from 'plugins/Plugin';
+import { InitializationOptions, Plugin, PluginFeature } from 'plugins/Plugin';
 
-export class ApphudPlugin implements Plugin {
+export class ApphudPlugin extends Plugin {
   readonly name = ApphudPlugin.name;
 
   readonly features: PluginFeature[] = ['IAPReceiptValidator'];
 
-  constructor(readonly options: Omit<StartProperties, 'observerMode'>) {}
+  constructor(
+    readonly options: Omit<StartProperties, 'observerMode'> &
+      InitializationOptions,
+  ) {
+    super(options);
+  }
 
-  async init(): Promise<InitializedPlugin | InitializationError> {
+  async init() {
     await ApphudSdk.start({ ...this.options, observerMode: true });
 
     return {
