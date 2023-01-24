@@ -1,6 +1,12 @@
 import { AppEventsLogger } from 'react-native-fbsdk-next';
 
-import { InitializationOptions, Plugin, PluginFeature } from 'plugins/Plugin';
+import {
+  InitializationError,
+  InitializationOptions,
+  InitializedPlugin,
+  Plugin,
+  PluginFeature,
+} from 'plugins/Plugin';
 import type { AnalyticsProvider } from 'plugins/types';
 
 export class FacebookPlugin extends Plugin {
@@ -12,7 +18,7 @@ export class FacebookPlugin extends Plugin {
     super(options);
   }
 
-  async init() {
+  async init(): Promise<InitializedPlugin | InitializationError> {
     return {
       instance: this,
       data: {

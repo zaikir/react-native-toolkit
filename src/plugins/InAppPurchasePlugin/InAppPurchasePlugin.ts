@@ -1,7 +1,13 @@
 import { Platform } from 'react-native';
 import * as IAP from 'react-native-iap';
 
-import { InitializationOptions, Plugin, PluginFeature } from 'plugins/Plugin';
+import {
+  InitializationError,
+  InitializationOptions,
+  InitializedPlugin,
+  Plugin,
+  PluginFeature,
+} from 'plugins/Plugin';
 
 import { transformProduct } from './utils/transformProduct';
 import { transformSubscription } from './utils/transformSubscription';
@@ -20,7 +26,7 @@ export class InAppPurchasePlugin extends Plugin {
     super(options);
   }
 
-  async init() {
+  async init(): Promise<InitializedPlugin | InitializationError> {
     try {
       /*
       1. initialization

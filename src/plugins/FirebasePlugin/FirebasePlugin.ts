@@ -1,6 +1,12 @@
 import initializeRemoteConfig from '@react-native-firebase/remote-config';
 
-import { InitializationOptions, Plugin, PluginFeature } from 'plugins/Plugin';
+import {
+  InitializationError,
+  InitializationOptions,
+  InitializedPlugin,
+  Plugin,
+  PluginFeature,
+} from 'plugins/Plugin';
 import type { RemoteConfig } from 'plugins/types';
 
 export class FirebasePlugin extends Plugin {
@@ -19,7 +25,7 @@ export class FirebasePlugin extends Plugin {
     this.remoteConfig = options.remoteConfig;
   }
 
-  async init() {
+  async init(): Promise<InitializedPlugin | InitializationError> {
     try {
       const data: Record<string, any> = {};
 

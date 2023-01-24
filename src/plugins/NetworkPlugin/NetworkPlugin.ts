@@ -1,4 +1,10 @@
-import { InitializationOptions, Plugin, PluginFeature } from 'plugins/Plugin';
+import {
+  InitializationError,
+  InitializationOptions,
+  InitializedPlugin,
+  Plugin,
+  PluginFeature,
+} from 'plugins/Plugin';
 import type { NetworkPluginData } from 'plugins/types';
 
 export class NetworkPlugin extends Plugin {
@@ -14,7 +20,7 @@ export class NetworkPlugin extends Plugin {
     super(options);
   }
 
-  async init() {
+  async init(): Promise<InitializedPlugin | InitializationError> {
     if (
       !(this.options?.offlineMode ?? true) &&
       !(await this.isInternetReachable())

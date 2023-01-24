@@ -1,6 +1,12 @@
 import ApphudSdk, { type StartProperties } from '@kirz/react-native-apphud-sdk';
 
-import { InitializationOptions, Plugin, PluginFeature } from 'plugins/Plugin';
+import {
+  InitializationError,
+  InitializationOptions,
+  InitializedPlugin,
+  Plugin,
+  PluginFeature,
+} from 'plugins/Plugin';
 
 export class ApphudPlugin extends Plugin {
   readonly name = ApphudPlugin.name;
@@ -14,7 +20,7 @@ export class ApphudPlugin extends Plugin {
     super(options);
   }
 
-  async init() {
+  async init(): Promise<InitializedPlugin | InitializationError> {
     await ApphudSdk.start({ ...this.options, observerMode: true });
 
     return {
