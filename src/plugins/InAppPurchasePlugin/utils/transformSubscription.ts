@@ -1,7 +1,12 @@
 import { Platform } from 'react-native';
-import type { SubscriptionAmazon, SubscriptionAndroid, SubscriptionIOS } from 'react-native-iap';
-import type { Subscription } from '../types/subscription';
+import type {
+  SubscriptionAmazon,
+  SubscriptionAndroid,
+  SubscriptionIOS,
+} from 'react-native-iap';
+
 import { parseIso8601Period } from './parseIso8601Period';
+import type { Subscription } from '../types/subscription';
 
 // eslint-disable-next-line max-len
 export function transformSubscription(
@@ -20,12 +25,16 @@ export function transformSubscription(
       currency: data.currency,
       periodUnit: data.subscriptionPeriodUnitIOS!.toLocaleLowerCase() as any,
       numberOfPeriods: parseFloat(data.subscriptionPeriodNumberIOS!),
-      ...data.introductoryPricePaymentModeIOS === 'FREETRIAL' && !isTrialUsed && {
-        trial: {
-          periodUnit: data.introductoryPriceSubscriptionPeriodIOS!.toLocaleLowerCase() as any,
-          numberOfPeriods: parseFloat(data.introductoryPriceNumberOfPeriodsIOS!),
-        },
-      },
+      ...(data.introductoryPricePaymentModeIOS === 'FREETRIAL' &&
+        !isTrialUsed && {
+          trial: {
+            periodUnit:
+              data.introductoryPriceSubscriptionPeriodIOS!.toLocaleLowerCase() as any,
+            numberOfPeriods: parseFloat(
+              data.introductoryPriceNumberOfPeriodsIOS!,
+            ),
+          },
+        }),
       originalData: data,
     };
   }
@@ -34,10 +43,13 @@ export function transformSubscription(
     const data = subscription as SubscriptionAndroid;
 
     if (data.subscriptionOfferDetails.length !== 1) {
-      console.warn(`Multiple offsers detected for a subscription ${data.productId}. First offer will be used`);
+      console.warn(
+        `Multiple offsers detected for a subscription ${data.productId}. First offer will be used`,
+      );
     }
 
-    const offerPrices = data.subscriptionOfferDetails[0].pricingPhases.pricingPhaseList;
+    const offerPrices =
+      data.subscriptionOfferDetails[0].pricingPhases.pricingPhaseList;
     const [priceInfo] = offerPrices.filter((x) => x.priceAmountMicros !== '0');
     const [trialInfo] = offerPrices.filter((y) => y.priceAmountMicros === '0');
 
@@ -50,11 +62,12 @@ export function transformSubscription(
       localizedPrice: priceInfo.formattedPrice,
       currency: priceInfo.priceCurrencyCode,
       ...parseIso8601Period(priceInfo.billingPeriod),
-      ...trialInfo && isTrialUsed && {
-        trial: {
-          ...parseIso8601Period(trialInfo.billingPeriod),
-        },
-      },
+      ...(trialInfo &&
+        isTrialUsed && {
+          trial: {
+            ...parseIso8601Period(trialInfo.billingPeriod),
+          },
+        }),
     };
   }
 

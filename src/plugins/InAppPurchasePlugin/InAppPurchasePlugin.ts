@@ -1,6 +1,13 @@
-import type { InitializedPlugin, Plugin, PluginFeature } from 'plugins/Plugin';
 import { Platform } from 'react-native';
 import * as IAP from 'react-native-iap';
+
+import type {
+  InitializationError,
+  InitializedPlugin,
+  Plugin,
+  PluginFeature,
+} from 'plugins/Plugin';
+
 import { transformProduct } from './utils/transformProduct';
 import { transformSubscription } from './utils/transformSubscription';
 
@@ -11,12 +18,12 @@ export class InAppPurchasePlugin implements Plugin {
 
   constructor(
     readonly options: {
-      products: { productId: string, type: 'subscription' | 'product' }[],
-      verbose?: boolean
+      products: { productId: string; type: 'subscription' | 'product' }[];
+      verbose?: boolean;
     },
   ) {}
 
-  async init(): Promise<InitializedPlugin | string> {
+  async init(): Promise<InitializedPlugin | InitializationError> {
     try {
       /*
       1. initialization
@@ -31,7 +38,7 @@ export class InAppPurchasePlugin implements Plugin {
       if (Platform.OS === 'android') {
         try {
           await IAP.flushFailedPurchasesCachedAsPendingAndroid();
-        } catch (err) {
+        } catch {
           // skip error
         }
       }
@@ -39,13 +46,17 @@ export class InAppPurchasePlugin implements Plugin {
       if (Platform.OS === 'ios') {
         try {
           await IAP.clearTransactionIOS();
-        } catch (err) {
+        } catch {
           // skip error
         }
       }
 
-      const productSkus = this.options.products.filter((x) => x.type === 'product').map((x) => x.productId);
-      const subscriptionSkus = this.options.products.filter((x) => x.type === 'subscription').map((x) => x.productId);
+      const productSkus = this.options.products
+        .filter((x) => x.type === 'product')
+        .map((x) => x.productId);
+      const subscriptionSkus = this.options.products
+        .filter((x) => x.type === 'subscription')
+        .map((x) => x.productId);
 
       const [fetchedProducts, fetchedSubscriptions] = await Promise.all([
         productSkus.length
@@ -57,7 +68,9 @@ export class InAppPurchasePlugin implements Plugin {
       ]);
 
       const products = fetchedProducts.map(transformProduct);
-      const subscriptions = fetchedSubscriptions.map((x) => transformSubscription(x, false));
+      const subscriptions = fetchedSubscriptions.map((x) =>
+        transformSubscription(x, false),
+      );
 
       return {
         instance: this,
@@ -69,7 +82,7 @@ export class InAppPurchasePlugin implements Plugin {
     } catch (err) {
       IAP.endConnection();
 
-      return (err as Error).message;
+      return { error: (err as Error).message };
     }
   }
 }

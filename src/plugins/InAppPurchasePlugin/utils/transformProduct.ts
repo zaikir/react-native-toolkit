@@ -1,8 +1,11 @@
 import { Platform } from 'react-native';
 import type { ProductAndroid, ProductIOS } from 'react-native-iap';
+
 import type { Product } from '../types/product';
 
-export function transformProduct(product: ProductIOS | ProductAndroid): Product {
+export function transformProduct(
+  product: ProductIOS | ProductAndroid,
+): Product {
   if (Platform.OS === 'ios') {
     const data = product as ProductIOS;
 
@@ -25,7 +28,8 @@ export function transformProduct(product: ProductIOS | ProductAndroid): Product 
       title: data.title,
       description: data.description,
       originalData: data,
-      price: parseFloat(data.oneTimePurchaseOfferDetails!.priceAmountMicros) / 1e6,
+      price:
+        parseFloat(data.oneTimePurchaseOfferDetails!.priceAmountMicros) / 1e6,
       localizedPrice: data.oneTimePurchaseOfferDetails!.formattedPrice,
       currency: data.oneTimePurchaseOfferDetails!.priceCurrencyCode,
     };

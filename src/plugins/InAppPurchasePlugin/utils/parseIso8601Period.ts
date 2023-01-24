@@ -11,7 +11,7 @@ export function parseIso8601Period(period: string) {
     periodUnit: androidPeriods[period.charAt(2)],
     numberOfPeriods: parseInt(period.charAt(1), 10),
   } as {
-    periodUnit: 'day' | 'week' | 'month' | 'year',
-    numberOfPeriods: number
+    periodUnit: 'day' | 'week' | 'month' | 'year';
+    numberOfPeriods: number;
   };
 }

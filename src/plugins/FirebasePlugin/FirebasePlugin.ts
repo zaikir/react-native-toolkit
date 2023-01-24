@@ -1,5 +1,11 @@
-import type { InitializedPlugin, Plugin, PluginFeature } from 'plugins/Plugin';
 import initializeRemoteConfig from '@react-native-firebase/remote-config';
+
+import type {
+  InitializationError,
+  InitializedPlugin,
+  Plugin,
+  PluginFeature,
+} from 'plugins/Plugin';
 import type { RemoteConfig } from 'plugins/types';
 
 export class FirebasePlugin implements Plugin {
@@ -9,13 +15,15 @@ export class FirebasePlugin implements Plugin {
 
   readonly remoteConfig?: RemoteConfig;
 
-  constructor(options: {
-    remoteConfig?: RemoteConfig
-  } = {}) {
+  constructor(
+    options: {
+      remoteConfig?: RemoteConfig;
+    } = {},
+  ) {
     this.remoteConfig = options.remoteConfig;
   }
 
-  async init(): Promise<InitializedPlugin | string> {
+  async init(): Promise<InitializedPlugin | InitializationError> {
     try {
       const data: Record<string, any> = {};
 
@@ -42,11 +50,14 @@ export class FirebasePlugin implements Plugin {
               return [key, config.getNumber(key)];
             }
 
-            return [key, JSON.parse(
-              // @ts-ignore
-              // eslint-disable-next-line no-underscore-dangle
-              config.getValue(key)._value,
-            )];
+            return [
+              key,
+              JSON.parse(
+                // @ts-ignore
+                // eslint-disable-next-line no-underscore-dangle
+                config.getValue(key)._value,
+              ),
+            ];
           }),
         );
       }
@@ -56,7 +67,7 @@ export class FirebasePlugin implements Plugin {
         data,
       };
     } catch (err) {
-      return (err as Error).message;
+      return { error: (err as Error).message };
     }
   }
 }

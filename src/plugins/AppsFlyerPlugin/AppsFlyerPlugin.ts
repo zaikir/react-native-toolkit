@@ -1,6 +1,12 @@
-import type { InitializedPlugin, Plugin, PluginFeature } from 'plugins/Plugin';
-import type { AnalyticsProvider } from 'plugins/types';
 import appsFlyer, { InitSDKOptions } from 'react-native-appsflyer';
+
+import type {
+  InitializationError,
+  InitializedPlugin,
+  Plugin,
+  PluginFeature,
+} from 'plugins/Plugin';
+import type { AnalyticsProvider } from 'plugins/types';
 
 export class AppsFlyerPlugin implements Plugin {
   readonly name = AppsFlyerPlugin.name;
@@ -10,17 +16,25 @@ export class AppsFlyerPlugin implements Plugin {
   constructor(
     readonly options: InitSDKOptions,
     readonly callbacks?: {
-      onAppOpenAttribution?: Parameters<typeof appsFlyer.onAppOpenAttribution>[0],
-      onAttributionFailure?: Parameters<typeof appsFlyer.onAttributionFailure>[0],
-      onDeepLink?: Parameters<typeof appsFlyer.onDeepLink>[0],
-      onInstallConversionData?: Parameters<typeof appsFlyer.onInstallConversionData>[0],
-      onInstallConversionFailure?: Parameters<typeof appsFlyer.onInstallConversionFailure>[0],
-      onInitSuccess?: (result?: any) => any,
-      onInitFailure?: (error?: any) => any,
+      onAppOpenAttribution?: Parameters<
+        typeof appsFlyer.onAppOpenAttribution
+      >[0];
+      onAttributionFailure?: Parameters<
+        typeof appsFlyer.onAttributionFailure
+      >[0];
+      onDeepLink?: Parameters<typeof appsFlyer.onDeepLink>[0];
+      onInstallConversionData?: Parameters<
+        typeof appsFlyer.onInstallConversionData
+      >[0];
+      onInstallConversionFailure?: Parameters<
+        typeof appsFlyer.onInstallConversionFailure
+      >[0];
+      onInitSuccess?: (result?: any) => any;
+      onInitFailure?: (error?: any) => any;
     },
   ) {}
 
-  async init(): Promise<InitializedPlugin | string> {
+  async init(): Promise<InitializedPlugin | InitializationError> {
     if (this.callbacks?.onAppOpenAttribution) {
       appsFlyer.onAppOpenAttribution(this.callbacks.onAppOpenAttribution);
     }
@@ -38,7 +52,9 @@ export class AppsFlyerPlugin implements Plugin {
     }
 
     if (this.callbacks?.onInstallConversionFailure) {
-      appsFlyer.onInstallConversionFailure(this.callbacks.onInstallConversionFailure);
+      appsFlyer.onInstallConversionFailure(
+        this.callbacks.onInstallConversionFailure,
+      );
     }
 
     appsFlyer.initSdk(

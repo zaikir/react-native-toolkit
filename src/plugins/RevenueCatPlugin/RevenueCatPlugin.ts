@@ -1,5 +1,11 @@
-import type { InitializedPlugin, Plugin, PluginFeature } from 'plugins/Plugin';
 import Purchases from 'react-native-purchases';
+
+import type {
+  InitializationError,
+  InitializedPlugin,
+  Plugin,
+  PluginFeature,
+} from 'plugins/Plugin';
 
 export class RevenueCatPlugin implements Plugin {
   readonly name = RevenueCatPlugin.name;
@@ -8,13 +14,13 @@ export class RevenueCatPlugin implements Plugin {
 
   constructor(
     readonly options: {
-      apiKey: string,
-      products: { id: string, type: 'subscription' | 'product' }[],
-      verbose?: boolean
+      apiKey: string;
+      products: { id: string; type: 'subscription' | 'product' }[];
+      verbose?: boolean;
     },
   ) {}
 
-  async init(): Promise<InitializedPlugin | string> {
+  async init(): Promise<InitializedPlugin | InitializationError> {
     Purchases.setDebugLogsEnabled(this.options.verbose || false);
     Purchases.configure({ apiKey: this.options.apiKey });
 

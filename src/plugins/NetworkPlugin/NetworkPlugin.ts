@@ -1,24 +1,24 @@
-import { CaptureConsole } from '@sentry/integrations';
 import * as Sentry from '@sentry/react-native';
+import { CaptureConsole } from '@sentry/integrations';
 import type { ReactNativeOptions } from '@sentry/react-native';
-
 import type {
-  InitializationError,
-  InitializedPlugin,
-  Plugin,
-  PluginFeature,
+  InitializationError, InitializationOptions, InitializedPlugin, Plugin, PluginFeature,
 } from 'plugins/Plugin';
 
-export class SentryPlugin implements Plugin {
-  readonly name = SentryPlugin.name;
+export class NetworkPlugin implements Plugin {
+  readonly name = NetworkPlugin.name;
 
-  readonly features: PluginFeature[] = ['ErrorTracking'];
+  readonly features: PluginFeature[] = ['Network'];
 
-  constructor(readonly options?: ReactNativeOptions) {}
+  constructor(
+    readonly options?: {
+      offlineMode?: boolean,
+    } & InitializationOptions,
+  ) {}
 
   async init(): Promise<InitializedPlugin | InitializationError> {
-    if (!this.options?.dsn) {
-      return { error: 'Sentry DSN is missing' };
+    if (!) {
+      return { error: 'No internet connection', code: 'offline' };
     }
 
     Sentry.init({

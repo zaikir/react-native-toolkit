@@ -1,25 +1,41 @@
-import type { InitializedPlugin, Plugin } from 'plugins/Plugin';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
+import { Button, Text, View } from 'react-native';
 import { hide as hideNativeSplash } from 'react-native-bootsplash';
-import useAsyncEffect from 'use-async-effect';
+import { useAsyncEffect } from 'use-async-effect';
+
 import { AppSplashScreen } from 'components/AppSplashScreen';
 import type { AppSplashScreenProps } from 'components/AppSplashScreen/AppSplashScreen';
-import { useAlerts } from 'hooks/useAlerts';
-import { Button, Text, View } from 'react-native';
 import { PluginsBundleProvider } from 'contexts/PluginsBundleContext/PluginsBundleContext';
+import { useAlerts } from 'hooks/useAlerts';
+import type {
+  InitializationError,
+  InitializationOptions,
+  InitializedPlugin,
+  Plugin,
+} from 'plugins/Plugin';
 
 type Props = {
-  children?: React.ReactNode,
-  plugins?: Plugin[],
-  splashScreenProps?: Omit<AppSplashScreenProps, 'visible' | 'children'>
+  children?: React.ReactNode;
+  plugins?: Plugin[];
+  splashScreenProps?: Omit<AppSplashScreenProps, 'visible' | 'children'>;
 };
 
-export default function AppBootstrapper({ children, plugins, splashScreenProps }: Props) {
+export default function AppBootstrapper({
+  children,
+  plugins,
+  splashScreenProps,
+}: Props) {
   const { showAlert } = useAlerts();
   const [isInitialized, setIsInitialized] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
-  const [initializationError, setInitializationError] = useState<string | null>(null);
+  const [errorFallbackScreen, setErrorFallbackScreen] = useState<
+    InitializationOptions['fallbackScreen'] | null
+  >(null);
+  const [initializationError, setInitializationError] =
+    useState<InitializationError | null>(null);
   const [pluginsBundle, setPluginsBundle] = useState<InitializedPlugin[]>([]);
+
+  const currentPluginIndex = useRef(0);
 
   const initialize = useCallback(async () => {
     if (!plugins) {
@@ -28,13 +44,20 @@ export default function AppBootstrapper({ children, plugins, splashScreenProps }
 
     const currentPluginBundle: InitializedPlugin[] = [];
 
-    for (let i = 0; i < plugins.length; i += 1) {
-      const plugin = plugins[i];
+    for (
+      currentPluginIndex.current;
+      currentPluginIndex.current < plugins.length;
+      currentPluginIndex.current += 1
+    ) {
+      const plugin = plugins[currentPluginIndex.current];
 
       // eslint-disable-next-line no-await-in-loop
       const result = await plugin.init(currentPluginBundle);
-      if (typeof result === 'string') {
-        throw new Error(result);
+
+      if ('error' in result) {
+        setInitializationError(result);
+        setErrorFallbackScreen(plugin.)
+        throw new Error(result.error);
       }
 
       currentPluginBundle.push(result);
@@ -43,11 +66,23 @@ export default function AppBootstrapper({ children, plugins, splashScreenProps }
     setPluginsBundle(currentPluginBundle);
   }, [plugins]);
 
+  const retryInitialization = useCallback(async () => {
+    try {
+      setIsRetrying(true);
+      await initialize();
+
+      setInitializationError(null);
+    } catch (err) {
+      showAlert('error', 'Error', (err as Error).message);
+    } finally {
+      setIsRetrying(false);
+    }
+  }, [initialize]);
+
   useAsyncEffect(async () => {
     try {
       await initialize();
     } catch (err) {
-      setInitializationError((err as Error).message);
       console.error(err);
     } finally {
       setIsInitialized(true);
@@ -56,39 +91,23 @@ export default function AppBootstrapper({ children, plugins, splashScreenProps }
   }, []);
 
   return (
-    <AppSplashScreen
-      visible={!isInitialized}
-      {...splashScreenProps}
-    >
-      {!initializationError
-        ? (
-          <PluginsBundleProvider plugins={pluginsBundle}>
-            {children}
-          </PluginsBundleProvider>
-        )
-        : (
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Text>{initializationError}</Text>
-            <Button
-              disabled={isRetrying}
-              onPress={async () => {
-                try {
-                  setIsRetrying(true);
-                  await initialize();
-
-                  setInitializationError(null);
-                } catch (err) {
-                  showAlert('error', 'Error', (err as Error).message);
-                  setInitializationError((err as Error).message);
-                } finally {
-                  setIsRetrying(false);
-                }
-              }}
-              title="Retry"
-            />
-          </View>
-        )}
-
+    <AppSplashScreen visible={!isInitialized} {...splashScreenProps}>
+      {!initializationError ? (
+        <PluginsBundleProvider plugins={pluginsBundle}>
+          {children}
+        </PluginsBundleProvider>
+      ) : (
+        <View
+          style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+        >
+          <Text>{initializationError}</Text>
+          <Button
+            disabled={isRetrying}
+            onPress={async () => {}}
+            title="Retry"
+          />
+        </View>
+      )}
     </AppSplashScreen>
   );
 }
