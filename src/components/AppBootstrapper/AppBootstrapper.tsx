@@ -21,7 +21,7 @@ type Props = {
               plugins: PluginsBundle,
               resolve: (value: any | PromiseLike<any>) => void,
               reject: (reason?: any) => void,
-            ) => Promise<Plugin>;
+            ) => Plugin | Promise<Plugin>;
           }
       ) &
         PluginFactoryOptions)
@@ -36,7 +36,7 @@ export default function AppBootstrapper({
 }: Props) {
   const [isInitialized, setIsInitialized] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
-  const [errorFallbackScreen, setErrorFallbackScreen] = useState<
+  const [ErrorFallbackScreen, setErrorFallbackScreen] = useState<
     PluginFactoryOptions['fallbackScreen'] | null
   >(null);
   const [initializationError, setInitializationError] = useState<string | null>(
@@ -101,7 +101,7 @@ export default function AppBootstrapper({
           'fallbackScreen' in plugin ? plugin.fallbackScreen : null,
         );
 
-        return;
+        throw new Error(errorData.message);
       }
     }
 
@@ -137,14 +137,14 @@ export default function AppBootstrapper({
       return null;
     }
 
-    if (errorFallbackScreen) {
-      return typeof errorFallbackScreen === 'function'
-        ? errorFallbackScreen({
-            error: initializationError,
-            isRetrying,
-            retry: retryInitialization,
-          })
-        : errorFallbackScreen;
+    if (ErrorFallbackScreen) {
+      return (
+        <ErrorFallbackScreen
+          error={initializationError}
+          isRetrying={isRetrying}
+          retry={retryInitialization}
+        />
+      );
     }
 
     return (
@@ -166,7 +166,7 @@ export default function AppBootstrapper({
     );
   }, [
     initializationError,
-    errorFallbackScreen,
+    ErrorFallbackScreen,
     isRetrying,
     retryInitialization,
   ]);

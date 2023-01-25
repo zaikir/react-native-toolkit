@@ -1,1 +1,0 @@
-export { CustomPlugin } from './CustomPlugin';

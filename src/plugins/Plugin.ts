@@ -6,16 +6,16 @@ export type PluginFeature =
   | 'IAPReceiptValidator'
   | 'Network';
 
+export type FallbackScreenProps = {
+  error: string;
+  isRetrying: boolean;
+  retry: () => Promise<void>;
+};
+
 export type PluginFactoryOptions = {
   name?: string;
   optional?: boolean;
-  fallbackScreen?:
-    | React.ReactNode
-    | ((props: {
-        error: string;
-        isRetrying: boolean;
-        retry: () => Promise<void>;
-      }) => React.ReactNode);
+  fallbackScreen?: React.FC<FallbackScreenProps>;
 };
 
 export abstract class Plugin {

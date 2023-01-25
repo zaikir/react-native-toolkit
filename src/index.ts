@@ -10,8 +10,12 @@ export { StorageProvider } from './contexts/StorageContext';
 export { ColorSchemeProvider } from './contexts/ColorSchemeContext';
 
 // plugins
-export { Plugin } from './plugins/Plugin';
-export { CustomPlugin } from './plugins/CustomPlugin';
+export {
+  Plugin,
+  FallbackScreenProps,
+  PluginFactoryOptions,
+  PluginsBundle,
+} from './plugins/Plugin';
 
 // hooks
 export { useAlerts } from './hooks/useAlerts';
