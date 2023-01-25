@@ -11,6 +11,7 @@ export { ColorSchemeProvider } from './contexts/ColorSchemeContext';
 
 // plugins
 export { Plugin } from './plugins/Plugin';
+export { CustomPlugin } from './plugins/CustomPlugin';
 
 // hooks
 export { useAlerts } from './hooks/useAlerts';
@@ -21,4 +22,5 @@ export { useColorScheme } from './hooks/useColorScheme';
 
 // other
 export { default as SyncStorage } from './utils/SyncStorage';
+export { ControlledPromise } from './utils/promise';
 export { ScaleReference, scaleX, scaleY } from './utils/scale';

@@ -7,6 +7,7 @@ import { AppSplashScreen } from 'components/AppSplashScreen';
 import type { AppSplashScreenProps } from 'components/AppSplashScreen/AppSplashScreen';
 import { PluginsBundleProvider } from 'contexts/PluginsBundleContext/PluginsBundleContext';
 import { useAlerts } from 'hooks/useAlerts';
+import { ControlledPromise } from 'index';
 import type {
   InitializationError,
   InitializationOptions,
@@ -16,7 +17,10 @@ import type {
 
 type Props = {
   children?: React.ReactNode;
-  plugins?: Plugin[];
+  plugins?: (
+    | Plugin
+    | ((bundle: InitializedPlugin[], resolve?: (data?: any) => void) => Plugin)
+  )[];
   splashScreenProps?: Omit<AppSplashScreenProps, 'visible' | 'children'>;
 };
 
@@ -51,12 +55,65 @@ export default function AppBootstrapper({
     ) {
       const plugin = plugins[currentPluginIndex.current];
 
+      let realPluginInstance: Plugin | null = null;
+
       // eslint-disable-next-line no-await-in-loop
-      const result = await plugin.init(currentPluginBundle);
+      const result = await (() => {
+        if (typeof plugin === 'function') {
+          return new Promise<InitializedPlugin | InitializationError>(
+            async (resolve, reject) => {
+              const waitPromise = new ControlledPromise<
+                InitializedPlugin | InitializationError
+              >();
+
+              const resolveManually = plugin.length > 1;
+
+              const pluginInstance = plugin(
+                currentPluginBundle,
+                async (data) => {
+                  const initializedPlugin = await waitPromise.wait();
+                  if ('error' in initializedPlugin) {
+                    resolve(initializedPlugin);
+                    return;
+                  }
+
+                  resolve({
+                    ...initializedPlugin,
+                    data: {
+                      ...initializedPlugin.data,
+                      ...data,
+                    },
+                  });
+                },
+              );
+
+              realPluginInstance = pluginInstance;
+
+              try {
+                const initializedPlugin = await pluginInstance.init(
+                  currentPluginBundle,
+                  currentPluginIndex.current,
+                );
+
+                waitPromise.resolve(initializedPlugin);
+
+                if (resolveManually) {
+                  resolve(initializedPlugin);
+                }
+              } catch (err) {
+                reject(err);
+              }
+            },
+          );
+        }
+
+        realPluginInstance = plugin;
+        return plugin.init(currentPluginBundle, currentPluginIndex.current);
+      })();
 
       if ('error' in result) {
         setInitializationError(result);
-        setErrorFallbackScreen(plugin.fallbackScreen);
+        setErrorFallbackScreen(realPluginInstance!.fallbackScreen);
         throw new Error(result.error);
       }
 

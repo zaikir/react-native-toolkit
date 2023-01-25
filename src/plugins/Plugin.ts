@@ -38,5 +38,6 @@ export abstract class Plugin {
 
   abstract init(
     bundle: InitializedPlugin[],
+    index: number,
   ): Promise<InitializedPlugin | InitializationError>;
 }
