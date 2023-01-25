@@ -15,12 +15,12 @@ export class SentryPlugin extends Plugin {
 
   readonly features: PluginFeature[] = ['ErrorTracking'];
 
-  constructor(readonly options?: ReactNativeOptions & InitializationOptions) {
+  constructor(readonly options: ReactNativeOptions & InitializationOptions) {
     super(options);
   }
 
   async init(): Promise<InitializedPlugin | InitializationError> {
-    if (!this.options?.dsn) {
+    if (!this.options.dsn) {
       return { error: 'Sentry DSN is missing' };
     }
 

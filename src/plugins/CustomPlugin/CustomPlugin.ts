@@ -16,7 +16,7 @@ export class CustomPlugin extends Plugin {
       init: (
         bundle: InitializedPlugin[],
         index: number,
-      ) => Promise<InitializedPlugin | InitializationError>;
+      ) => Promise<Omit<InitializedPlugin, 'instance'> | InitializationError>;
       name?: string;
       features?: PluginFeature[];
     },
@@ -30,6 +30,14 @@ export class CustomPlugin extends Plugin {
     bundle: InitializedPlugin[],
     index: number,
   ): Promise<InitializedPlugin | InitializationError> {
-    return this.options.init(bundle, index);
+    const data = await this.options.init(bundle, index);
+    if ('error' in data) {
+      return data;
+    }
+
+    return {
+      ...data,
+      instance: this,
+    };
   }
 }
