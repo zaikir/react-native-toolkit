@@ -1,1 +1,5 @@
-export { ColorSchemeContext, ColorSchemeContextType, ColorSchemeProvider } from './ColorSchemeContext';
+export {
+  ColorSchemeContext,
+  ColorSchemeContextType,
+  ColorSchemeProvider,
+} from './ColorSchemeContext';

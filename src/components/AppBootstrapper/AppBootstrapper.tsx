@@ -165,10 +165,19 @@ export default function AppBootstrapper({
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <Text>{initializationError.error}</Text>
-        <Button disabled={isRetrying} onPress={async () => {}} title="Retry" />
+        <Button
+          disabled={isRetrying}
+          onPress={retryInitialization}
+          title="Retry"
+        />
       </View>
     );
-  }, [errorFallbackScreen, isRetrying, retryInitialization]);
+  }, [
+    initializationError,
+    errorFallbackScreen,
+    isRetrying,
+    retryInitialization,
+  ]);
 
   return (
     <AppSplashScreen visible={!isInitialized} {...splashScreenProps}>

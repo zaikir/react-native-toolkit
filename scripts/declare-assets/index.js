@@ -1,17 +1,21 @@
-const path = require('path');
 const fs = require('fs');
-const getAllFiles = require('./readdirRecursiveSync')
+const path = require('path');
 
-const declarationFilename = path.join(__dirname, '..', '..', 'generated.d.ts')
+const getAllFiles = require('./readdirRecursiveSync');
+
+// eslint-disable-next-line no-undef
+const declarationFilename = path.join(__dirname, '..', '..', 'generated.d.ts');
 
 const snakeToPascal = (string) => {
-  return string.split("/")
-    .map(snake => snake.split("_")
-      .map(substr => substr.charAt(0)
-        .toUpperCase() +
-        substr.slice(1))
-      .join(""))
-    .join("/");
+  return string
+    .split('/')
+    .map((snake) =>
+      snake
+        .split('_')
+        .map((substr) => substr.charAt(0).toUpperCase() + substr.slice(1))
+        .join(''),
+    )
+    .join('/');
 };
 
 module.exports = () => {
@@ -19,62 +23,79 @@ module.exports = () => {
   const pathToIcons = path.join(workingPath, 'assets', 'icons');
   const pathToImages = path.join(workingPath, 'assets', 'images');
 
-  const modules = []
-  
-  const icons = getAllFiles(pathToIcons).map(filename => {
-    const relativeFilename = filename.replace(pathToIcons, '')
+  const modules = [];
 
-    const extension = path.extname(relativeFilename)
-    const fullname = path.basename(relativeFilename)
+  const icons = getAllFiles(pathToIcons)
+    .map((filename) => {
+      const relativeFilename = filename.replace(pathToIcons, '');
 
-    if (fullname === '.gitkeep') {
-      return
-    }
+      const extension = path.extname(relativeFilename);
+      const fullname = path.basename(relativeFilename);
 
-    if (extension !== '.svg') {
-      console.warn(`Wrong icon extension detected for ${fullname}`)
-      return
-    }
+      if (fullname === '.gitkeep') {
+        return;
+      }
 
-    const basename = path.basename(relativeFilename, extension)
-    const moduleName = `icons${relativeFilename}`
-    const iconName = snakeToPascal(basename.trim().replace(/\-+/g, ' ').replace(/ +/g, ' ').replace(/[ -]/g, '_')) + 'Icon'
+      if (extension !== '.svg') {
+        console.warn(`Wrong icon extension detected for ${fullname}`);
+        return;
+      }
 
-    return `declare module '${moduleName}' {\n  import type { SvgProps } from 'react-native-svg';\n\n  const ${iconName}: React.FC<SvgProps>;\n  export default ${iconName};\n}`
-  }).filter(x => !!x)
+      const basename = path.basename(relativeFilename, extension);
+      const moduleName = `icons${relativeFilename}`;
+      const iconName =
+        snakeToPascal(
+          basename
+            .trim()
+            .replace(/\-+/g, ' ')
+            .replace(/ +/g, ' ')
+            .replace(/[ -]/g, '_'),
+        ) + 'Icon';
 
-  modules.push(...icons)
+      return `declare module '${moduleName}' {\n  import type { SvgProps } from 'react-native-svg';\n\n  const ${iconName}: React.FC<SvgProps>;\n  export default ${iconName};\n}`;
+    })
+    .filter((x) => !!x);
 
+  modules.push(...icons);
 
-  const images = getAllFiles(pathToImages).map(filename => {
-    const relativeFilename = filename.replace(pathToImages, '')
+  const images = getAllFiles(pathToImages)
+    .map((filename) => {
+      const relativeFilename = filename.replace(pathToImages, '');
 
-    const extension = path.extname(relativeFilename)
-    const fullname = path.basename(relativeFilename)
+      const extension = path.extname(relativeFilename);
+      const fullname = path.basename(relativeFilename);
 
-    if (fullname === '.gitkeep') {
-      return
-    }
+      if (fullname === '.gitkeep') {
+        return;
+      }
 
-    if (!['.png', '.jpg', '.jpeg'].includes(extension)) {
-      console.warn(`Wrong image extension detected for ${fullname}`)
-      return
-    }
+      if (!['.png', '.jpg', '.jpeg'].includes(extension)) {
+        console.warn(`Wrong image extension detected for ${fullname}`);
+        return;
+      }
 
-    const basename = path.basename(relativeFilename, extension)
-    const moduleName = `images${relativeFilename}`
-    const imageName = snakeToPascal(basename.trim().replace(/\-+/g, ' ').replace(/ +/g, ' ').replace(/[ -]/g, '_')) + 'Image'
+      const basename = path.basename(relativeFilename, extension);
+      const moduleName = `images${relativeFilename}`;
+      const imageName =
+        snakeToPascal(
+          basename
+            .trim()
+            .replace(/\-+/g, ' ')
+            .replace(/ +/g, ' ')
+            .replace(/[ -]/g, '_'),
+        ) + 'Image';
 
-    return `
+      return `
 declare module '${moduleName}' {
   import { ImageSourcePropType } from 'react-native';
 
   const ${imageName}: ImageSourcePropType;
   export default ${imageName};
-}`.trim()
-  }).filter(x => !!x)
+}`.trim();
+    })
+    .filter((x) => !!x);
 
-  modules.push(...images)
+  modules.push(...images);
 
   // const declaration = modules.join('\n\n')
   const declaration = `
@@ -87,7 +108,7 @@ declare module '*.svg' {
 
 declare module '*.png' { const img: any; export default img; }
 declare module '*.jpg' { const img: any; export default img; }
-declare module '*.jpeg' { const img: any; export default img; }`.trim()
+declare module '*.jpeg' { const img: any; export default img; }`.trim();
 
-  fs.writeFileSync(declarationFilename, declaration, 'utf-8')
-}
+  fs.writeFileSync(declarationFilename, declaration, 'utf-8');
+};

@@ -1,6 +1,7 @@
+import { useContext } from 'react';
+
 import { PluginsBundleContext } from 'contexts/PluginsBundleContext';
 import type { RemoteConfig } from 'plugins/types';
-import { useContext } from 'react';
 
 export function useRemoteConfig() {
   const { features } = useContext(PluginsBundleContext);

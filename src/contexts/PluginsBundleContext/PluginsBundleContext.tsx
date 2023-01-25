@@ -1,17 +1,20 @@
 import React, { createContext, PropsWithChildren, useMemo } from 'react';
+
 import type { PluginFeature, InitializedPlugin } from 'plugins/Plugin';
 
 export type PluginsBundleContextType = {
-  plugins: InitializedPlugin[],
-  features: Record<PluginFeature, InitializedPlugin[]>
+  plugins: InitializedPlugin[];
+  features: Record<PluginFeature, InitializedPlugin[]>;
 };
 
-export const PluginsBundleContext = createContext<PluginsBundleContextType>({} as any);
+export const PluginsBundleContext = createContext<PluginsBundleContextType>(
+  {} as any,
+);
 
 export function PluginsBundleProvider({
   children,
   plugins,
-}: PropsWithChildren<{ plugins: InitializedPlugin[], }>) {
+}: PropsWithChildren<{ plugins: InitializedPlugin[] }>) {
   const contextData = useMemo<PluginsBundleContextType>(
     () => ({
       plugins,

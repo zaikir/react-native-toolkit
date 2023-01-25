@@ -1,1 +1,4 @@
-export { PluginsBundleContextType, PluginsBundleContext } from './PluginsBundleContext';
+export {
+  PluginsBundleContextType,
+  PluginsBundleContext,
+} from './PluginsBundleContext';

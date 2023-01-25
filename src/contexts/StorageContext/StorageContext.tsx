@@ -1,17 +1,20 @@
 import React, {
-  createContext, PropsWithChildren, useEffect, useMemo, useState,
+  createContext,
+  PropsWithChildren,
+  useEffect,
+  useMemo,
+  useState,
 } from 'react';
+
 import SyncStorage, { CSyncStorage } from 'utils/SyncStorage';
 
 export type StorageContextType = {
-  storage: CSyncStorage,
+  storage: CSyncStorage;
 };
 
 export const StorageContext = createContext<StorageContextType>({} as any);
 
-export function StorageProvider({
-  children,
-}: PropsWithChildren<{ }>) {
+export function StorageProvider({ children }: PropsWithChildren<object>) {
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {

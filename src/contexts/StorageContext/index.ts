@@ -1,1 +1,5 @@
-export { StorageContext, StorageContextType, StorageProvider } from './StorageContext';
+export {
+  StorageContext,
+  StorageContextType,
+  StorageProvider,
+} from './StorageContext';
