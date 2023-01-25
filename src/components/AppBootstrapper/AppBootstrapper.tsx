@@ -19,7 +19,7 @@ type Props = {
   children?: React.ReactNode;
   plugins?: (
     | Plugin
-    | ((bundle: InitializedPlugin[], resolve?: (data?: any) => void) => Plugin)
+    | ((bundle: InitializedPlugin[], resolve: (data?: any) => void) => Plugin)
   )[];
   splashScreenProps?: Omit<AppSplashScreenProps, 'visible' | 'children'>;
 };
