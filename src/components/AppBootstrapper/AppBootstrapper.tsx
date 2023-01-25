@@ -1,13 +1,12 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { Button, Text, View } from 'react-native';
+import { Alert, Button, Text, View } from 'react-native';
 import { hide as hideNativeSplash } from 'react-native-bootsplash';
 import { useAsyncEffect } from 'use-async-effect';
 
 import { AppSplashScreen } from 'components/AppSplashScreen';
 import type { AppSplashScreenProps } from 'components/AppSplashScreen/AppSplashScreen';
 import { PluginsBundleProvider } from 'contexts/PluginsBundleContext/PluginsBundleContext';
-import { useAlerts } from 'hooks/useAlerts';
-import { ControlledPromise } from 'index';
+import { ControlledPromise, scaleX, scaleY } from 'index';
 import type {
   InitializationError,
   InitializationOptions,
@@ -29,7 +28,6 @@ export default function AppBootstrapper({
   plugins,
   splashScreenProps,
 }: Props) {
-  const { showAlert } = useAlerts();
   const [isInitialized, setIsInitialized] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
   const [errorFallbackScreen, setErrorFallbackScreen] = useState<
@@ -130,7 +128,7 @@ export default function AppBootstrapper({
 
       setInitializationError(null);
     } catch (err) {
-      showAlert('error', 'Error', (err as Error).message);
+      Alert.alert('Error', (err as Error).message);
     } finally {
       setIsRetrying(false);
     }
@@ -164,7 +162,14 @@ export default function AppBootstrapper({
 
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Text>{initializationError.error}</Text>
+        <Text
+          style={{
+            fontSize: scaleX(20),
+            marginBottom: scaleY(5),
+          }}
+        >
+          {initializationError.error}
+        </Text>
         <Button
           disabled={isRetrying}
           onPress={retryInitialization}

@@ -29,12 +29,12 @@ export function ColorSchemeProvider({
 }>) {
   const systemColorScheme = useColorScheme();
   const [fixedScheme, setFixedScheme] = useState<ColorScheme | null>(
-    scheme || null,
+    scheme ?? null,
   );
 
   const contextData = useMemo<ColorSchemeContextType>(
     () => ({
-      colorScheme: fixedScheme || systemColorScheme || 'light',
+      colorScheme: fixedScheme ?? systemColorScheme ?? 'light',
       setColorScheme: setFixedScheme,
     }),
     [systemColorScheme, fixedScheme],
@@ -45,7 +45,7 @@ export function ColorSchemeProvider({
       <StatusBar
         {...statusBarProps}
         barStyle={
-          statusBarProps?.barStyle ||
+          statusBarProps?.barStyle ??
           (contextData.colorScheme === 'light'
             ? 'dark-content'
             : 'light-content')
