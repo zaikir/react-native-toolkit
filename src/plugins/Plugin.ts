@@ -24,7 +24,7 @@ export abstract class Plugin {
 
   payload?: any;
 
-  abstract initialize(): Promise<void>;
+  abstract initialize(): Promise<void> | void;
 }
 
 export class PluginsBundle {
