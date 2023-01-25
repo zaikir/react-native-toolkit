@@ -13,10 +13,7 @@ export class CustomPlugin extends Plugin {
 
   constructor(
     readonly options: InitializationOptions & {
-      init: (
-        bundle: InitializedPlugin[],
-        index: number,
-      ) => Promise<Omit<InitializedPlugin, 'instance'> | InitializationError>;
+      init: (bundle: InitializedPlugin[], index: number) => Promise<any>;
       name?: string;
       features?: PluginFeature[];
     },
@@ -38,6 +35,7 @@ export class CustomPlugin extends Plugin {
     return {
       ...data,
       instance: this,
+      data: data || {},
     };
   }
 }
