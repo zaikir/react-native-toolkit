@@ -6,38 +6,45 @@ export type PluginFeature =
   | 'IAPReceiptValidator'
   | 'Network';
 
-export type InitializationError = {
-  code?: 'offline';
-  error: string;
-};
-
-export type InitializationOptions = {
+export type PluginFactoryOptions = {
+  name?: string;
+  optional?: boolean;
   fallbackScreen?:
     | React.ReactNode
     | ((props: {
-        error: InitializationError;
+        error: string;
         isRetrying: boolean;
         retry: () => Promise<void>;
       }) => React.ReactNode);
-};
-
-export type InitializedPlugin = {
-  instance: Plugin;
-  data: any;
 };
 
 export abstract class Plugin {
   abstract get name(): string;
   abstract get features(): PluginFeature[];
 
-  get fallbackScreen(): InitializationOptions['fallbackScreen'] | null {
-    return this.options?.fallbackScreen ?? null;
+  payload?: any;
+
+  abstract initialize(): Promise<void>;
+}
+
+export class PluginsBundle {
+  constructor(readonly plugins: Plugin[]) {}
+
+  get<T extends Plugin>(constructorOrName: (new (...args: any) => T) | string) {
+    if (typeof constructorOrName === 'string') {
+      return this.plugins.find((x) => x.name === constructorOrName) as
+        | T
+        | undefined;
+    }
+
+    return this.plugins.find((x) => x.name === constructorOrName.name) as
+      | T
+      | undefined;
   }
 
-  constructor(readonly options?: InitializationOptions) {}
-
-  abstract init(
-    bundle: InitializedPlugin[],
-    index: number,
-  ): Promise<InitializedPlugin | InitializationError>;
+  getByFeature<T extends Plugin>(feature: PluginFeature) {
+    return this.plugins.find((x) => x.features.includes(feature)) as
+      | T
+      | undefined;
+  }
 }

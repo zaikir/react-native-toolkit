@@ -7,18 +7,24 @@ import { AppSplashScreen } from 'components/AppSplashScreen';
 import type { AppSplashScreenProps } from 'components/AppSplashScreen/AppSplashScreen';
 import { PluginsBundleProvider } from 'contexts/PluginsBundleContext/PluginsBundleContext';
 import { ControlledPromise, scaleX, scaleY } from 'index';
-import type {
-  InitializationError,
-  InitializationOptions,
-  InitializedPlugin,
-  Plugin,
-} from 'plugins/Plugin';
+import { Plugin, PluginFactoryOptions, PluginsBundle } from 'plugins/Plugin';
 
 type Props = {
   children?: React.ReactNode;
   plugins?: (
     | Plugin
-    | ((bundle: InitializedPlugin[], resolve: (data?: any) => void) => Plugin)
+    | ((
+        | { useValue: Plugin }
+        | { useFactory: (plugins: PluginsBundle) => Plugin | Promise<Plugin> }
+        | {
+            useDeferredFactory: (
+              plugins: PluginsBundle,
+              resolve: (value: any | PromiseLike<any>) => void,
+              reject: (reason?: any) => void,
+            ) => Promise<Plugin>;
+          }
+      ) &
+        PluginFactoryOptions)
   )[];
   splashScreenProps?: Omit<AppSplashScreenProps, 'visible' | 'children'>;
 };
@@ -31,11 +37,14 @@ export default function AppBootstrapper({
   const [isInitialized, setIsInitialized] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
   const [errorFallbackScreen, setErrorFallbackScreen] = useState<
-    InitializationOptions['fallbackScreen'] | null
+    PluginFactoryOptions['fallbackScreen'] | null
   >(null);
-  const [initializationError, setInitializationError] =
-    useState<InitializationError | null>(null);
-  const [pluginsBundle, setPluginsBundle] = useState<InitializedPlugin[]>([]);
+  const [initializationError, setInitializationError] = useState<string | null>(
+    null,
+  );
+  const [pluginsBundle, setPluginsBundle] = useState<PluginsBundle>(
+    new PluginsBundle([]),
+  );
 
   const currentPluginIndex = useRef(0);
 
@@ -44,7 +53,7 @@ export default function AppBootstrapper({
       return;
     }
 
-    const currentPluginBundle: InitializedPlugin[] = [];
+    const initializedPlugins: Plugin[] = [];
 
     for (
       currentPluginIndex.current;
@@ -53,72 +62,50 @@ export default function AppBootstrapper({
     ) {
       const plugin = plugins[currentPluginIndex.current];
 
-      let realPluginInstance: Plugin | null = null;
-
-      // eslint-disable-next-line no-await-in-loop
-      const result = await (() => {
-        if (typeof plugin === 'function') {
-          return new Promise<InitializedPlugin | InitializationError>(
-            async (resolve, reject) => {
-              const waitPromise = new ControlledPromise<
-                InitializedPlugin | InitializationError
-              >();
-
-              const resolveManually = plugin.length > 1;
-
-              const pluginInstance = plugin(
-                currentPluginBundle,
-                async (data) => {
-                  const initializedPlugin = await waitPromise.wait();
-                  if ('error' in initializedPlugin) {
-                    resolve(initializedPlugin);
-                    return;
-                  }
-
-                  resolve({
-                    ...initializedPlugin,
-                    data: {
-                      ...initializedPlugin.data,
-                      ...data,
-                    },
-                  });
-                },
-              );
-
-              realPluginInstance = pluginInstance;
-
-              try {
-                const initializedPlugin = await pluginInstance.init(
-                  currentPluginBundle,
-                  currentPluginIndex.current,
-                );
-
-                waitPromise.resolve(initializedPlugin);
-
-                if (resolveManually) {
-                  resolve(initializedPlugin);
-                }
-              } catch (err) {
-                reject(err);
-              }
-            },
+      try {
+        if ('useValue' in plugin) {
+          await plugin.useValue.initialize();
+          initializedPlugins.push(plugin.useValue);
+        } else if ('useFactory' in plugin) {
+          const initializedPlugin = await plugin.useFactory(
+            new PluginsBundle(initializedPlugins),
           );
+
+          initializedPlugins.push(initializedPlugin);
+        } else if ('useDeferredFactory' in plugin) {
+          const promise = new ControlledPromise<void>();
+          const [initializedPlugin, additionalData] = await Promise.all([
+            plugin.useDeferredFactory(
+              new PluginsBundle(initializedPlugins),
+              promise.resolve,
+              promise.reject,
+            ),
+            promise.wait(),
+          ]);
+
+          initializedPlugin.payload = additionalData;
+          initializedPlugins.push(initializedPlugin);
+        } else {
+          initializedPlugins.push(plugin);
+        }
+      } catch (err) {
+        if ('optional' in plugin && plugin.optional) {
+          continue;
         }
 
-        realPluginInstance = plugin;
-        return plugin.init(currentPluginBundle, currentPluginIndex.current);
-      })();
+        const errorData = err as Error;
+        console.error(errorData.message);
 
-      if ('error' in result) {
-        setInitializationError(result);
-        setErrorFallbackScreen(realPluginInstance!.fallbackScreen);
-        throw new Error(result.error);
+        setInitializationError(errorData.message);
+        setErrorFallbackScreen(
+          'fallbackScreen' in plugin ? plugin.fallbackScreen : null,
+        );
+
+        return;
       }
-
-      currentPluginBundle.push(result);
     }
 
-    setPluginsBundle(currentPluginBundle);
+    setPluginsBundle(new PluginsBundle(initializedPlugins));
   }, [plugins]);
 
   const retryInitialization = useCallback(async () => {
@@ -168,7 +155,7 @@ export default function AppBootstrapper({
             marginBottom: scaleY(5),
           }}
         >
-          {initializationError.error}
+          {initializationError}
         </Text>
         <Button
           disabled={isRetrying}
@@ -187,7 +174,7 @@ export default function AppBootstrapper({
   return (
     <AppSplashScreen visible={!isInitialized} {...splashScreenProps}>
       {!initializationError ? (
-        <PluginsBundleProvider plugins={pluginsBundle}>
+        <PluginsBundleProvider bundle={pluginsBundle}>
           {children}
         </PluginsBundleProvider>
       ) : (

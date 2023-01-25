@@ -1,51 +1,40 @@
 import ApphudSdk, { type StartProperties } from '@kirz/react-native-apphud-sdk';
 
-import {
-  InitializationError,
-  InitializationOptions,
-  InitializedPlugin,
-  Plugin,
-  PluginFeature,
-} from 'plugins/Plugin';
+import { Plugin, PluginFeature } from 'plugins/Plugin';
 
 export class ApphudPlugin extends Plugin {
   readonly name = ApphudPlugin.name;
 
   readonly features: PluginFeature[] = ['IAPReceiptValidator'];
 
-  constructor(
-    readonly options: Omit<StartProperties, 'observerMode'> &
-      InitializationOptions,
-  ) {
-    super(options);
+  constructor(readonly options: Omit<StartProperties, 'observerMode'>) {
+    super();
   }
 
-  async init(): Promise<InitializedPlugin | InitializationError> {
+  async initialize() {
     await ApphudSdk.start({ ...this.options, observerMode: true });
+  }
+
+  hasActiveSubscription() {
+    return ApphudSdk.hasActiveSubscription();
+  }
+
+  async restorePurchases() {
+    const result = await ApphudSdk.restorePurchases();
+    if (result.error) {
+      throw new Error(result.error);
+    }
 
     return {
-      instance: this,
-      data: {
-        hasActiveSubscription: () => ApphudSdk.hasActiveSubscription(),
-        restorePurchases: async () => {
-          const result = await ApphudSdk.restorePurchases();
-          if (result.error) {
-            throw new Error(result.error);
-          }
-
-          return {
-            products: result.purchases.map((x) => ({
-              productId: x.sku!,
-              originalData: x,
-            })),
-            subscriptions: result.subscriptions.map((x) => ({
-              productId: x.productId,
-              expiresAt: x.expiresAt,
-              originalData: x,
-            })),
-          };
-        },
-      },
+      products: result.purchases.map((x) => ({
+        productId: x.sku!,
+        originalData: x,
+      })),
+      subscriptions: result.subscriptions.map((x) => ({
+        productId: x.productId,
+        expiresAt: x.expiresAt,
+        originalData: x,
+      })),
     };
   }
 }

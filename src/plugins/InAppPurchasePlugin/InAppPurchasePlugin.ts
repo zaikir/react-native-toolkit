@@ -1,13 +1,7 @@
 import { Platform } from 'react-native';
 import * as IAP from 'react-native-iap';
 
-import {
-  InitializationError,
-  InitializationOptions,
-  InitializedPlugin,
-  Plugin,
-  PluginFeature,
-} from 'plugins/Plugin';
+import { Plugin, PluginFeature } from 'plugins/Plugin';
 
 import { transformProduct } from './utils/transformProduct';
 import { transformSubscription } from './utils/transformSubscription';
@@ -21,12 +15,12 @@ export class InAppPurchasePlugin extends Plugin {
     readonly options: {
       products: { productId: string; type: 'subscription' | 'product' }[];
       verbose?: boolean;
-    } & InitializationOptions,
+    },
   ) {
-    super(options);
+    super();
   }
 
-  async init(): Promise<InitializedPlugin | InitializationError> {
+  async initialize() {
     try {
       /*
       1. initialization
@@ -74,18 +68,9 @@ export class InAppPurchasePlugin extends Plugin {
       const subscriptions = fetchedSubscriptions.map((x) =>
         transformSubscription(x, false),
       );
-
-      return {
-        instance: this,
-        data: {
-          subscriptions,
-          products,
-        },
-      };
-    } catch (err) {
+      console.log(products, subscriptions);
+    } finally {
       IAP.endConnection();
-
-      return { error: (err as Error).message };
     }
   }
 }

@@ -1,11 +1,4 @@
-import {
-  InitializationError,
-  InitializationOptions,
-  InitializedPlugin,
-  Plugin,
-  PluginFeature,
-} from 'plugins/Plugin';
-import type { NetworkPluginData } from 'plugins/types';
+import { Plugin, PluginFeature } from 'plugins/Plugin';
 
 export class NetworkPlugin extends Plugin {
   readonly name = NetworkPlugin.name;
@@ -15,27 +8,18 @@ export class NetworkPlugin extends Plugin {
   constructor(
     readonly options?: {
       offlineMode?: boolean;
-    } & InitializationOptions,
+    },
   ) {
-    super(options);
+    super();
   }
 
-  async init(): Promise<InitializedPlugin | InitializationError> {
+  async initialize() {
     if (
       !(this.options?.offlineMode ?? true) &&
       !(await this.isInternetReachable())
     ) {
-      return { error: 'No internet connection', code: 'offline' as const };
+      throw new Error('No internet connection');
     }
-
-    return {
-      instance: this,
-      data: {
-        isInternetReachable() {
-          return this.isInternetReachable();
-        },
-      } as NetworkPluginData,
-    };
   }
 
   async isInternetReachable() {

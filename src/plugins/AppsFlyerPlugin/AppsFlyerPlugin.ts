@@ -1,21 +1,15 @@
 import appsFlyer, { InitSDKOptions } from 'react-native-appsflyer';
 
-import {
-  InitializationError,
-  InitializationOptions,
-  InitializedPlugin,
-  Plugin,
-  PluginFeature,
-} from 'plugins/Plugin';
+import { Plugin, PluginFeature } from 'plugins/Plugin';
 import type { AnalyticsProvider } from 'plugins/types';
 
-export class AppsFlyerPlugin extends Plugin {
+export class AppsFlyerPlugin extends Plugin implements AnalyticsProvider {
   readonly name = AppsFlyerPlugin.name;
 
   readonly features: PluginFeature[] = ['Analytics'];
 
   constructor(
-    readonly options: InitSDKOptions & InitializationOptions,
+    readonly options: InitSDKOptions,
     readonly callbacks?: {
       onAppOpenAttribution?: Parameters<
         typeof appsFlyer.onAppOpenAttribution
@@ -34,10 +28,10 @@ export class AppsFlyerPlugin extends Plugin {
       onInitFailure?: (error?: any) => any;
     },
   ) {
-    super(options);
+    super();
   }
 
-  async init(): Promise<InitializedPlugin | InitializationError> {
+  async initialize() {
     if (this.callbacks?.onAppOpenAttribution) {
       appsFlyer.onAppOpenAttribution(this.callbacks.onAppOpenAttribution);
     }
@@ -77,14 +71,9 @@ export class AppsFlyerPlugin extends Plugin {
         this.callbacks?.onInitFailure?.(error);
       },
     );
+  }
 
-    return {
-      instance: this,
-      data: {
-        async logEvent(event, parameters) {
-          await appsFlyer.logEvent(event, parameters as any);
-        },
-      } as AnalyticsProvider,
-    };
+  async logEvent(event: string, parameters?: Record<string, any> | undefined) {
+    await appsFlyer.logEvent(event, parameters as any);
   }
 }

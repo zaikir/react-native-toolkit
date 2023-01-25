@@ -1,10 +1,4 @@
-import {
-  InitializationError,
-  InitializationOptions,
-  InitializedPlugin,
-  Plugin,
-  PluginFeature,
-} from 'plugins/Plugin';
+import { Plugin, PluginFeature } from 'plugins/Plugin';
 
 export class CustomPlugin extends Plugin {
   readonly name = CustomPlugin.name;
@@ -12,30 +6,26 @@ export class CustomPlugin extends Plugin {
   readonly features: PluginFeature[] = [];
 
   constructor(
-    readonly options: InitializationOptions & {
-      init: (bundle: InitializedPlugin[], index: number) => Promise<any>;
-      name?: string;
-      features?: PluginFeature[];
+    readonly options: {
+      // initialize: (bundle: InitializedPlugin[], index: number) => Promise<any>;
+      // name?: string;
+      // features?: PluginFeature[];
     },
   ) {
-    super(options);
-    this.name = options.name ?? CustomPlugin.name;
-    this.features = options.features ?? [];
+    super();
+    // this.name = options.name ?? CustomPlugin.name;
+    // this.features = options.features ?? [];
   }
 
-  async init(
-    bundle: InitializedPlugin[],
-    index: number,
-  ): Promise<InitializedPlugin | InitializationError> {
-    const data = await this.options.init(bundle, index);
-    if (data && 'error' in data) {
-      return data;
-    }
-
-    return {
-      ...data,
-      instance: this,
-      data: data || {},
-    };
+  async initialize() {
+    // const data = await this.options.initialize(bundle, index);
+    // if (data && 'error' in data) {
+    //   return data;
+    // }
+    // return {
+    //   ...data,
+    //   instance: this,
+    //   data: data || {},
+    // };
   }
 }

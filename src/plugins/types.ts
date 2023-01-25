@@ -7,3 +7,7 @@ export interface AnalyticsProvider {
 export interface NetworkPluginData {
   isInternetReachable: () => Promise<boolean>;
 }
+
+export interface IRemoteConfigPlugin {
+  readonly values: Record<string, any>;
+}
