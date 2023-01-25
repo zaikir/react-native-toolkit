@@ -28,7 +28,7 @@ export class CustomPlugin extends Plugin {
     index: number,
   ): Promise<InitializedPlugin | InitializationError> {
     const data = await this.options.init(bundle, index);
-    if ('error' in data) {
+    if (data && 'error' in data) {
       return data;
     }
 
