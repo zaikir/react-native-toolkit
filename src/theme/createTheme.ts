@@ -1,4 +1,5 @@
 import type { TextStyle } from 'react-native';
+
 import type { ThemeColor } from './index';
 
 export function createTheme<
@@ -7,15 +8,18 @@ export function createTheme<
   Color extends string,
   TextFont extends Font,
 >(props: {
-  typography: Record<TextVariant, Omit<TextStyle, 'fontFamily' | 'color'> & {
-    fontFamily?: TextFont,
-    color?: ThemeColor
-  }>,
-  fonts: Record<Font, string[]>,
+  typography: Record<
+    TextVariant,
+    Omit<TextStyle, 'fontFamily' | 'color'> & {
+      fontFamily?: TextFont;
+      color?: ThemeColor;
+    }
+  >;
+  fonts: Record<Font, string[]>;
   colors: {
-    text: ThemeColor,
-    background: ThemeColor
-  } & Record<Color, ThemeColor>,
+    text: ThemeColor;
+    background: ThemeColor;
+  } & Record<Color, ThemeColor>;
 }) {
   return props;
 }

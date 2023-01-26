@@ -1,4 +1,3 @@
-// eslint-disable-next-line consistent-default-export-name/default-export-match-filename
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type OnEndCallback = (err?: string) => void;
@@ -9,9 +8,7 @@ const wrapPromise = (promise: Promise<void>, onEnd?: OnEndCallback) => {
     return;
   }
 
-  promise
-    .then(() => onEnd())
-    .catch((err) => onEnd((err as Error).message));
+  promise.then(() => onEnd()).catch((err) => onEnd((err as Error).message));
 };
 
 export class CSyncStorage {
@@ -20,7 +17,7 @@ export class CSyncStorage {
   data: Record<string, any> = {};
 
   async init() {
-    this.keys = await AsyncStorage.getAllKeys() as string[];
+    this.keys = (await AsyncStorage.getAllKeys()) as string[];
     const stored = await AsyncStorage.multiGet(this.keys);
 
     stored.forEach(([key, item]) => {
@@ -29,7 +26,7 @@ export class CSyncStorage {
       if (item) {
         try {
           value = JSON.parse(item);
-        } catch (e) {
+        } catch {
           // no-op
         }
       }

@@ -1,19 +1,24 @@
 import type { ThemeColor } from './index';
 
 export type Theme = {
-  typography: TextVariants,
-  fonts: FontFamilies,
-  colors: Colors
+  typography: TextVariants;
+  fonts: FontFamilies;
+  colors: Colors;
+  getContrastColor: (color: string) => 'black' | 'white';
 };
 
-export interface TextVariants extends Record<string, Omit<string, 'fontFamily' | 'color'> & {
-  fontFamily?: string,
-  color?: ThemeColor
-}> {}
+export interface TextVariants
+  extends Record<
+    string,
+    Omit<string, 'fontFamily' | 'color'> & {
+      fontFamily?: string;
+      color?: ThemeColor;
+    }
+  > {}
 export interface FontFamilies {}
 export interface Colors {
-  text: ThemeColor,
-  background: ThemeColor,
+  text: ThemeColor;
+  background: ThemeColor;
 }
 
 export type TextVariant = keyof TextVariants;

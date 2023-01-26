@@ -15,13 +15,17 @@ type Props = {
     | Plugin
     | ((
         | { useValue: Plugin }
-        | { useFactory: (plugins: PluginsBundle) => Plugin | Promise<Plugin> }
+        | {
+            useFactory: (
+              plugins: PluginsBundle,
+            ) => Plugin | void | Promise<Plugin | void>;
+          }
         | {
             useDeferredFactory: (
               plugins: PluginsBundle,
               resolve: (value: any | PromiseLike<any>) => void,
               reject: (reason?: any) => void,
-            ) => Plugin | Promise<Plugin>;
+            ) => Plugin | void | Promise<Plugin | void>;
           }
       ) &
         PluginFactoryOptions)
@@ -36,16 +40,15 @@ export default function AppBootstrapper({
 }: Props) {
   const [isInitialized, setIsInitialized] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
-  const [ErrorFallbackScreen, setErrorFallbackScreen] = useState<
-    PluginFactoryOptions['fallbackScreen'] | null
-  >(null);
   const [initializationError, setInitializationError] = useState<string | null>(
     null,
   );
   const [pluginsBundle, setPluginsBundle] = useState<PluginsBundle>(
     new PluginsBundle([]),
   );
-
+  const ErrorFallbackScreen = useRef<
+    PluginFactoryOptions['fallbackScreen'] | null
+  >(null);
   const currentPluginIndex = useRef(0);
 
   const initialize = useCallback(async () => {
@@ -71,7 +74,9 @@ export default function AppBootstrapper({
             new PluginsBundle(initializedPlugins),
           );
 
-          initializedPlugins.push(initializedPlugin);
+          if (initializedPlugin) {
+            initializedPlugins.push(initializedPlugin);
+          }
         } else if ('useDeferredFactory' in plugin) {
           const promise = new ControlledPromise<void>();
           const [initializedPlugin, additionalData] = await Promise.all([
@@ -83,8 +88,10 @@ export default function AppBootstrapper({
             promise.wait(),
           ]);
 
-          initializedPlugin.payload = additionalData;
-          initializedPlugins.push(initializedPlugin);
+          if (initializedPlugin) {
+            initializedPlugin.payload = additionalData;
+            initializedPlugins.push(initializedPlugin);
+          }
         } else {
           initializedPlugins.push(plugin);
         }
@@ -92,16 +99,15 @@ export default function AppBootstrapper({
         if ('optional' in plugin && plugin.optional) {
           continue;
         }
+        const errorMessage =
+          err instanceof Error ? err.message : (err as any).toString();
 
-        const errorData = err as Error;
-        console.error(errorData.message);
+        ErrorFallbackScreen.current =
+          'fallbackScreen' in plugin ? plugin.fallbackScreen : null;
+        setInitializationError(errorMessage);
 
-        setInitializationError(errorData.message);
-        setErrorFallbackScreen(
-          'fallbackScreen' in plugin ? plugin.fallbackScreen : null,
-        );
-
-        throw new Error(errorData.message);
+        console.error(errorMessage);
+        throw new Error(errorMessage);
       }
     }
 
@@ -137,9 +143,9 @@ export default function AppBootstrapper({
       return null;
     }
 
-    if (ErrorFallbackScreen) {
+    if (ErrorFallbackScreen.current) {
       return (
-        <ErrorFallbackScreen
+        <ErrorFallbackScreen.current
           error={initializationError}
           isRetrying={isRetrying}
           retry={retryInitialization}

@@ -1,3 +1,4 @@
+import fontColorContrast from 'font-color-contrast';
 import React, { createContext, PropsWithChildren, useMemo } from 'react';
 import type { TextStyle } from 'react-native';
 
@@ -8,6 +9,7 @@ export type UseTheme<T extends Theme> = {
   typography: Record<keyof T['typography'], TextStyle>;
   fonts: T['fonts'];
   colors: Record<keyof T['colors'], string>;
+  getContrastColor: T['getContrastColor'];
 };
 
 export type ThemeContextType = {
@@ -50,6 +52,8 @@ export function ThemeProvider({
         ...theme,
         colors: colors as any,
         typography,
+        getContrastColor: (color) =>
+          fontColorContrast(color) === '#ffffff' ? 'white' : 'black',
       },
     };
   }, [theme, colorScheme]);
