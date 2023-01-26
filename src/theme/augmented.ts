@@ -4,7 +4,6 @@ export type Theme = {
   typography: TextVariants;
   fonts: FontFamilies;
   colors: Colors;
-  getContrastColor: (color: string) => 'black' | 'white';
 };
 
 export interface TextVariants
