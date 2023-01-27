@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const plist = require('plist');
 
 const label = `react-native-tooklit`;
 const workingPath = process.cwd();
@@ -104,6 +105,46 @@ const deleteLines = (filename, placeholder, lines) => {
   }
 };
 
+const updatePlist = (filename, values) => {
+  const pathToFile = path.join(workingPath, filename);
+  const content = fs.readFileSync(pathToFile, 'utf-8');
+
+  const parsed = plist.parse(content);
+  values.forEach(({ key, value }) => {
+    if (key === 'url-scheme-add') {
+      const arr = parsed['CFBundleURLTypes'][0]['CFBundleURLSchemes'];
+      if (!arr.includes(value)) {
+        arr.push(value);
+      }
+
+      return;
+    }
+
+    if (key === 'url-scheme-delete') {
+      const arr = parsed['CFBundleURLTypes'][0]['CFBundleURLSchemes'];
+      if (arr.includes(value)) {
+        arr.splice(arr.indexOf(value));
+      }
+      return;
+    }
+
+    if (parsed[key] && !value) {
+      delete parsed[key];
+      return;
+    }
+
+    parsed[key] = value;
+  });
+
+  fs.writeFileSync(
+    pathToFile,
+    plist.build(parsed, {
+      allowEmpty: false,
+    }),
+    'utf-8',
+  );
+};
+
 const setGradleMinSdkVersion = (version) => {
   const pathToFile = path.join(workingPath, '/android/build.gradle');
   let content = fs.readFileSync(pathToFile, 'utf-8');
@@ -197,18 +238,25 @@ module.exports = {
       );
 
       // iOS
-      addLines(
-        `ios/${appName}/Info.plist`,
-        placeholders.ios.info.BundleURLSchemes,
-        `					<string>fb$(FACEBOOK_APP_ID)</string>`,
-        'xml',
-      );
-      addLines(
-        `ios/${appName}/Info.plist`,
-        placeholders.ios.info.dict,
-        `		<key>FacebookAppID</key>\n		<string>$(FACEBOOK_APP_ID)</string>\n		<key>FacebookClientToken</key>\n		<string>$(FACEBOOK_CLIENT_TOKEN)</string>\n		<key>FacebookDisplayName</key>\n		<string>$(APP_DISPLAY_NAME)</string>`,
-        'xml',
-      );
+      updatePlist(`ios/${appName}/Info.plist`, [
+        {
+          key: 'FacebookAppID',
+          value: '$(FACEBOOK_APP_ID)',
+        },
+        {
+          key: 'FacebookClientToken',
+          value: '$(FACEBOOK_CLIENT_TOKEN)',
+        },
+        {
+          key: 'FacebookDisplayName',
+          value: '$(APP_DISPLAY_NAME)',
+        },
+        {
+          key: 'url-scheme-add',
+          value: 'fb$(FACEBOOK_APP_ID)',
+        },
+      ]);
+
       addLines(
         `ios/${appName}/AppDelegate.mm`,
         placeholders.ios.appDelegate.import,
@@ -239,24 +287,22 @@ module.exports = {
       );
 
       // iOS
-      deleteLines(
-        `ios/${appName}/Info.plist`,
-        placeholders.ios.info.BundleURLSchemes,
-        `<string>fb$(FACEBOOK_APP_ID)</string>`,
-      );
-      deleteLines(
-        `ios/${appName}/Info.plist`,
-        placeholders.ios.info.dict,
-        [
-          `<key>FacebookAppID</key>`,
-          `<string>$(FACEBOOK_APP_ID)</string>`,
-          `<key>FacebookClientToken</key>`,
-          `<string>$(FACEBOOK_CLIENT_TOKEN)</string>`,
-          `<key>FacebookDisplayName</key>`,
-          `<string>$(APP_DISPLAY_NAME)</string>`,
-        ],
-        'xml',
-      );
+      updatePlist(`ios/${appName}/Info.plist`, [
+        {
+          key: 'FacebookAppID',
+        },
+        {
+          key: 'FacebookClientToken',
+        },
+        {
+          key: 'FacebookDisplayName',
+        },
+        {
+          key: 'url-scheme-delete',
+          value: 'fb$(FACEBOOK_APP_ID)',
+        },
+      ]);
+
       deleteLines(
         `ios/${appName}/AppDelegate.mm`,
         placeholders.ios.appDelegate.import,
@@ -349,28 +395,26 @@ module.exports = {
   ApphudPlugin: {
     dependencies: ['@kirz/react-native-apphud-sdk'],
   },
-  AdvertisingIdentifierPlugin: {
+  IdfaPlugin: {
     dependencies: ['@sparkfabrik/react-native-idfa-aaid'],
     add(appName) {
       // iOS
-      addLines(
-        `ios/${appName}/Info.plist`,
-        placeholders.ios.info.dict,
-        `		<key>NSUserTrackingUsageDescription</key>\n		<string>This identifier will be used to deliver personalized ads to you.</string>`,
-        'xml',
-      );
+
+      updatePlist(`ios/${appName}/Info.plist`, [
+        {
+          key: 'NSUserTrackingUsageDescription',
+          value:
+            'This identifier will be used to deliver personalized ads to you.',
+        },
+      ]);
     },
     delete(appName) {
       // iOS
-      deleteLines(
-        `ios/${appName}/Info.plist`,
-        placeholders.ios.info.dict,
-        [
-          `<key>NSUserTrackingUsageDescription</key>`,
-          `<string>This identifier will be used to deliver personalized ads to you.</string>`,
-        ],
-        'xml',
-      );
+      updatePlist(`ios/${appName}/Info.plist`, [
+        {
+          key: 'NSUserTrackingUsageDescription',
+        },
+      ]);
     },
   },
 };
