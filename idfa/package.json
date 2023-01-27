@@ -1,0 +1,5 @@
+{
+  "main": "../lib/commonjs/plugins/IdfaPlugin/index.js",
+  "module": "../lib/module/plugins/IdfaPlugin/index.js",
+  "types": "../lib/typescript/plugins/IdfaPlugin/index.d.ts"
+}

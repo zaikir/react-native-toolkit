@@ -4,7 +4,8 @@ export type PluginFeature =
   | 'Analytics'
   | 'InAppPurchase'
   | 'IAPReceiptValidator'
-  | 'Network';
+  | 'Network'
+  | 'IDFA';
 
 export type FallbackScreenProps = {
   error: string;

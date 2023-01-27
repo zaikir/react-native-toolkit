@@ -1,0 +1,1 @@
+export { IdfaPlugin } from './IdfaPlugin';

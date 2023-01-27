@@ -349,4 +349,28 @@ module.exports = {
   ApphudPlugin: {
     dependencies: ['@kirz/react-native-apphud-sdk'],
   },
+  AdvertisingIdentifierPlugin: {
+    dependencies: ['@sparkfabrik/react-native-idfa-aaid'],
+    add(appName) {
+      // iOS
+      addLines(
+        `ios/${appName}/Info.plist`,
+        placeholders.ios.info.dict,
+        `		<key>NSUserTrackingUsageDescription</key>\n		<string>This identifier will be used to deliver personalized ads to you.</string>`,
+        'xml',
+      );
+    },
+    delete(appName) {
+      // iOS
+      deleteLines(
+        `ios/${appName}/Info.plist`,
+        placeholders.ios.info.dict,
+        [
+          `<key>NSUserTrackingUsageDescription</key>`,
+          `<string>This identifier will be used to deliver personalized ads to you.</string>`,
+        ],
+        'xml',
+      );
+    },
+  },
 };
