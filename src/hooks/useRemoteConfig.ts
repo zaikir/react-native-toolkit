@@ -1,22 +1,20 @@
-// import { useContext } from 'react';
+import { useContext } from 'react';
 
-// import { PluginsBundleContext } from 'contexts/PluginsBundleContext';
-// import type { RemoteConfig } from 'plugins/types';
+import { PluginsBundleContext } from 'contexts/PluginsBundleContext';
+import type { IRemoteConfigPlugin, RemoteConfig } from 'plugins/types';
 
 export function useRemoteConfig() {
-  throw new Error('Not implemented');
+  const { bundle } = useContext(PluginsBundleContext);
+  const remoteConfigPlugin =
+    bundle.getByFeature<IRemoteConfigPlugin>('RemoteConfig');
 
-  // const { bundle } = useContext(PluginsBundleContext);
+  if (!remoteConfigPlugin) {
+    throw new Error('None of RemoteConfig plugins were initialized');
+  }
 
-  // // const remoteConfigPlugin = bundle.getByFeature<>
-  // // if (!features.RemoteConfig) {
-  // //   throw new Error('None of RemoteConfig plugins were initialized');
-  // // }
+  const parameters = Object.assign(
+    remoteConfigPlugin.remoteValues,
+  ) as RemoteConfig;
 
-  // // const parameters = Object.assign(
-  // //   {},
-  // //   ...features.RemoteConfig.map((x) => x.data.remoteConfig),
-  // // ) as RemoteConfig;
-
-  // return parameters;
+  return parameters;
 }

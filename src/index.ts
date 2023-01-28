@@ -16,6 +16,12 @@ export {
   PluginFactoryOptions,
   PluginsBundle,
 } from './plugins/Plugin';
+export {
+  RemoteConfig,
+  NetworkPluginData,
+  IRemoteConfigPlugin,
+  IAnalyticsProvider,
+} from './plugins/types';
 
 // hooks
 export { useAlerts } from './hooks/useAlerts';

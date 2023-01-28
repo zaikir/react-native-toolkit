@@ -43,7 +43,7 @@ export class PluginsBundle {
       | undefined;
   }
 
-  getByFeature<T extends Plugin>(feature: PluginFeature) {
+  getByFeature<T>(feature: PluginFeature) {
     return this.plugins.find((x) => x.features.includes(feature)) as
       | T
       | undefined;

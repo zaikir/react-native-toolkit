@@ -10,7 +10,7 @@ export class FirebasePlugin extends Plugin implements IRemoteConfigPlugin {
 
   readonly remoteConfig?: RemoteConfig;
 
-  get values() {
+  get remoteValues() {
     return this.remoteConfig as any;
   }
 
@@ -45,14 +45,8 @@ export class FirebasePlugin extends Plugin implements IRemoteConfigPlugin {
             return [key, config.getNumber(key)];
           }
 
-          return [
-            key,
-            JSON.parse(
-              // @ts-ignore
-              // eslint-disable-next-line no-underscore-dangle
-              config.getValue(key)._value,
-            ),
-          ];
+          // @ts-ignore
+          return [key, JSON.parse(config.getValue(key)._value)];
         }),
       );
     }
