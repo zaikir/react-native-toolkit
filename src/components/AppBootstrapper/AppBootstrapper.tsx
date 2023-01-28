@@ -75,20 +75,21 @@ export default function AppBootstrapper({
           );
 
           if (initializedPlugin) {
+            await initializedPlugin.initialize();
             initializedPlugins.push(initializedPlugin);
           }
         } else if ('useDeferredFactory' in plugin) {
           const promise = new ControlledPromise<void>();
-          const [initializedPlugin, additionalData] = await Promise.all([
-            plugin.useDeferredFactory(
-              new PluginsBundle(initializedPlugins),
-              promise.resolve,
-              promise.reject,
-            ),
-            promise.wait(),
-          ]);
+          const initializedPlugin = await plugin.useDeferredFactory(
+            new PluginsBundle(initializedPlugins),
+            promise.resolve,
+            promise.reject,
+          );
+
+          const additionalData = await promise.wait();
 
           if (initializedPlugin) {
+            await initializedPlugin.initialize();
             initializedPlugin.payload = additionalData;
             initializedPlugins.push(initializedPlugin);
           }

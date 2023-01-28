@@ -8,45 +8,56 @@ export class FirebasePlugin extends Plugin implements IRemoteConfigPlugin {
 
   readonly features: PluginFeature[] = ['RemoteConfig'];
 
-  readonly remoteConfig?: RemoteConfig;
+  _remoteConfig?: RemoteConfig;
 
   get remoteValues() {
-    return this.remoteConfig as any;
+    return this._remoteConfig as any;
   }
 
   constructor(options: { remoteConfig?: RemoteConfig }) {
     super();
-    this.remoteConfig = options.remoteConfig;
+    this._remoteConfig = options.remoteConfig;
   }
 
   async initialize() {
-    const data: Record<string, any> = {};
-
-    if (this.remoteConfig) {
+    if (this._remoteConfig) {
       const config = initializeRemoteConfig();
 
       await config.setConfigSettings({ minimumFetchIntervalMillis: 0 });
-      await config.setDefaults({ ...this.remoteConfig });
+      await config.setDefaults({ ...this._remoteConfig });
 
       await config.fetch(0);
       await config.activate();
 
-      data.remoteConfig = Object.fromEntries(
-        Object.entries(this.remoteConfig).map(([key, defaultValue]) => {
+      this._remoteConfig = Object.fromEntries(
+        Object.entries(config.getAll()).map(([key, entry]) => {
+          // @ts-ignore
+          const defaultValue = this._remoteConfig[key];
+
+          if (!defaultValue) {
+            try {
+              // @ts-ignore
+              const parsed = JSON.parse(entry._value);
+              return [key, parsed];
+            } catch {
+              return [key, entry.asString()];
+            }
+          }
+
           if (typeof defaultValue === 'string') {
-            return [key, config.getString(key)];
+            return [key, entry.asString()];
           }
 
           if (typeof defaultValue === 'boolean') {
-            return [key, config.getBoolean(key)];
+            return [key, entry.asBoolean()];
           }
 
           if (typeof defaultValue === 'number') {
-            return [key, config.getNumber(key)];
+            return [key, entry.asNumber()];
           }
 
           // @ts-ignore
-          return [key, JSON.parse(config.getValue(key)._value)];
+          return [key, JSON.parse(entry._value)];
         }),
       );
     }
