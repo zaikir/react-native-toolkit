@@ -30,6 +30,7 @@ const placeholders = {
     },
     appDelegate: {
       import: 'import',
+      continueUserActivity: 'continueUserActivity',
       didFinishLaunchingWithOptions: {
         start: 'didFinishLaunchingWithOptions/start',
       },
@@ -320,6 +321,38 @@ module.exports = {
   },
   AppsFlyerPlugin: {
     dependencies: ['react-native-appsflyer'],
+    add(appName) {
+      // Android
+
+      // iOS
+      addLines(
+        `ios/${appName}/AppDelegate.mm`,
+        placeholders.ios.appDelegate.import,
+        `#import <RNAppsFlyer.h>`,
+      );
+      addLines(
+        `ios/${appName}/AppDelegate.mm`,
+        placeholders.ios.appDelegate.continueUserActivity,
+        `  [[AppsFlyerAttribution shared] continueUserActivity:userActivity restorationHandler:restorationHandler];`,
+      );
+    },
+    delete(appName) {
+      // Android
+
+      // iOS
+      deleteLines(
+        `ios/${appName}/AppDelegate.mm`,
+        placeholders.ios.appDelegate.import,
+        `#import <RNAppsFlyer.h>`,
+      );
+      deleteLines(
+        `ios/${appName}/AppDelegate.mm`,
+        placeholders.ios.appDelegate.continueUserActivity,
+        [
+          `[[AppsFlyerAttribution shared] continueUserActivity:userActivity restorationHandler:restorationHandler];`,
+        ],
+      );
+    },
   },
   NetworkPlugin: {
     dependencies: [],
