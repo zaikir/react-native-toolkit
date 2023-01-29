@@ -8,6 +8,10 @@ export class AppsFlyerPlugin extends Plugin implements IAnalyticsProvider {
 
   readonly features: PluginFeature[] = ['Analytics'];
 
+  get instance() {
+    return appsFlyer;
+  }
+
   constructor(
     readonly options: InitSDKOptions,
     readonly callbacks?: {
@@ -54,23 +58,27 @@ export class AppsFlyerPlugin extends Plugin implements IAnalyticsProvider {
       );
     }
 
-    appsFlyer.initSdk(
-      {
-        isDebug: false,
-        onInstallConversionDataListener: true,
-        onDeepLinkListener: true,
-        timeToWaitForATTUserAuthorization: 10, // for iOS 14.5
-        ...this.options,
-      },
-      (result) => {
-        this.callbacks?.onInitSuccess?.(result);
-      },
-      (error) => {
-        console.error(error);
+    await new Promise<void>((resolve, reject) => {
+      appsFlyer.initSdk(
+        {
+          isDebug: false,
+          onInstallConversionDataListener: true,
+          onDeepLinkListener: true,
+          timeToWaitForATTUserAuthorization: 10, // for iOS 14.5
+          ...this.options,
+        },
+        (result) => {
+          resolve();
+          this.callbacks?.onInitSuccess?.(result);
+        },
+        (error) => {
+          console.error(error);
 
-        this.callbacks?.onInitFailure?.(error);
-      },
-    );
+          reject(error);
+          this.callbacks?.onInitFailure?.(error);
+        },
+      );
+    });
   }
 
   async logEvent(event: string, parameters?: Record<string, any> | undefined) {

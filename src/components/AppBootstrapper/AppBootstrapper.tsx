@@ -86,10 +86,12 @@ export default function AppBootstrapper({
             promise.reject,
           );
 
-          const additionalData = await promise.wait();
+          const [, additionalData] = await Promise.all([
+            initializedPlugin?.initialize(),
+            promise.wait(),
+          ]);
 
           if (initializedPlugin) {
-            await initializedPlugin.initialize();
             initializedPlugin.payload = additionalData;
             initializedPlugins.push(initializedPlugin);
           }
@@ -131,8 +133,8 @@ export default function AppBootstrapper({
   useAsyncEffect(async () => {
     try {
       await initialize();
-    } catch (err) {
-      console.error(err);
+    } catch {
+      // no-op
     } finally {
       setIsInitialized(true);
       hideNativeSplash();
