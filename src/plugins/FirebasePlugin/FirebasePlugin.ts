@@ -8,15 +8,15 @@ export class FirebasePlugin extends Plugin implements IRemoteConfigPlugin {
 
   readonly features: PluginFeature[] = ['RemoteConfig'];
 
-  _remoteConfig?: RemoteConfig;
+  _remoteConfig: RemoteConfig;
 
   get remoteValues() {
-    return this._remoteConfig as any;
+    return this._remoteConfig;
   }
 
   constructor(options: { remoteConfig?: RemoteConfig }) {
     super();
-    this._remoteConfig = options.remoteConfig;
+    this._remoteConfig = options.remoteConfig ?? {};
   }
 
   async initialize() {

@@ -5,7 +5,7 @@ export interface NetworkPluginData {
 }
 
 export interface IRemoteConfigPlugin {
-  readonly remoteValues: Record<string, any>;
+  readonly remoteValues: RemoteConfig;
 }
 
 export interface IAnalyticsProvider {
