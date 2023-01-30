@@ -3,7 +3,7 @@ import ApphudSdk, { type StartProperties } from '@kirz/react-native-apphud-sdk';
 import { Plugin, PluginFeature } from 'plugins/Plugin';
 
 export class ApphudPlugin extends Plugin {
-  readonly name = ApphudPlugin.name;
+  readonly name = 'ApphudPlugin';
 
   readonly features: PluginFeature[] = ['IAPReceiptValidator'];
 

@@ -4,7 +4,7 @@ import { Plugin, PluginFeature } from 'plugins/Plugin';
 import type { IAnalyticsProvider } from 'plugins/types';
 
 export class AppsFlyerPlugin extends Plugin implements IAnalyticsProvider {
-  readonly name = AppsFlyerPlugin.name;
+  readonly name = 'AppsFlyerPlugin';
 
   readonly features: PluginFeature[] = ['Analytics'];
 

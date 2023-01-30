@@ -4,7 +4,7 @@ import { Plugin, PluginFeature } from 'plugins/Plugin';
 import type { IAnalyticsProvider } from 'plugins/types';
 
 export class FacebookPlugin extends Plugin implements IAnalyticsProvider {
-  readonly name = FacebookPlugin.name;
+  readonly name = 'FacebookPlugin';
 
   readonly features: PluginFeature[] = ['Analytics'];
 

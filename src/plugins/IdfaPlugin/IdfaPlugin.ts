@@ -3,7 +3,7 @@ import ReactNativeIdfaAaid from '@sparkfabrik/react-native-idfa-aaid';
 import { Plugin, PluginFeature } from 'plugins/Plugin';
 
 export class IdfaPlugin extends Plugin {
-  readonly name = IdfaPlugin.name;
+  readonly name = 'IdfaPlugin';
 
   readonly features: PluginFeature[] = ['IDFA'];
   private _idfa: string | null = null;
@@ -14,7 +14,7 @@ export class IdfaPlugin extends Plugin {
 
   async initialize() {
     const res = await ReactNativeIdfaAaid.getAdvertisingInfo();
-    if (res.isAdTrackingLimited || !res.id) {
+    if (!res.id) {
       return;
     }
 

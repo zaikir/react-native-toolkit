@@ -1,7 +1,7 @@
 import { Plugin, PluginFeature } from 'plugins/Plugin';
 
 export class NetworkPlugin extends Plugin {
-  readonly name = NetworkPlugin.name;
+  readonly name = 'NetworkPlugin';
 
   readonly features: PluginFeature[] = ['Network'];
 

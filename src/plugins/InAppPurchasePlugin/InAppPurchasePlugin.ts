@@ -7,7 +7,7 @@ import { transformProduct } from './utils/transformProduct';
 import { transformSubscription } from './utils/transformSubscription';
 
 export class InAppPurchasePlugin extends Plugin {
-  readonly name = InAppPurchasePlugin.name;
+  readonly name = 'InAppPurchasePlugin';
 
   readonly features: PluginFeature[] = ['InAppPurchase'];
 

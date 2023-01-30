@@ -5,7 +5,7 @@ import type { ReactNativeOptions } from '@sentry/react-native';
 import { Plugin, PluginFeature } from 'plugins/Plugin';
 
 export class SentryPlugin extends Plugin {
-  readonly name = SentryPlugin.name;
+  readonly name = 'SentryPlugin';
 
   readonly features: PluginFeature[] = ['ErrorTracking'];
 
