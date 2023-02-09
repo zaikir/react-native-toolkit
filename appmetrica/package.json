@@ -1,0 +1,5 @@
+{
+  "main": "../lib/commonjs/plugins/AppMetricaPlugin/index.js",
+  "module": "../lib/module/plugins/AppMetricaPlugin/index.js",
+  "types": "../lib/typescript/plugins/AppMetricaPlugin/index.d.ts"
+}

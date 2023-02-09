@@ -450,4 +450,9 @@ module.exports = {
       ]);
     },
   },
+  AppMetricaPlugin: {
+    dependencies: ['@kirz/react-native-appmetrica'],
+    add(appName) {},
+    delete(appName) {},
+  },
 };

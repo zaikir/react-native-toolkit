@@ -1,6 +1,6 @@
 {
   "name": "@kirz/react-native-toolkit",
-  "version": "0.1.5-beta.14",
+  "version": "0.1.5-beta.15",
   "files": [
     "react-native.config.js",
     "lib",
@@ -11,7 +11,8 @@
     "appsflyer",
     "apphud",
     "network",
-    "idfa"
+    "idfa",
+    "appmetrica"
   ],
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
@@ -56,6 +57,11 @@
       "types": "./lib/typescript/plugins/IdfaPlugin/index.d.ts",
       "import": "./lib/module/plugins/IdfaPlugin/index.js",
       "default": "./lib/commonjs/plugins/IdfaPlugin/index.js"
+    },
+    "./appmetrica": {
+      "types": "./lib/typescript/plugins/AppMetricaPlugin/index.d.ts",
+      "import": "./lib/module/plugins/AppMetricaPlugin/index.js",
+      "default": "./lib/commonjs/plugins/AppMetricaPlugin/index.js"
     }
   },
   "scripts": {
@@ -74,6 +80,7 @@
     "@babel/core": "^7.16.10",
     "@babel/runtime": "^7.12.5",
     "@kirz/react-native-apphud-sdk": "^1.0.11",
+    "@kirz/react-native-appmetrica": "^2.1.0",
     "@react-native-async-storage/async-storage": "^1.17.11",
     "@react-native-firebase/analytics": "^14.12.0",
     "@react-native-firebase/app": "^14.12.0",

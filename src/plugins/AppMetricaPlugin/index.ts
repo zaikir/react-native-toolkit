@@ -1,0 +1,1 @@
+export { AppMetricaPlugin } from './AppMetricaPlugin';
