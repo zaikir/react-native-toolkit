@@ -1,4 +1,4 @@
-import { AppEventsLogger } from 'react-native-fbsdk-next';
+import { AppEventsLogger, AppLink, Settings } from 'react-native-fbsdk-next';
 
 import { Plugin, PluginFeature } from 'plugins/Plugin';
 import type { IAnalyticsProvider } from 'plugins/types';
@@ -7,6 +7,14 @@ export class FacebookPlugin extends Plugin implements IAnalyticsProvider {
   readonly name = 'FacebookPlugin';
 
   readonly features: PluginFeature[] = ['Analytics'];
+
+  get instance() {
+    return {
+      ...AppEventsLogger,
+      ...AppLink,
+      ...Settings,
+    };
+  }
 
   /**
    * Requires FACEBOOK_APP_ID and FACEBOOK_CLIENT_TOKEN environment variables to exist
