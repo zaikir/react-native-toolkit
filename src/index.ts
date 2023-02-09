@@ -29,6 +29,7 @@ export { useRemoteConfig } from './hooks/useRemoteConfig';
 export { useTheme } from './hooks/useTheme';
 export { useStorage, useStoredState } from './hooks/useStorage';
 export { useColorScheme } from './hooks/useColorScheme';
+export { useAnalytics } from './hooks/useAnalytics';
 
 // other
 export { default as SyncStorage } from './utils/SyncStorage';
