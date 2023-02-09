@@ -226,15 +226,9 @@ module.exports = {
     add(appName) {
       // Android
       addLines(
-        'android/app/src/main/res/values/strings.xml',
-        placeholders.android.res.strings,
-        '    <string name="facebook_app_id">${FACEBOOK_APP_ID}</string>\n    <string name="facebook_client_token">${FACEBOOK_CLIENT_TOKEN}</string>',
-        'xml',
-      );
-      addLines(
         'android/app/src/main/AndroidManifest.xml',
         placeholders.android.manifest['meta-data'],
-        `      <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>\n      <meta-data android:name="com.facebook.sdk.ClientToken" android:value="@string/facebook_client_token"/>`,
+        `      <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/FACEBOOK_APP_ID"/>\n      <meta-data android:name="com.facebook.sdk.ClientToken" android:value="@string/FACEBOOK_CLIENT_TOKEN"/>`,
         'xml',
       );
 
@@ -272,17 +266,11 @@ module.exports = {
     delete(appName) {
       // Android
       deleteLines(
-        'android/app/src/main/res/values/strings.xml',
-        placeholders.android.res.strings,
-        '<string name="facebook_app_id">${FACEBOOK_APP_ID}</string>\n    <string name="facebook_client_token">${FACEBOOK_CLIENT_TOKEN}</string>',
-        'xml',
-      );
-      deleteLines(
         'android/app/src/main/AndroidManifest.xml',
         placeholders.android.manifest['meta-data'],
         [
-          `<meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>`,
-          `<meta-data android:name="com.facebook.sdk.ClientToken" android:value="@string/facebook_client_token"/>`,
+          `<meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/FACEBOOK_APP_ID"/>`,
+          `<meta-data android:name="com.facebook.sdk.ClientToken" android:value="@string/FACEBOOK_CLIENT_TOKEN"/>`,
         ],
         'xml',
       );
