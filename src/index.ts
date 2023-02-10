@@ -33,5 +33,7 @@ export { useAnalytics } from './hooks/useAnalytics';
 
 // other
 export { default as SyncStorage } from './utils/SyncStorage';
-export { ControlledPromise } from './utils/promise';
+export { ControlledPromise } from './utils/promise/control';
 export { ScaleReference, scaleX, scaleY } from './utils/scale';
+export { timeout } from './utils/promise/timeout';
+export { wait } from './utils/promise/wait';

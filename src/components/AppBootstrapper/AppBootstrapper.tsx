@@ -6,7 +6,7 @@ import { useAsyncEffect } from 'use-async-effect';
 import { AppSplashScreen } from 'components/AppSplashScreen';
 import type { AppSplashScreenProps } from 'components/AppSplashScreen/AppSplashScreen';
 import { PluginsBundleProvider } from 'contexts/PluginsBundleContext/PluginsBundleContext';
-import { ControlledPromise, scaleX, scaleY } from 'index';
+import { ControlledPromise, scaleX, scaleY, timeout } from 'index';
 import { Plugin, PluginFactoryOptions, PluginsBundle } from 'plugins/Plugin';
 
 type Props = {
@@ -67,7 +67,7 @@ export default function AppBootstrapper({
 
       try {
         if ('useValue' in plugin) {
-          await plugin.useValue.initialize();
+          await timeout(plugin.useValue.initialize(), plugin.timeout);
           initializedPlugins.push(plugin.useValue);
         } else if ('useFactory' in plugin) {
           const initializedPlugin = await plugin.useFactory(
@@ -75,7 +75,7 @@ export default function AppBootstrapper({
           );
 
           if (initializedPlugin) {
-            await initializedPlugin.initialize();
+            await timeout(initializedPlugin.initialize(), plugin.timeout);
             initializedPlugins.push(initializedPlugin);
           }
         } else if ('useDeferredFactory' in plugin) {
@@ -86,10 +86,10 @@ export default function AppBootstrapper({
             promise.reject,
           );
 
-          const [, additionalData] = await Promise.all([
-            initializedPlugin?.initialize(),
-            promise.wait(),
-          ]);
+          const [, additionalData] = await timeout(
+            Promise.all([initializedPlugin?.initialize(), promise.wait()]),
+            plugin.timeout,
+          );
 
           if (initializedPlugin) {
             initializedPlugin.payload = additionalData;
