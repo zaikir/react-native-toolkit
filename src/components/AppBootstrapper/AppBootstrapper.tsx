@@ -80,10 +80,13 @@ export default function AppBootstrapper({
           }
         } else if ('useDeferredFactory' in plugin) {
           const promise = new ControlledPromise<void>();
-          const initializedPlugin = await plugin.useDeferredFactory(
-            new PluginsBundle(initializedPlugins),
-            promise.resolve,
-            promise.reject,
+          const initializedPlugin = await timeout(
+            plugin.useDeferredFactory(
+              new PluginsBundle(initializedPlugins),
+              promise.resolve,
+              promise.reject,
+            ),
+            plugin.timeout,
           );
 
           const [, additionalData] = await timeout(
