@@ -1,23 +1,46 @@
 import React, {
-  PropsWithChildren, useEffect, useRef, useState,
+  createContext,
+  PropsWithChildren,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
 } from 'react';
 import { Animated } from 'react-native';
 import { hide as hideNativeSplash } from 'react-native-bootsplash';
 
 export type AppSplashScreenProps = PropsWithChildren<{
-  visible: boolean,
-  SplashScreen?: React.ReactNode,
-  fadeDuration?: number
+  visible: boolean;
+  SplashScreen?: React.ReactNode;
+  fadeDuration?: number;
+  hideManually?: boolean;
 }>;
 
+export const SplashScreenContext = createContext<{
+  hide: () => void;
+}>({} as any);
+
 export default function AppSplashScreen({
-  visible, SplashScreen, children, fadeDuration = 220,
+  visible,
+  SplashScreen,
+  children,
+  hideManually,
+  fadeDuration = 220,
 }: AppSplashScreenProps) {
-  const [isFadeFinished, setIsFadeFinished] = useState(false);
+  const [isSplashScreenVisible, setIsSplashScreenVisible] = useState(true);
+  const [isAnimationFinished, setIsAnimationFinished] = useState(false);
+
   const opacityAnim = useRef(new Animated.Value(1)).current;
 
+  const splashScreenContextData = useMemo(
+    () => ({
+      hide: () => setIsSplashScreenVisible(false),
+    }),
+    [],
+  );
+
   useEffect(() => {
-    if (visible) {
+    if (visible || (hideManually && isSplashScreenVisible)) {
       return;
     }
 
@@ -31,11 +54,11 @@ export default function AppSplashScreen({
       duration: fadeDuration,
       useNativeDriver: true,
     }).start(() => {
-      setIsFadeFinished(true);
+      setIsAnimationFinished(true);
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible]);
+  }, [visible, isSplashScreenVisible, hideManually]);
 
   useEffect(() => {
     if (SplashScreen) {
@@ -44,21 +67,26 @@ export default function AppSplashScreen({
   }, [SplashScreen]);
 
   if (!SplashScreen) {
-    return visible ? null : children as JSX.Element;
+    return visible ? null : (children as JSX.Element);
   }
 
   return (
     <>
-      {children}
-      {!isFadeFinished && (
-        <Animated.View style={[{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          opacity: opacityAnim,
-        }]}
+      <SplashScreenContext.Provider value={splashScreenContextData}>
+        {children}
+      </SplashScreenContext.Provider>
+      {!isAnimationFinished && (
+        <Animated.View
+          style={[
+            {
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              opacity: opacityAnim,
+            },
+          ]}
         >
           {SplashScreen}
         </Animated.View>

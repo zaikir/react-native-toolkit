@@ -30,6 +30,7 @@ export { useTheme } from './hooks/useTheme';
 export { useStorage, useStoredState } from './hooks/useStorage';
 export { useColorScheme } from './hooks/useColorScheme';
 export { useAnalytics } from './hooks/useAnalytics';
+export { useSplashScreen } from './hooks/useSplashScreen';
 
 // other
 export { default as SyncStorage } from './utils/SyncStorage';
