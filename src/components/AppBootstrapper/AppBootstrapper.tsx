@@ -64,6 +64,7 @@ export default function AppBootstrapper({
       currentPluginIndex.current += 1
     ) {
       const plugin = plugins[currentPluginIndex.current];
+      let pluginName = plugin?.name;
 
       try {
         if ('useValue' in plugin) {
@@ -75,6 +76,8 @@ export default function AppBootstrapper({
           );
 
           if (initializedPlugin) {
+            pluginName = initializedPlugin.name;
+
             await timeout(initializedPlugin.initialize(), plugin.timeout);
             initializedPlugins.push(initializedPlugin);
           }
@@ -88,6 +91,8 @@ export default function AppBootstrapper({
             ),
             plugin.timeout,
           );
+
+          pluginName = initializedPlugin?.name;
 
           const [, additionalData] = await timeout(
             Promise.all([initializedPlugin?.initialize(), promise.wait()]),
@@ -105,8 +110,12 @@ export default function AppBootstrapper({
         if ('optional' in plugin && plugin.optional) {
           continue;
         }
-        const errorMessage =
+        let errorMessage =
           err instanceof Error ? err.message : (err as any).toString();
+
+        if (errorMessage === 'Timeout error') {
+          errorMessage = `${pluginName} timeout error`;
+        }
 
         ErrorFallbackScreen.current =
           'fallbackScreen' in plugin ? plugin.fallbackScreen : null;
