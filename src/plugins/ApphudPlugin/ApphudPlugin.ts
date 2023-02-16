@@ -4,8 +4,8 @@ import { Plugin, PluginFeature } from 'plugins/Plugin';
 
 export class ApphudPlugin extends Plugin {
   readonly name = 'ApphudPlugin';
-
   readonly features: PluginFeature[] = ['IAPReceiptValidator'];
+  readonly initializationTimeout = 5000;
 
   constructor(readonly options: Omit<StartProperties, 'observerMode'>) {
     super();

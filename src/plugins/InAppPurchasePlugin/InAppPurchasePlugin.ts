@@ -8,8 +8,8 @@ import { transformSubscription } from './utils/transformSubscription';
 
 export class InAppPurchasePlugin extends Plugin {
   readonly name = 'InAppPurchasePlugin';
-
   readonly features: PluginFeature[] = ['InAppPurchase'];
+  readonly initializationTimeout = 5000;
 
   constructor(
     readonly options: {

@@ -6,8 +6,8 @@ import type { IRemoteConfigPlugin, RemoteConfig } from 'plugins/types';
 
 export class FirebasePlugin extends Plugin implements IRemoteConfigPlugin {
   readonly name = 'FirebasePlugin';
-
   readonly features: PluginFeature[] = ['RemoteConfig'];
+  readonly initializationTimeout = 5000;
 
   _remoteConfig: RemoteConfig;
 

@@ -68,7 +68,10 @@ export default function AppBootstrapper({
 
       try {
         if ('useValue' in plugin) {
-          await timeout(plugin.useValue.initialize(), plugin.timeout);
+          await timeout(
+            plugin.useValue.initialize(),
+            plugin.timeout ?? plugin.useValue.initializationTimeout,
+          );
           initializedPlugins.push(plugin.useValue);
         } else if ('useFactory' in plugin) {
           const initializedPlugin = await plugin.useFactory(
@@ -78,7 +81,10 @@ export default function AppBootstrapper({
           if (initializedPlugin) {
             pluginName = initializedPlugin.name;
 
-            await timeout(initializedPlugin.initialize(), plugin.timeout);
+            await timeout(
+              initializedPlugin.initialize(),
+              plugin.timeout ?? initializedPlugin.initializationTimeout,
+            );
             initializedPlugins.push(initializedPlugin);
           }
         } else if ('useDeferredFactory' in plugin) {
@@ -96,7 +102,7 @@ export default function AppBootstrapper({
 
           const [, additionalData] = await timeout(
             Promise.all([initializedPlugin?.initialize(), promise.wait()]),
-            plugin.timeout,
+            plugin.timeout ?? initializedPlugin?.initializationTimeout,
           );
 
           if (initializedPlugin) {

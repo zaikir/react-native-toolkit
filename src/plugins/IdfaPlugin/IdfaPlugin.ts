@@ -4,8 +4,9 @@ import { Plugin, PluginFeature } from 'plugins/Plugin';
 
 export class IdfaPlugin extends Plugin {
   readonly name = 'IdfaPlugin';
-
   readonly features: PluginFeature[] = ['IDFA'];
+  readonly initializationTimeout = 5000;
+
   private _idfa: string | null = null;
 
   public get idfa() {

@@ -23,6 +23,7 @@ export type PluginFactoryOptions = {
 export abstract class Plugin {
   abstract get name(): string;
   abstract get features(): PluginFeature[];
+  abstract get initializationTimeout(): number | null;
 
   payload?: any;
 

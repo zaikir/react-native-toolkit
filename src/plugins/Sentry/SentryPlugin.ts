@@ -6,8 +6,8 @@ import { Plugin, PluginFeature } from 'plugins/Plugin';
 
 export class SentryPlugin extends Plugin {
   readonly name = 'SentryPlugin';
-
   readonly features: PluginFeature[] = ['ErrorTracking'];
+  readonly initializationTimeout = 5000;
 
   constructor(readonly options: ReactNativeOptions) {
     super();

@@ -2,8 +2,8 @@ import { Plugin, PluginFeature } from 'plugins/Plugin';
 
 export class NetworkPlugin extends Plugin {
   readonly name = 'NetworkPlugin';
-
   readonly features: PluginFeature[] = ['Network'];
+  readonly initializationTimeout = 5000;
 
   constructor(
     readonly options?: {
