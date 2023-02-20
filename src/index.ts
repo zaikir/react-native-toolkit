@@ -35,6 +35,5 @@ export { useSplashScreen } from './hooks/useSplashScreen';
 // other
 export { default as SyncStorage } from './utils/SyncStorage';
 export { ControlledPromise } from './utils/promise/control';
+export { PromiseUtils } from 'utils/promise';
 export { ScaleReference, scaleX, scaleY } from './utils/scale';
-export { timeout } from './utils/promise/timeout';
-export { wait } from './utils/promise/wait';

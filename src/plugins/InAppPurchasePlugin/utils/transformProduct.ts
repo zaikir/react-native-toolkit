@@ -27,11 +27,11 @@ export function transformProduct(
       productId: data.productId,
       title: data.title,
       description: data.description,
-      originalData: data,
       price:
         parseFloat(data.oneTimePurchaseOfferDetails!.priceAmountMicros) / 1e6,
       localizedPrice: data.oneTimePurchaseOfferDetails!.formattedPrice,
       currency: data.oneTimePurchaseOfferDetails!.priceCurrencyCode,
+      originalData: data,
     };
   }
 
