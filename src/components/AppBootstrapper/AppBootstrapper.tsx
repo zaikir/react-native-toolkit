@@ -67,6 +67,8 @@ export default function AppBootstrapper({
 
       try {
         if ('useValue' in plugin) {
+          pluginName = plugin.useValue.name;
+
           await timeout(
             plugin.useValue.initialize(),
             plugin.timeout === null
