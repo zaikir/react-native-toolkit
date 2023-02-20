@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { Alert, Button, Text, View } from 'react-native';
+import { Alert, Button, StatusBar, Text, View } from 'react-native';
 import { hide as hideNativeSplash } from 'react-native-bootsplash';
 import { useAsyncEffect } from 'use-async-effect';
 
@@ -46,6 +46,7 @@ export default function AppBootstrapper({
   const [pluginsBundle, setPluginsBundle] = useState<PluginsBundle>(
     new PluginsBundle([]),
   );
+  const initializedPlugins = useRef<Plugin[]>([]);
   const ErrorFallbackScreen = useRef<
     PluginFactoryOptions['fallbackScreen'] | null
   >(null);
@@ -55,8 +56,6 @@ export default function AppBootstrapper({
     if (!plugins) {
       return;
     }
-
-    const initializedPlugins: Plugin[] = [];
 
     for (
       currentPluginIndex.current;
@@ -72,10 +71,10 @@ export default function AppBootstrapper({
             plugin.useValue.initialize(),
             plugin.timeout ?? plugin.useValue.initializationTimeout,
           );
-          initializedPlugins.push(plugin.useValue);
+          initializedPlugins.current.push(plugin.useValue);
         } else if ('useFactory' in plugin) {
           const initializedPlugin = await plugin.useFactory(
-            new PluginsBundle(initializedPlugins),
+            new PluginsBundle(initializedPlugins.current),
           );
 
           if (initializedPlugin) {
@@ -85,13 +84,13 @@ export default function AppBootstrapper({
               initializedPlugin.initialize(),
               plugin.timeout ?? initializedPlugin.initializationTimeout,
             );
-            initializedPlugins.push(initializedPlugin);
+            initializedPlugins.current.push(initializedPlugin);
           }
         } else if ('useDeferredFactory' in plugin) {
           const promise = new ControlledPromise<void>();
           const initializedPlugin = await timeout(
             plugin.useDeferredFactory(
-              new PluginsBundle(initializedPlugins),
+              new PluginsBundle(initializedPlugins.current),
               promise.resolve,
               promise.reject,
             ),
@@ -107,10 +106,10 @@ export default function AppBootstrapper({
 
           if (initializedPlugin) {
             initializedPlugin.payload = additionalData;
-            initializedPlugins.push(initializedPlugin);
+            initializedPlugins.current.push(initializedPlugin);
           }
         } else {
-          initializedPlugins.push(plugin);
+          initializedPlugins.current.push(plugin);
         }
       } catch (err) {
         if ('optional' in plugin && plugin.optional) {
@@ -132,7 +131,7 @@ export default function AppBootstrapper({
       }
     }
 
-    setPluginsBundle(new PluginsBundle(initializedPlugins));
+    setPluginsBundle(new PluginsBundle(initializedPlugins.current));
   }, [plugins]);
 
   const retryInitialization = useCallback(async () => {
@@ -176,6 +175,7 @@ export default function AppBootstrapper({
 
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <StatusBar barStyle="dark-content" />
         <Text
           style={{
             fontSize: scaleX(20),
