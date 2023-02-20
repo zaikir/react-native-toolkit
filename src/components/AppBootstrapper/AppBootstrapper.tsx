@@ -69,7 +69,9 @@ export default function AppBootstrapper({
         if ('useValue' in plugin) {
           await timeout(
             plugin.useValue.initialize(),
-            plugin.timeout ?? plugin.useValue.initializationTimeout,
+            plugin.timeout === null
+              ? null
+              : plugin.timeout ?? plugin.useValue.initializationTimeout,
           );
           initializedPlugins.current.push(plugin.useValue);
         } else if ('useFactory' in plugin) {
@@ -82,7 +84,9 @@ export default function AppBootstrapper({
 
             await timeout(
               initializedPlugin.initialize(),
-              plugin.timeout ?? initializedPlugin.initializationTimeout,
+              plugin.timeout === null
+                ? null
+                : plugin.timeout ?? initializedPlugin.initializationTimeout,
             );
             initializedPlugins.current.push(initializedPlugin);
           }
@@ -101,7 +105,9 @@ export default function AppBootstrapper({
 
           const [, additionalData] = await timeout(
             Promise.all([initializedPlugin?.initialize(), promise.wait()]),
-            plugin.timeout ?? initializedPlugin?.initializationTimeout,
+            plugin.timeout === null
+              ? null
+              : plugin.timeout ?? initializedPlugin?.initializationTimeout,
           );
 
           if (initializedPlugin) {
