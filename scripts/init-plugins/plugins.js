@@ -414,7 +414,7 @@ module.exports = {
     },
   },
   ApphudPlugin: {
-    dependencies: ['@kirz/react-native-apphud-sdk'],
+    dependencies: ['@kirz/react-native-apphud'],
   },
   IdfaPlugin: {
     dependencies: ['@sparkfabrik/react-native-idfa-aaid'],

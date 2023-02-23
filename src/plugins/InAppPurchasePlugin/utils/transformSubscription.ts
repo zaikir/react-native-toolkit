@@ -5,13 +5,13 @@ import type {
   SubscriptionIOS,
 } from 'react-native-iap';
 
+import type { Subscription } from 'plugins/types';
+
 import { parseIso8601Period } from './parseIso8601Period';
-import type { Subscription } from '../types/subscription';
 
 // eslint-disable-next-line max-len
 export function transformSubscription(
   subscription: SubscriptionIOS | SubscriptionAndroid | SubscriptionAmazon,
-  isTrialUsed: boolean,
 ): Subscription {
   if (Platform.OS === 'ios') {
     const data = subscription as SubscriptionIOS;
@@ -25,16 +25,15 @@ export function transformSubscription(
       currency: data.currency,
       periodUnit: data.subscriptionPeriodUnitIOS!.toLocaleLowerCase() as any,
       numberOfPeriods: parseFloat(data.subscriptionPeriodNumberIOS!),
-      ...(data.introductoryPricePaymentModeIOS === 'FREETRIAL' &&
-        !isTrialUsed && {
-          trial: {
-            periodUnit:
-              data.introductoryPriceSubscriptionPeriodIOS!.toLocaleLowerCase() as any,
-            numberOfPeriods: parseFloat(
-              data.introductoryPriceNumberOfPeriodsIOS!,
-            ),
-          },
-        }),
+      ...(data.introductoryPricePaymentModeIOS === 'FREETRIAL' && {
+        trial: {
+          periodUnit:
+            data.introductoryPriceSubscriptionPeriodIOS!.toLocaleLowerCase() as any,
+          numberOfPeriods: parseFloat(
+            data.introductoryPriceNumberOfPeriodsIOS!,
+          ),
+        },
+      }),
       originalData: data,
     };
   }
@@ -62,12 +61,11 @@ export function transformSubscription(
       localizedPrice: priceInfo.formattedPrice,
       currency: priceInfo.priceCurrencyCode,
       ...parseIso8601Period(priceInfo.billingPeriod),
-      ...(trialInfo &&
-        isTrialUsed && {
-          trial: {
-            ...parseIso8601Period(trialInfo.billingPeriod),
-          },
-        }),
+      ...(trialInfo && {
+        trial: {
+          ...parseIso8601Period(trialInfo.billingPeriod),
+        },
+      }),
     };
   }
 

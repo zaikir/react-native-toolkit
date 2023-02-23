@@ -66,26 +66,26 @@ export default function AppBootstrapper({
       let pluginName = plugin?.name;
 
       try {
+        const bundle = new PluginsBundle(initializedPlugins.current);
+
         if ('useValue' in plugin) {
           pluginName = plugin.useValue.name;
 
           await timeout(
-            plugin.useValue.initialize(),
+            plugin.useValue.initialize(bundle),
             plugin.timeout === null
               ? null
               : plugin.timeout ?? plugin.useValue.initializationTimeout,
           );
           initializedPlugins.current.push(plugin.useValue);
         } else if ('useFactory' in plugin) {
-          const initializedPlugin = await plugin.useFactory(
-            new PluginsBundle(initializedPlugins.current),
-          );
+          const initializedPlugin = await plugin.useFactory(bundle);
 
           if (initializedPlugin) {
             pluginName = initializedPlugin.name;
 
             await timeout(
-              initializedPlugin.initialize(),
+              initializedPlugin.initialize(bundle),
               plugin.timeout === null
                 ? null
                 : plugin.timeout ?? initializedPlugin.initializationTimeout,
@@ -95,18 +95,17 @@ export default function AppBootstrapper({
         } else if ('useDeferredFactory' in plugin) {
           const promise = new ControlledPromise<void>();
           const initializedPlugin = await timeout(
-            plugin.useDeferredFactory(
-              new PluginsBundle(initializedPlugins.current),
-              promise.resolve,
-              promise.reject,
-            ),
+            plugin.useDeferredFactory(bundle, promise.resolve, promise.reject),
             plugin.timeout,
           );
 
           pluginName = initializedPlugin?.name;
 
           const [, additionalData] = await timeout(
-            Promise.all([initializedPlugin?.initialize(), promise.wait()]),
+            Promise.all([
+              initializedPlugin?.initialize(bundle),
+              promise.wait(),
+            ]),
             plugin.timeout === null
               ? null
               : plugin.timeout ?? initializedPlugin?.initializationTimeout,

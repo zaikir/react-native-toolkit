@@ -1,7 +1,8 @@
 import { Platform } from 'react-native';
 import * as IAP from 'react-native-iap';
 
-import { Plugin, PluginFeature } from 'plugins/Plugin';
+import { Plugin, PluginFeature, PluginsBundle } from 'plugins/Plugin';
+import type { IReceiptValidator, Product, Subscription } from 'plugins/types';
 
 import { transformProduct } from './utils/transformProduct';
 import { transformSubscription } from './utils/transformSubscription';
@@ -10,6 +11,13 @@ export class InAppPurchasePlugin extends Plugin {
   readonly name = 'InAppPurchasePlugin';
   readonly features: PluginFeature[] = ['InAppPurchase'];
   readonly initializationTimeout = 5000;
+
+  // @ts-ignore
+  products: Product[];
+  // @ts-ignore
+  subscriptions: Subscription[];
+  // @ts-ignore
+  receiptValidator: IReceiptValidator;
 
   constructor(
     readonly options: {
@@ -20,17 +28,17 @@ export class InAppPurchasePlugin extends Plugin {
     super();
   }
 
-  async initialize() {
+  async initialize(bundle: PluginsBundle) {
     try {
-      /*
-      1. initialization
-      2. product fetch
-      3. unify product model
-      */
+      const iapReceiptValidator = bundle.getByFeature<IReceiptValidator>(
+        'IAPReceiptValidator',
+      );
 
-      const canMakePayments = await IAP.initConnection();
-      // eslint-disable-next-line no-console
-      console.info({ canMakePayments });
+      if (!iapReceiptValidator) {
+        throw new Error('No receipt validator found');
+      }
+
+      await IAP.initConnection();
 
       if (Platform.OS === 'android') {
         try {
@@ -65,10 +73,23 @@ export class InAppPurchasePlugin extends Plugin {
       ]);
 
       const products = fetchedProducts.map(transformProduct);
-      const subscriptions = fetchedSubscriptions.map((x) =>
-        transformSubscription(x, false),
+      const subscriptions = await Promise.all(
+        fetchedSubscriptions.map((x) => {
+          const { trial, ...subscription } = transformSubscription(x);
+          const isTrialAvailable =
+            !!trial &&
+            iapReceiptValidator.isTrialAvailable(subscription.productId);
+
+          return {
+            ...subscription,
+            ...(isTrialAvailable && { trial }),
+          };
+        }),
       );
-      console.log(products, subscriptions);
+
+      this.products = products;
+      this.subscriptions = subscriptions;
+      this.receiptValidator = iapReceiptValidator;
     } finally {
       IAP.endConnection();
     }
