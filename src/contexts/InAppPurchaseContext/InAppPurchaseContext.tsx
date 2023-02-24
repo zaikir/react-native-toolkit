@@ -112,10 +112,6 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
     fetchUserData();
   }, [iapPurchasePlugin]);
 
-  if (!iapPurchasePlugin) {
-    return children;
-  }
-
   return (
     <InAppPurchaseContext.Provider value={contextData}>
       {children}
