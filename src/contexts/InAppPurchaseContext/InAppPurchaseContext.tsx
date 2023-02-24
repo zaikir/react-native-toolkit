@@ -78,14 +78,21 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
         throw new Error('IAP plugin not found');
       }
 
-      const product = iapPurchasePlugin.products.find(
-        (x) => x.productId === productId,
-      );
-      if (!product) {
-        throw new Error('Unknown product ' + productId);
+      try {
+        await iapPurchasePlugin.purchaseProduct(productId);
+      } catch (err) {
+        const error = err as {
+          isCancelled: boolean;
+          message: string;
+        };
+
+        if (error.isCancelled) {
+          return;
+        }
+
+        throw new Error(error.message);
       }
 
-      await iapPurchasePlugin.purchaseProduct(productId);
       await fetchUserData();
       await iapPurchasePlugin.refetchProducts();
     },
@@ -96,12 +103,18 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
     () => ({
       hasPremiumAccess,
       activeSubscription,
-      products: iapPurchasePlugin!.products,
-      subscriptions: iapPurchasePlugin!.subscriptions,
+      products: iapPurchasePlugin?.products ?? [],
+      subscriptions: iapPurchasePlugin?.subscriptions ?? [],
       restorePurchases,
       purchaseProduct,
     }),
-    [hasPremiumAccess, activeSubscription, restorePurchases, purchaseProduct],
+    [
+      iapPurchasePlugin,
+      hasPremiumAccess,
+      activeSubscription,
+      restorePurchases,
+      purchaseProduct,
+    ],
   );
 
   useEffect(() => {

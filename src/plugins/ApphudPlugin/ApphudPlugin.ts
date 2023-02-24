@@ -1,4 +1,5 @@
 import ApphudSdk, { type StartProperties } from '@kirz/react-native-apphud';
+import { Platform } from 'react-native';
 
 import { Plugin, PluginFeature } from 'plugins/Plugin';
 import type {
@@ -10,7 +11,7 @@ import type {
 export class ApphudPlugin extends Plugin implements IReceiptValidator {
   readonly name = 'ApphudPlugin';
   readonly features: PluginFeature[] = ['IAPReceiptValidator'];
-  readonly initializationTimeout = 5000;
+  readonly initializationTimeout = 15000;
 
   constructor(readonly options: Omit<StartProperties, 'observerMode'>) {
     super();
@@ -35,7 +36,10 @@ export class ApphudPlugin extends Plugin implements IReceiptValidator {
   }
 
   async getPurchasedSubscriptions(): Promise<PurchasedSubscriptionInfo[]> {
-    const subscriptions = await ApphudSdk.subscriptions();
+    const subscriptions =
+      Platform.OS === 'ios'
+        ? [await ApphudSdk.subscription()]
+        : await ApphudSdk.subscriptions();
 
     return subscriptions.map((x) => ({
       productId: x.productId,
