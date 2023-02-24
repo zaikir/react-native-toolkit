@@ -7,10 +7,11 @@ export type Product = {
   price: number;
   localizedPrice: string;
   currency: string;
+  consumable: boolean;
   originalData: any;
 };
 
-export type Subscription = Product & {
+export type Subscription = Omit<Product, 'consumable'> & {
   periodUnit: 'day' | 'week' | 'month' | 'year';
   numberOfPeriods: number;
   trial?: {
@@ -32,6 +33,13 @@ export type PurchasedProductInfo = {
   productId: string;
   purchasedAt: string;
   canceledAt?: string;
+};
+
+export type Purchase = {
+  productId: string;
+  transactionDate: string;
+  transactionReceipt: string;
+  originalData: any;
 };
 
 export interface NetworkPluginData {
@@ -86,4 +94,13 @@ export interface IReceiptValidator {
    * Restores users purchases
    */
   restorePurchases(): Promise<void>;
+}
+
+export interface IAppPurchasePlugin {
+  readonly products: Product[];
+  readonly subscriptions: Subscription[];
+  readonly receiptValidator: IReceiptValidator;
+
+  purchaseProduct(productId: string): Promise<Purchase>;
+  refetchProducts(): Promise<void>;
 }
