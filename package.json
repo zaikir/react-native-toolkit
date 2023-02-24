@@ -1,6 +1,6 @@
 {
   "name": "@kirz/react-native-toolkit",
-  "version": "0.1.6-beta.13",
+  "version": "0.1.7-beta.2",
   "files": [
     "react-native.config.js",
     "lib",
@@ -11,6 +11,7 @@
     "appsflyer",
     "apphud",
     "network",
+    "iap",
     "idfa",
     "appmetrica"
   ],
@@ -47,6 +48,11 @@
       "types": "./lib/typescript/plugins/ApphudPlugin/index.d.ts",
       "import": "./lib/module/plugins/ApphudPlugin/index.js",
       "default": "./lib/commonjs/plugins/ApphudPlugin/index.js"
+    },
+    "./iap": {
+      "types": "./lib/typescript/plugins/InAppPurchasePlugin/index.d.ts",
+      "import": "./lib/module/plugins/InAppPurchasePlugin/index.js",
+      "default": "./lib/commonjs/plugins/InAppPurchasePlugin/index.js"
     },
     "./network": {
       "types": "./lib/typescript/plugins/NetworkPlugin/index.d.ts",

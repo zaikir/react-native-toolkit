@@ -1,0 +1,5 @@
+{
+  "main": "../lib/commonjs/plugins/InAppPurchasePlugin/index.js",
+  "module": "../lib/module/plugins/InAppPurchasePlugin/index.js",
+  "types": "../lib/typescript/plugins/InAppPurchasePlugin/index.d.ts"
+}
