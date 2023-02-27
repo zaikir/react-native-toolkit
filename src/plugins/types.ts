@@ -27,6 +27,7 @@ export type PurchasedSubscriptionInfo = {
   expiresAt: string;
   isActive: boolean;
   isAutoRenewEnabled: boolean;
+  isSandbox: boolean;
 };
 
 export type PurchasedProductInfo = {

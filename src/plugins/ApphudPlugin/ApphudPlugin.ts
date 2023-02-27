@@ -77,6 +77,7 @@ export class ApphudPlugin extends Plugin implements IReceiptValidator {
         cancelledAt: x.cancelledAt,
         isAutoRenewEnabled: x.isAutoRenewEnabled as boolean,
         isActive: x.isActive as boolean,
+        isSandbox: false,
       };
     });
   }

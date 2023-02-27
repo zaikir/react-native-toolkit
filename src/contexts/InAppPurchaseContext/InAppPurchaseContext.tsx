@@ -6,6 +6,7 @@ import React, {
   useEffect,
   useMemo,
   useState,
+  useRef,
 } from 'react';
 
 import { PluginsBundleContext } from 'contexts/PluginsBundleContext/PluginsBundleContext';
@@ -15,7 +16,7 @@ import type {
   PurchasedSubscriptionInfo,
   Subscription,
 } from 'plugins/types';
-
+import type { FunctionWrapper, GenericFunction } from 'utils/types';
 export type InAppPurchaseContextType = {
   products: Product[];
   subscriptions: Subscription[];
@@ -23,6 +24,7 @@ export type InAppPurchaseContextType = {
   activeSubscription: (PurchasedSubscriptionInfo & Subscription) | null;
   restorePurchases: () => Promise<boolean>;
   purchaseProduct: (productId: string) => Promise<void>;
+  premiumAccess: <F extends GenericFunction>(func: F) => FunctionWrapper<F>;
 };
 
 export const InAppPurchaseContext = createContext<InAppPurchaseContextType>(
@@ -37,6 +39,7 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
     (PurchasedSubscriptionInfo & Subscription) | null
   >(null);
   const [hasPremiumAccess, setHasPremiumAccess] = useState(false);
+  const lastUserDataFetchTimestamp = useRef(new Date().valueOf());
 
   const fetchUserData = async () => {
     if (!iapPurchasePlugin) {
@@ -59,6 +62,8 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
           }
         : null,
     );
+
+    lastUserDataFetchTimestamp.current = new Date().valueOf();
 
     return results[0];
   };
@@ -99,6 +104,29 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
     [iapPurchasePlugin],
   );
 
+  const premiumAccess = useCallback(
+    <F extends GenericFunction>(func: F): FunctionWrapper<F> => {
+      return async (...args) => {
+        let isAllowed = hasPremiumAccess;
+
+        if (
+          isAllowed &&
+          new Date().valueOf() - lastUserDataFetchTimestamp.current >
+            1000 * 60 * 60
+        ) {
+          isAllowed = await fetchUserData();
+        }
+
+        if (!isAllowed) {
+          throw new Error('Premium access required');
+        }
+
+        return func(...args);
+      };
+    },
+    [hasPremiumAccess, fetchUserData],
+  );
+
   const contextData = useMemo<InAppPurchaseContextType>(
     () => ({
       hasPremiumAccess,
@@ -107,6 +135,7 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
       subscriptions: iapPurchasePlugin?.subscriptions ?? [],
       restorePurchases,
       purchaseProduct,
+      premiumAccess,
     }),
     [
       iapPurchasePlugin,
@@ -114,6 +143,7 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
       activeSubscription,
       restorePurchases,
       purchaseProduct,
+      premiumAccess,
     ],
   );
 
