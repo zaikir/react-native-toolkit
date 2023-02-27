@@ -100,12 +100,11 @@ export class InAppPurchasePlugin extends Plugin implements IAppPurchasePlugin {
         }
 
         if (
-          !purchase.purchaseStateAndroid ||
-          (Platform.OS === 'android' &&
-            [
-              PurchaseStateAndroid.PENDING,
-              PurchaseStateAndroid.UNSPECIFIED_STATE,
-            ].includes(purchase.purchaseStateAndroid))
+          Platform.OS === 'android' &&
+          [
+            PurchaseStateAndroid.PENDING,
+            PurchaseStateAndroid.UNSPECIFIED_STATE,
+          ].includes(purchase.purchaseStateAndroid!)
         ) {
           console.warn(
             `Skip purchase with status ${purchase.purchaseStateAndroid}`,
