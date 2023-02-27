@@ -16,7 +16,9 @@ import type {
   PurchasedSubscriptionInfo,
   Subscription,
 } from 'plugins/types';
+import { waitUntil } from 'utils/promise/waitUntil';
 import type { FunctionWrapper, GenericFunction } from 'utils/types';
+
 export type InAppPurchaseContextType = {
   products: Product[];
   subscriptions: Subscription[];
@@ -24,6 +26,7 @@ export type InAppPurchaseContextType = {
   activeSubscription: (PurchasedSubscriptionInfo & Subscription) | null;
   restorePurchases: () => Promise<boolean>;
   purchaseProduct: (productId: string) => Promise<void>;
+  purchasePremium: (productId: string) => Promise<void>;
   premiumAccess: <F extends GenericFunction>(func: F) => FunctionWrapper<F>;
 };
 
@@ -107,15 +110,24 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
     [iapPurchasePlugin],
   );
 
+  const purchasePremium = useCallback(
+    async (productId: string) => {
+      await purchaseProduct(productId);
+
+      await waitUntil(() => fetchUserData());
+      await iapPurchasePlugin!.refetchProducts();
+    },
+    [purchaseProduct, iapPurchasePlugin],
+  );
+
   const premiumAccess = useCallback(
     <F extends GenericFunction>(func: F): FunctionWrapper<F> => {
       return async (...args) => {
         let isAllowed = hasPremiumAccess;
 
         if (
-          isAllowed &&
           new Date().valueOf() - lastUserDataFetchTimestamp.current >
-            1000 * 60 * 60
+          1000 * 60 * 60
         ) {
           isAllowed = await fetchUserData();
         }
@@ -138,6 +150,7 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
       subscriptions: iapPurchasePlugin?.subscriptions ?? [],
       restorePurchases,
       purchaseProduct,
+      purchasePremium,
       premiumAccess,
     }),
     [
@@ -146,6 +159,7 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
       activeSubscription,
       restorePurchases,
       purchaseProduct,
+      purchasePremium,
       premiumAccess,
     ],
   );
