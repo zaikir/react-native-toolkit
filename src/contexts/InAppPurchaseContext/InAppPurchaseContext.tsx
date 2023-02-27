@@ -25,8 +25,8 @@ export type InAppPurchaseContextType = {
   hasPremiumAccess: boolean;
   activeSubscription: (PurchasedSubscriptionInfo & Subscription) | null;
   restorePurchases: () => Promise<boolean>;
-  purchaseProduct: (productId: string) => Promise<void>;
-  purchasePremium: (productId: string) => Promise<void>;
+  purchaseProduct: (productId: string) => Promise<boolean>;
+  purchasePremium: (productId: string) => Promise<boolean>;
   premiumAccess: <F extends GenericFunction>(func: F) => FunctionWrapper<F>;
 };
 
@@ -90,7 +90,7 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
 
       try {
         await iapPurchasePlugin.purchaseProduct(productId);
-        console.log('purchased');
+        return true;
       } catch (err) {
         const error = err as {
           isCancelled: boolean;
@@ -98,24 +98,26 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
         };
 
         if (error.isCancelled) {
-          return;
+          return false;
         }
 
         throw new Error(error.message);
       }
-
-      await fetchUserData();
-      await iapPurchasePlugin.refetchProducts();
     },
     [iapPurchasePlugin],
   );
 
   const purchasePremium = useCallback(
     async (productId: string) => {
-      await purchaseProduct(productId);
+      const isSuccess = await purchaseProduct(productId);
+      if (!isSuccess) {
+        return false;
+      }
 
       await waitUntil(() => fetchUserData());
       await iapPurchasePlugin!.refetchProducts();
+
+      return true;
     },
     [purchaseProduct, iapPurchasePlugin],
   );

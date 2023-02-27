@@ -377,7 +377,7 @@ module.exports = {
       addLines(
         'android/build.gradle',
         placeholders.android.gradle['buildscript/ext'],
-        '        androidXAnnotation = "1.1.0"\n        androidXBrowser = "1.0.0"\n        kotlinVersion = "1.5.0"',
+        '        androidXAnnotation = "1.1.0"\n        androidXBrowser = "1.0.0"\n        kotlinVersion = "1.7.0"',
       );
       addLines(
         'android/build.gradle',
@@ -398,7 +398,7 @@ module.exports = {
         [
           'androidXAnnotation = "1.1.0"',
           'androidXBrowser = "1.0.0"',
-          'kotlinVersion = "1.5.0"',
+          'kotlinVersion = "1.7.0"',
         ],
       );
       deleteLines(
