@@ -51,6 +51,8 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
       iapPurchasePlugin.receiptValidator.getActiveSubscription(),
     ]);
 
+    console.log('fetchUserData', { results });
+
     setHasPremiumAccess(results[0]);
     setActiveSubscription(
       results[1]
@@ -85,6 +87,7 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
 
       try {
         await iapPurchasePlugin.purchaseProduct(productId);
+        console.log('purchased');
       } catch (err) {
         const error = err as {
           isCancelled: boolean;
