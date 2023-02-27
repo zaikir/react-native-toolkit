@@ -129,7 +129,7 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
           new Date().valueOf() - lastUserDataFetchTimestamp.current >
           1000 * 60 * 60
         ) {
-          isAllowed = await fetchUserData();
+          isAllowed = await restorePurchases();
         }
 
         if (!isAllowed) {
@@ -139,7 +139,7 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
         return func(...args);
       };
     },
-    [hasPremiumAccess, fetchUserData],
+    [hasPremiumAccess, fetchUserData, restorePurchases],
   );
 
   const contextData = useMemo<InAppPurchaseContextType>(

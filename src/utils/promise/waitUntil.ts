@@ -5,7 +5,7 @@ export async function waitUntil(
   timeout?: number,
   retries?: number,
 ) {
-  for (let i = 0; i < (retries ?? 10); i++) {
+  for (let i = 0; i < (retries ?? 60); i++) {
     const result = await fn();
     if (result) {
       return;
