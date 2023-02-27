@@ -114,7 +114,11 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
         return false;
       }
 
-      await waitUntil(() => fetchUserData());
+      await waitUntil(async () => {
+        await iapPurchasePlugin!.receiptValidator.handlePurchase();
+        const result = await fetchUserData();
+        return result;
+      });
       await iapPurchasePlugin!.refetchProducts();
 
       return true;

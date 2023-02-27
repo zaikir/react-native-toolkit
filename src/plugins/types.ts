@@ -95,6 +95,11 @@ export interface IReceiptValidator {
    * Restores users purchases
    */
   restorePurchases(): Promise<void>;
+
+  /**
+   * Handles purchase
+   */
+  handlePurchase(): Promise<void>;
 }
 
 export interface IAppPurchasePlugin {
