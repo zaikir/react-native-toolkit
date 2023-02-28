@@ -117,6 +117,8 @@ export class InAppPurchasePlugin extends Plugin implements IAppPurchasePlugin {
           isConsumable: productDef.type === 'consumable',
         }).catch(console.error);
 
+        await this.receiptValidator.handlePurchase();
+
         this.purchasePromise?.resolve(purchase);
       } catch (err) {
         this.purchasePromise?.reject({

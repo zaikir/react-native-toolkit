@@ -72,10 +72,11 @@ export class ApphudPlugin extends Plugin implements IReceiptValidator {
 
       return {
         productId: x.productId,
-        expiresAt: x.expiresAt,
-        startedAt: x.startedAt,
+        expiresAt: new Date(parseInt(x.expiresAt, 10)).toISOString(),
+        // @ts-ignore
+        startedAt: new Date(parseInt(x.statedAt, 10)).toISOString(),
         cancelledAt: x.cancelledAt,
-        isAutoRenewEnabled: x.isAutoRenewEnabled as boolean,
+        isAutoRenewEnabled: x.isInRetryBilling as boolean,
         isActive: x.isActive as boolean,
         isSandbox: false,
       };
