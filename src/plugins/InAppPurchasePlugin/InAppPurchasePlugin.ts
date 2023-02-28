@@ -115,7 +115,9 @@ export class InAppPurchasePlugin extends Plugin implements IAppPurchasePlugin {
         await IAP.finishTransaction({
           purchase,
           isConsumable: productDef.type === 'consumable',
-        }).catch(console.error);
+        }).catch(() => {
+          // no-op
+        });
 
         await this.receiptValidator.handlePurchase();
 
