@@ -14,7 +14,12 @@ export function createTheme<
       fontFamily?: TextFont;
       color?: ThemeColor;
     }
-  >;
+  > & {
+    default: Omit<TextStyle, 'fontFamily' | 'color'> & {
+      fontFamily?: TextFont;
+      color?: ThemeColor;
+    };
+  };
   fonts: Record<Font, string[]>;
   colors: {
     text: ThemeColor;

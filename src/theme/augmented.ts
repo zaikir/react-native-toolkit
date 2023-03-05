@@ -6,14 +6,7 @@ export type Theme = {
   colors: Colors;
 };
 
-export interface TextVariants
-  extends Record<
-    string,
-    Omit<string, 'fontFamily' | 'color'> & {
-      fontFamily?: string;
-      color?: ThemeColor;
-    }
-  > {}
+export interface TextVariants {}
 export interface FontFamilies {}
 export interface Colors {
   text: ThemeColor;
