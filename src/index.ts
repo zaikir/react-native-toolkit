@@ -8,6 +8,7 @@ export { AlertsProvider, DropdownAlert } from './contexts/AlertsContext';
 export { ThemeProvider } from './contexts/ThemeContext';
 export { StorageProvider } from './contexts/StorageContext';
 export { ColorSchemeProvider } from './contexts/ColorSchemeContext';
+export { PluginsBundleContext } from './contexts/PluginsBundleContext';
 
 // plugins
 export {
@@ -32,6 +33,7 @@ export { useColorScheme } from './hooks/useColorScheme';
 export { useAnalytics } from './hooks/useAnalytics';
 export { useSplashScreen } from './hooks/useSplashScreen';
 export { usePurchases } from './hooks/usePurchases';
+export { usePlugin } from './hooks/usePlugin';
 
 // other
 export { default as SyncStorage } from './utils/SyncStorage';
