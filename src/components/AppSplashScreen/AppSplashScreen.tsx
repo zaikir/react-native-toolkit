@@ -72,9 +72,11 @@ export default function AppSplashScreen({
 
   return (
     <>
-      <SplashScreenContext.Provider value={splashScreenContextData}>
-        {children}
-      </SplashScreenContext.Provider>
+      {!visible && (
+        <SplashScreenContext.Provider value={splashScreenContextData}>
+          {children}
+        </SplashScreenContext.Provider>
+      )}
       {!isAnimationFinished && (
         <Animated.View
           style={[
