@@ -4,17 +4,16 @@ import type { TextProps as TextPropsBase, TextStyle } from 'react-native';
 
 import { useTheme } from 'index';
 import type { FontFamily, TextVariant } from 'theme/augmented';
+import { getFontWeightName } from 'utils/getFontWeightName';
 
-import { getFontWeightName } from './utils/getFontWeightName';
-
-type TextProps = TextPropsBase & {
+export type TextProps = TextPropsBase & {
   variant?: 'default' | TextVariant;
   style?: StyleProp<TextStyle> & {
     fontFamily?: FontFamily;
   };
 };
 
-export default function Text(props: TextProps) {
+export function Text(props: TextProps) {
   const theme = useTheme();
 
   const flattenStyles = StyleSheet.flatten(props.style) || {};

@@ -20,7 +20,7 @@ export const SplashScreenContext = createContext<{
   hide: () => void;
 }>({} as any);
 
-export default function AppSplashScreen({
+export function AppSplashScreen({
   visible,
   SplashScreen,
   children,

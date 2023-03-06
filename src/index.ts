@@ -2,13 +2,17 @@ export * from './theme';
 export { hide as hideSplash } from 'react-native-bootsplash';
 
 // components
-export { Text } from './components/Text';
+export { Text, type TextProps } from './components/Text';
 export { AppBootstrapper } from './components/AppBootstrapper';
 export { AlertsProvider, DropdownAlert } from './contexts/AlertsContext';
 export { ThemeProvider } from './contexts/ThemeContext';
 export { StorageProvider } from './contexts/StorageContext';
 export { ColorSchemeProvider } from './contexts/ColorSchemeContext';
 export { PluginsBundleContext } from './contexts/PluginsBundleContext';
+export {
+  KeyboardDismissView,
+  type KeyboardDismissViewProps,
+} from './components/KeyboardDismissView';
 
 // plugins
 export {

@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { SplashScreenContext } from 'components/AppSplashScreen/AppSplashScreen';
+import { SplashScreenContext } from 'components/AppSplashScreen';
 
 export function useSplashScreen() {
   const { hide } = useContext(SplashScreenContext);

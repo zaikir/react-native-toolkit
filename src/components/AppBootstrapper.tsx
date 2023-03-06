@@ -4,7 +4,7 @@ import { hide as hideNativeSplash } from 'react-native-bootsplash';
 import { useAsyncEffect } from 'use-async-effect';
 
 import { AppSplashScreen } from 'components/AppSplashScreen';
-import type { AppSplashScreenProps } from 'components/AppSplashScreen/AppSplashScreen';
+import type { AppSplashScreenProps } from 'components/AppSplashScreen';
 import { InAppPurchaseProvider } from 'contexts/InAppPurchaseContext/InAppPurchaseContext';
 import { PluginsBundleProvider } from 'contexts/PluginsBundleContext/PluginsBundleContext';
 import { ControlledPromise, scaleX, scaleY, timeout } from 'index';
@@ -34,7 +34,7 @@ type Props = {
   splashScreenProps?: Omit<AppSplashScreenProps, 'visible' | 'children'>;
 };
 
-export default function AppBootstrapper({
+export function AppBootstrapper({
   children,
   plugins,
   splashScreenProps,
