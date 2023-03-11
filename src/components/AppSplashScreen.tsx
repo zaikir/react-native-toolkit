@@ -67,7 +67,7 @@ export function AppSplashScreen({
       if (SplashScreen) {
         await childrenRenderAwaiter.current.wait();
 
-        hideNativeSplash();
+        hideNativeSplash({ fade: true });
       }
     })();
   }, [SplashScreen]);
