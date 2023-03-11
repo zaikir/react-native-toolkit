@@ -1,6 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { Alert, Button, StatusBar, Text, View } from 'react-native';
-import { hide as hideNativeSplash } from 'react-native-bootsplash';
 import { useAsyncEffect } from 'use-async-effect';
 
 import { AppSplashScreen } from 'components/AppSplashScreen';
