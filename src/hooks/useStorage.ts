@@ -3,6 +3,7 @@ import {
   SetStateAction,
   useCallback,
   useContext,
+  useEffect,
   useState,
 } from 'react';
 
@@ -13,6 +14,8 @@ export function useStorage() {
 
   return storage;
 }
+
+const listeners = new Map<string, Set<Dispatch<SetStateAction<any>>>>();
 
 export function useStoredState<T>(
   key: string,
@@ -31,11 +34,26 @@ export function useStoredState<T>(
         return;
       }
 
-      setValue(newValue);
       storage.setItem(key, newValue);
+
+      listeners.get(key)?.forEach((listener) => {
+        listener(newValue);
+      });
     },
     [key, value, setValue, storage],
   );
+
+  useEffect(() => {
+    if (!listeners.has(key)) {
+      listeners.set(key, new Set<Dispatch<SetStateAction<any>>>());
+    }
+
+    listeners.get(key)?.add(setValue);
+
+    return () => {
+      listeners.get(key)?.delete(setValue);
+    };
+  }, []);
 
   return [value, setter];
 }
