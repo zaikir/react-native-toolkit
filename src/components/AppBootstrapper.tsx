@@ -162,7 +162,6 @@ export function AppBootstrapper({
       // no-op
     } finally {
       setIsInitialized(true);
-      hideNativeSplash();
     }
   }, []);
 

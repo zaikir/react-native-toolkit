@@ -9,6 +9,8 @@ import React, {
 import { Animated } from 'react-native';
 import { hide as hideNativeSplash } from 'react-native-bootsplash';
 
+import { ControlledPromise } from 'index';
+
 export type AppSplashScreenProps = PropsWithChildren<{
   visible: boolean;
   SplashScreen?: React.ReactNode;
@@ -29,7 +31,7 @@ export function AppSplashScreen({
 }: AppSplashScreenProps) {
   const [isSplashScreenVisible, setIsSplashScreenVisible] = useState(true);
   const [isAnimationFinished, setIsAnimationFinished] = useState(false);
-
+  const childrenRenderAwaiter = useRef(new ControlledPromise<void>());
   const opacityAnim = useRef(new Animated.Value(1)).current;
 
   const splashScreenContextData = useMemo(
@@ -61,9 +63,13 @@ export function AppSplashScreen({
   }, [visible, isSplashScreenVisible, hideManually]);
 
   useEffect(() => {
-    if (SplashScreen) {
-      hideNativeSplash();
-    }
+    (async () => {
+      if (SplashScreen) {
+        await childrenRenderAwaiter.current.wait();
+
+        hideNativeSplash();
+      }
+    })();
   }, [SplashScreen]);
 
   if (!SplashScreen) {
@@ -79,6 +85,9 @@ export function AppSplashScreen({
       )}
       {!isAnimationFinished && (
         <Animated.View
+          onLayout={() => {
+            childrenRenderAwaiter.current.resolve();
+          }}
           style={[
             {
               position: 'absolute',
