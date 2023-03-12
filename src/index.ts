@@ -20,12 +20,20 @@ export {
   FallbackScreenProps,
   PluginFactoryOptions,
   PluginsBundle,
+  PluginFeature,
 } from './plugins/Plugin';
 export {
   RemoteConfig,
   NetworkPluginData,
   IRemoteConfigPlugin,
   IAnalyticsProvider,
+  IAppPurchasePlugin,
+  IReceiptValidator,
+  Product,
+  Purchase,
+  PurchasedProductInfo,
+  PurchasedSubscriptionInfo,
+  Subscription,
 } from './plugins/types';
 
 // hooks

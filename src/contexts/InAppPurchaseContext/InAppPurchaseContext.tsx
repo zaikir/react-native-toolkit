@@ -54,8 +54,6 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
       iapPurchasePlugin.receiptValidator.getActiveSubscription(),
     ]);
 
-    console.log('fetchUserData', { results });
-
     setHasPremiumAccess(results[0]);
     setActiveSubscription(
       results[1]

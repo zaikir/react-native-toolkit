@@ -36,10 +36,10 @@ export class ApphudPlugin extends Plugin implements IReceiptValidator {
   }
 
   async getPurchasedSubscriptions(): Promise<PurchasedSubscriptionInfo[]> {
-    const subscriptions =
-      Platform.OS === 'ios'
-        ? [await ApphudSdk.subscription()]
-        : await ApphudSdk.subscriptions();
+    const subscriptions = await ApphudSdk.subscriptions();
+    // Platform.OS === 'ios'
+    //   ? [await ApphudSdk.subscription()]
+    //   : await ApphudSdk.subscriptions();
 
     return subscriptions.map((x) => {
       if (Platform.OS === 'ios') {
