@@ -46,6 +46,7 @@ export { useAnalytics } from './hooks/useAnalytics';
 export { useSplashScreen } from './hooks/useSplashScreen';
 export { usePurchases } from './hooks/usePurchases';
 export { usePlugin } from './hooks/usePlugin';
+export { useAppActivityEffect } from './hooks/useAppActivityEffect';
 
 // other
 export { default as SyncStorage } from './utils/SyncStorage';
