@@ -47,6 +47,7 @@ export function Text(props: TextProps) {
   return (
     <TextBase
       {...props}
+      allowFontScaling={props.allowFontScaling ?? false}
       style={{
         color: theme.colors.text,
         ...variant,
