@@ -1,3 +1,4 @@
+import PQueue from 'p-queue';
 import React, { useCallback, useRef, useState } from 'react';
 import { Alert, Button, StatusBar, Text, View } from 'react-native';
 import { useAsyncEffect } from 'use-async-effect';
@@ -9,27 +10,28 @@ import { PluginsBundleProvider } from 'contexts/PluginsBundleContext/PluginsBund
 import { ControlledPromise, scaleX, scaleY, timeout } from 'index';
 import { Plugin, PluginFactoryOptions, PluginsBundle } from 'plugins/Plugin';
 
+type PluginDef =
+  | Plugin
+  | ((
+      | { useValue: Plugin }
+      | {
+          useFactory: (
+            plugins: PluginsBundle,
+          ) => Plugin | void | Promise<Plugin | void>;
+        }
+      | {
+          useDeferredFactory: (
+            plugins: PluginsBundle,
+            resolve: (value: any | PromiseLike<any>) => void,
+            reject: (reason?: any) => void,
+          ) => Plugin | void | Promise<Plugin | void>;
+        }
+    ) &
+      PluginFactoryOptions);
+
 type Props = {
   children?: React.ReactNode;
-  plugins?: (
-    | Plugin
-    | ((
-        | { useValue: Plugin }
-        | {
-            useFactory: (
-              plugins: PluginsBundle,
-            ) => Plugin | void | Promise<Plugin | void>;
-          }
-        | {
-            useDeferredFactory: (
-              plugins: PluginsBundle,
-              resolve: (value: any | PromiseLike<any>) => void,
-              reject: (reason?: any) => void,
-            ) => Plugin | void | Promise<Plugin | void>;
-          }
-      ) &
-        PluginFactoryOptions)
-  )[];
+  plugins?: PluginDef[];
   splashScreenProps?: Omit<AppSplashScreenProps, 'visible' | 'children'>;
 };
 
@@ -51,11 +53,61 @@ export function AppBootstrapper({
     PluginFactoryOptions['fallbackScreen'] | null
   >(null);
   const currentPluginIndex = useRef(0);
+  const isInitializedRef = useRef(false);
 
   const initialize = useCallback(async () => {
     if (!plugins) {
       return;
     }
+
+    const initializePlugin = async (
+      plugin: PluginDef,
+      bundle: PluginsBundle,
+    ) => {
+      if ('useValue' in plugin) {
+        await timeout(
+          plugin.useValue.initialize(bundle),
+          plugin.timeout === null
+            ? null
+            : plugin.timeout ?? plugin.useValue.initializationTimeout,
+        );
+        initializedPlugins.current.push(plugin.useValue);
+      } else if ('useFactory' in plugin) {
+        const initializedPlugin = await plugin.useFactory(bundle);
+
+        if (initializedPlugin) {
+          await timeout(
+            initializedPlugin.initialize(bundle),
+            plugin.timeout === null
+              ? null
+              : plugin.timeout ?? initializedPlugin.initializationTimeout,
+          );
+          initializedPlugins.current.push(initializedPlugin);
+        }
+      } else if ('useDeferredFactory' in plugin) {
+        const promise = new ControlledPromise<void>();
+        const initializedPlugin = await timeout(
+          plugin.useDeferredFactory(bundle, promise.resolve, promise.reject),
+          plugin.timeout,
+        );
+
+        const [, additionalData] = await timeout(
+          Promise.all([initializedPlugin?.initialize(bundle), promise.wait()]),
+          plugin.timeout === null
+            ? null
+            : plugin.timeout ?? initializedPlugin?.initializationTimeout,
+        );
+
+        if (initializedPlugin) {
+          initializedPlugin.payload = additionalData;
+          initializedPlugins.current.push(initializedPlugin);
+        }
+      } else {
+        initializedPlugins.current.push(plugin);
+      }
+    };
+
+    const asyncQueue = new PQueue({ concurrency: 1 });
 
     for (
       currentPluginIndex.current;
@@ -63,61 +115,26 @@ export function AppBootstrapper({
       currentPluginIndex.current += 1
     ) {
       const plugin = plugins[currentPluginIndex.current];
-      let pluginName = plugin?.name;
 
       try {
         const bundle = new PluginsBundle(initializedPlugins.current);
 
-        if ('useValue' in plugin) {
-          pluginName = plugin.useValue.name;
+        if ('async' in plugin && plugin.async) {
+          asyncQueue.add(async () => {
+            try {
+              await initializePlugin(plugin, bundle);
+            } catch {
+              // no-op
+            }
 
-          await timeout(
-            plugin.useValue.initialize(bundle),
-            plugin.timeout === null
-              ? null
-              : plugin.timeout ?? plugin.useValue.initializationTimeout,
-          );
-          initializedPlugins.current.push(plugin.useValue);
-        } else if ('useFactory' in plugin) {
-          const initializedPlugin = await plugin.useFactory(bundle);
-
-          if (initializedPlugin) {
-            pluginName = initializedPlugin.name;
-
-            await timeout(
-              initializedPlugin.initialize(bundle),
-              plugin.timeout === null
-                ? null
-                : plugin.timeout ?? initializedPlugin.initializationTimeout,
-            );
-            initializedPlugins.current.push(initializedPlugin);
-          }
-        } else if ('useDeferredFactory' in plugin) {
-          const promise = new ControlledPromise<void>();
-          const initializedPlugin = await timeout(
-            plugin.useDeferredFactory(bundle, promise.resolve, promise.reject),
-            plugin.timeout,
-          );
-
-          pluginName = initializedPlugin?.name;
-
-          const [, additionalData] = await timeout(
-            Promise.all([
-              initializedPlugin?.initialize(bundle),
-              promise.wait(),
-            ]),
-            plugin.timeout === null
-              ? null
-              : plugin.timeout ?? initializedPlugin?.initializationTimeout,
-          );
-
-          if (initializedPlugin) {
-            initializedPlugin.payload = additionalData;
-            initializedPlugins.current.push(initializedPlugin);
-          }
-        } else {
-          initializedPlugins.current.push(plugin);
+            if (isInitializedRef.current && !asyncQueue.size) {
+              setPluginsBundle(new PluginsBundle(initializedPlugins.current));
+            }
+          });
+          continue;
         }
+
+        await initializePlugin(plugin, bundle);
       } catch (err) {
         if ('optional' in plugin && plugin.optional) {
           continue;
@@ -126,7 +143,7 @@ export function AppBootstrapper({
           err instanceof Error ? err.message : (err as any).toString();
 
         if (errorMessage === 'Timeout error') {
-          errorMessage = `${pluginName} timeout error`;
+          errorMessage = `Plugin timeout error`;
         }
 
         ErrorFallbackScreen.current =
@@ -139,6 +156,7 @@ export function AppBootstrapper({
     }
 
     setPluginsBundle(new PluginsBundle(initializedPlugins.current));
+    isInitializedRef.current = true;
   }, [plugins]);
 
   const retryInitialization = useCallback(async () => {

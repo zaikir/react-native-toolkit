@@ -31,7 +31,9 @@ export function Text(props: TextProps) {
     // @ts-ignore
     const weights = theme.fonts[font] as string[];
 
-    const names = fontWeight && getFontWeightName(fontWeight);
+    const names =
+      (fontWeight ?? variant?.fontWeight) &&
+      getFontWeightName(fontWeight ?? variant?.fontWeight);
     const name = names
       ? weights.find((x: string) => names.includes(x.toLowerCase()))
       : weights[0];

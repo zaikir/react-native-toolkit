@@ -16,6 +16,7 @@ export type FallbackScreenProps = {
 export type PluginFactoryOptions = {
   name?: string;
   optional?: boolean;
+  async?: boolean;
   fallbackScreen?: React.FC<FallbackScreenProps>;
   timeout?: number | null;
 };
