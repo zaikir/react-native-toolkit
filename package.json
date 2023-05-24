@@ -1,6 +1,6 @@
 {
   "name": "@kirz/react-native-toolkit",
-  "version": "0.1.9-beta.4",
+  "version": "0.1.9-beta.5",
   "files": [
     "react-native.config.js",
     "lib",
@@ -13,7 +13,8 @@
     "network",
     "iap",
     "idfa",
-    "appmetrica"
+    "appmetrica",
+    "amplitude"
   ],
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
@@ -68,6 +69,11 @@
       "types": "./lib/typescript/plugins/AppMetricaPlugin/index.d.ts",
       "import": "./lib/module/plugins/AppMetricaPlugin/index.js",
       "default": "./lib/commonjs/plugins/AppMetricaPlugin/index.js"
+    },
+    "./amplitude": {
+      "types": "./lib/typescript/plugins/AmplitudePlugin/index.d.ts",
+      "import": "./lib/module/plugins/AppMetricaAmplitudePluginPlugin/index.js",
+      "default": "./lib/commonjs/plugins/AmplitudePlugin/index.js"
     }
   },
   "scripts": {
@@ -83,6 +89,7 @@
     "react-native-bootsplash": "^4.4.0"
   },
   "devDependencies": {
+    "@amplitude/react-native": "^2.17.0",
     "@babel/core": "^7.16.10",
     "@babel/runtime": "^7.12.5",
     "@kirz/react-native-apphud": "^1.0.6",

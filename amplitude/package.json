@@ -1,0 +1,5 @@
+{
+  "main": "../lib/commonjs/plugins/AmplitudePlugin/index.js",
+  "module": "../lib/module/plugins/AmplitudePlugin/index.js",
+  "types": "../lib/typescript/plugins/AmplitudePlugin/index.d.ts"
+}

@@ -48,10 +48,10 @@ module.exports = () => {
       return;
     }
 
-    //// add dependencies to delete list
+    // // add dependencies to delete list
     dependenciesToDelete.push(...(pluginInfo.dependencies || []));
 
-    //// execute "delete" action
+    // // execute "delete" action
     console.log(`⏳ [${name}] removing...`);
 
     if (pluginInfo.delete) {
@@ -70,10 +70,10 @@ module.exports = () => {
       return;
     }
 
-    //// add dependencies to add list
+    // // add dependencies to add list
     dependenciesToAdd.push(...(pluginInfo.dependencies || []));
 
-    //// execute "add" action
+    // // execute "add" action
     console.log(`⏳ [${name}] preparing...`);
 
     if (pluginInfo.add) {

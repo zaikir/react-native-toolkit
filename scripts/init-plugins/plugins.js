@@ -443,4 +443,9 @@ module.exports = {
     add(appName) {},
     delete(appName) {},
   },
+  AmplitudePlugin: {
+    dependencies: ['@amplitude/react-native'],
+    add(appName) {},
+    delete(appName) {},
+  },
 };
