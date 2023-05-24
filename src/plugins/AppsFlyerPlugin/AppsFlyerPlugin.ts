@@ -48,9 +48,9 @@ export class AppsFlyerPlugin extends Plugin implements IAnalyticsProvider {
       appsFlyer.onDeepLink(this.callbacks.onDeepLink);
     }
 
-    if (this.callbacks?.onInstallConversionData) {
-      appsFlyer.onInstallConversionData(this.callbacks.onInstallConversionData);
-    }
+    appsFlyer.onInstallConversionData(
+      this.callbacks?.onInstallConversionData ?? (() => {}),
+    );
 
     if (this.callbacks?.onInstallConversionFailure) {
       appsFlyer.onInstallConversionFailure(
