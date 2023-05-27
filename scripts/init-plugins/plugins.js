@@ -444,7 +444,7 @@ module.exports = {
     delete(appName) {},
   },
   AmplitudePlugin: {
-    dependencies: ['@amplitude/react-native'],
+    dependencies: ['@amplitude/analytics-react-native'],
     add(appName) {},
     delete(appName) {},
   },
