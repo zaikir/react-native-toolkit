@@ -104,6 +104,10 @@ export class ApphudPlugin extends Plugin implements IReceiptValidator {
   }
 
   async restorePurchases() {
+    if (Platform.OS === 'android') {
+      await ApphudSdk.syncPurchases();
+    }
+
     await ApphudSdk.restorePurchases();
   }
 
