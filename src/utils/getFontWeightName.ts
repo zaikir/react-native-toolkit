@@ -10,7 +10,7 @@ export function getFontWeightName(fontWeight: TextStyle['fontWeight']) {
       return ['light'];
     case '400':
     case 'normal':
-      return ['normal', 'regular'];
+      return ['normal', 'regular', 'book'];
     case '500':
       return ['medium'];
     case '600':
