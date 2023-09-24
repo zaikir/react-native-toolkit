@@ -1,4 +1,8 @@
-import { createIntl, createIntlCache } from '@formatjs/intl';
+import {
+  FormatNumberOptions,
+  createIntl,
+  createIntlCache,
+} from '@formatjs/intl';
 import * as RNLocalize from 'react-native-localize';
 import 'intl';
 import 'intl/dist/Intl.complete';
@@ -59,12 +63,16 @@ export class Product implements IProduct {
     this.localizedPrice = this.formatPrice();
   }
 
-  formatPrice(formatter?: (value: number) => number) {
+  formatPrice(
+    options?: FormatNumberOptions,
+    formatter?: (value: number) => number,
+  ) {
     return intl.formatNumber(formatter ? formatter(this.price) : this.price, {
       style: 'currency',
       currency: this.currency,
       compactDisplay: 'short',
       currencyDisplay: 'symbol',
+      ...options,
     });
   }
 }

@@ -69,8 +69,8 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
         ? {
             ...subscriptionInstance,
             ...results[1],
-            formatPrice(formatter) {
-              return subscriptionInstance.formatPrice(formatter);
+            formatPrice(options, formatter) {
+              return subscriptionInstance.formatPrice(options, formatter);
             },
           }
         : null,
