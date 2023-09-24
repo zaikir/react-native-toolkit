@@ -1,6 +1,23 @@
+import { createIntl, createIntlCache } from '@formatjs/intl';
+import * as RNLocalize from 'react-native-localize';
+import 'intl';
+import 'intl/dist/Intl.complete';
+
+const cache = createIntlCache();
+
+const deviceLanguage = RNLocalize.getLocales()[0].languageTag;
+
+const intl = createIntl(
+  {
+    locale: deviceLanguage,
+    messages: {},
+  },
+  cache,
+);
+
 export interface RemoteConfig {}
 
-export type Product = {
+export interface IProduct {
   productId: string;
   title: string;
   description: string;
@@ -9,16 +26,64 @@ export type Product = {
   currency: string;
   consumable: boolean;
   originalData: any;
-};
+}
 
-export type Subscription = Omit<Product, 'consumable'> & {
+export interface ISubscription extends Omit<IProduct, 'consumable'> {
   periodUnit: 'day' | 'week' | 'month' | 'year';
   numberOfPeriods: number;
   trial?: {
     periodUnit: 'day' | 'week' | 'month' | 'year';
     numberOfPeriods: number;
   };
-};
+}
+
+export class Product implements IProduct {
+  productId: string;
+  title: string;
+  description: string;
+  price: number;
+  localizedPrice: string;
+  currency: string;
+  consumable: boolean;
+  originalData: any;
+
+  constructor(obj: IProduct) {
+    this.productId = obj.productId;
+    this.title = obj.title;
+    this.description = obj.description;
+    this.price = obj.price;
+    this.currency = obj.currency;
+    this.consumable = obj.consumable;
+    this.originalData = obj.originalData;
+
+    this.localizedPrice = this.formatPrice();
+  }
+
+  formatPrice(formatter?: (value: number) => number) {
+    return intl.formatNumber(formatter ? formatter(this.price) : this.price, {
+      style: 'currency',
+      currency: this.currency,
+      compactDisplay: 'short',
+      currencyDisplay: 'symbol',
+    });
+  }
+}
+
+export class Subscription extends Product implements ISubscription {
+  periodUnit: 'day' | 'week' | 'month' | 'year';
+  numberOfPeriods: number;
+  trial?:
+    | { periodUnit: 'day' | 'week' | 'month' | 'year'; numberOfPeriods: number }
+    | undefined;
+
+  constructor(obj: ISubscription) {
+    super({ ...obj, consumable: false } as IProduct);
+
+    this.periodUnit = obj.periodUnit;
+    this.numberOfPeriods = obj.numberOfPeriods;
+    this.trial = obj.trial;
+  }
+}
 
 export type PurchasedSubscriptionInfo = {
   productId: string;

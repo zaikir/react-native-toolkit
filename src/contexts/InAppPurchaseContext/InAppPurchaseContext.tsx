@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 
 import { PluginsBundleContext } from 'contexts/PluginsBundleContext/PluginsBundleContext';
-import type {
+import {
   IAppPurchasePlugin,
   Product,
   PurchasedSubscriptionInfo,
@@ -55,13 +55,23 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
     ]);
 
     setHasPremiumAccess(results[0]);
+
+    const subscriptionInstance =
+      results[1] &&
+      new Subscription(
+        iapPurchasePlugin.subscriptions.find(
+          (x) => x.productId === results[1]?.productId,
+        )!,
+      );
+
     setActiveSubscription(
-      results[1]
+      subscriptionInstance && results[1]
         ? {
-            ...iapPurchasePlugin.subscriptions.find(
-              (x) => x.productId === results[1]?.productId,
-            )!,
+            ...subscriptionInstance,
             ...results[1],
+            formatPrice(formatter) {
+              return subscriptionInstance.formatPrice(formatter);
+            },
           }
         : null,
     );

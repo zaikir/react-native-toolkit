@@ -8,7 +8,7 @@ import {
 } from 'react-native-iap';
 
 import { Plugin, PluginFeature, PluginsBundle } from 'plugins/Plugin';
-import type {
+import {
   IAppPurchasePlugin,
   IReceiptValidator,
   Product,
@@ -173,10 +173,10 @@ export class InAppPurchasePlugin extends Plugin implements IAppPurchasePlugin {
               subscription.productId,
             )));
 
-        return {
+        return new Subscription({
           ...subscription,
           ...(isTrialAvailable && { trial }),
-        };
+        });
       }),
     );
 

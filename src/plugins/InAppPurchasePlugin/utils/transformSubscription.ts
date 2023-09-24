@@ -5,7 +5,7 @@ import type {
   SubscriptionIOS,
 } from 'react-native-iap';
 
-import type { Subscription } from 'plugins/types';
+import { Subscription } from 'plugins/types';
 
 import { parseIso8601Period } from './parseIso8601Period';
 
@@ -16,7 +16,7 @@ export function transformSubscription(
   if (Platform.OS === 'ios') {
     const data = subscription as SubscriptionIOS;
 
-    return {
+    return new Subscription({
       productId: data.productId,
       title: data.title,
       description: data.description,
@@ -35,7 +35,7 @@ export function transformSubscription(
         },
       }),
       originalData: data,
-    };
+    });
   }
 
   if (Platform.OS === 'android') {
@@ -52,7 +52,7 @@ export function transformSubscription(
     const [priceInfo] = offerPrices.filter((x) => x.priceAmountMicros !== '0');
     const [trialInfo] = offerPrices.filter((y) => y.priceAmountMicros === '0');
 
-    return {
+    return new Subscription({
       productId: data.productId,
       title: data.title,
       description: data.description,
@@ -66,7 +66,7 @@ export function transformSubscription(
           ...parseIso8601Period(trialInfo.billingPeriod),
         },
       }),
-    };
+    });
   }
 
   throw new Error(`Platform not supported: ${Platform.OS}`);
