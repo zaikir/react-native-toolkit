@@ -63,17 +63,20 @@ export class Product implements IProduct {
     this.localizedPrice = this.formatPrice();
   }
 
-  formatPrice(
-    options?: FormatNumberOptions,
-    formatter?: (value: number) => number,
-  ) {
-    return intl.formatNumber(formatter ? formatter(this.price) : this.price, {
-      style: 'currency',
-      currency: this.currency,
-      compactDisplay: 'short',
-      currencyDisplay: 'symbol',
-      ...options,
-    });
+  formatPrice(options?: {
+    options?: FormatNumberOptions;
+    formatter?: (value: number) => number;
+  }) {
+    return intl.formatNumber(
+      options?.formatter ? options?.formatter(this.price) : this.price,
+      {
+        style: 'currency',
+        currency: this.currency,
+        compactDisplay: 'short',
+        currencyDisplay: 'symbol',
+        ...options?.options,
+      },
+    );
   }
 }
 
