@@ -13,6 +13,7 @@ import { PluginsBundleContext } from 'contexts/PluginsBundleContext/PluginsBundl
 import {
   IAppPurchasePlugin,
   Product,
+  Purchase,
   PurchasedSubscriptionInfo,
   Subscription,
 } from 'plugins/types';
@@ -25,8 +26,8 @@ export type InAppPurchaseContextType = {
   hasPremiumAccess: boolean;
   activeSubscription: (PurchasedSubscriptionInfo & Subscription) | null;
   restorePurchases: () => Promise<boolean>;
-  purchaseProduct: (productId: string) => Promise<boolean>;
-  purchasePremium: (productId: string) => Promise<boolean>;
+  purchaseProduct: (productId: string) => Promise<Purchase | null>;
+  purchasePremium: (productId: string) => Promise<Purchase | null>;
   premiumAccess: <F extends GenericFunction>(func: F) => FunctionWrapper<F>;
 };
 
@@ -97,8 +98,8 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
       }
 
       try {
-        await iapPurchasePlugin.purchaseProduct(productId);
-        return true;
+        const purchase = await iapPurchasePlugin.purchaseProduct(productId);
+        return purchase;
       } catch (err) {
         const error = err as {
           isCancelled: boolean;
@@ -106,7 +107,7 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
         };
 
         if (error.isCancelled) {
-          return false;
+          return null;
         }
 
         throw new Error(error.message);
@@ -117,9 +118,9 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
 
   const purchasePremium = useCallback(
     async (productId: string) => {
-      const isSuccess = await purchaseProduct(productId);
-      if (!isSuccess) {
-        return false;
+      const purchase = await purchaseProduct(productId);
+      if (!purchase) {
+        return null;
       }
 
       await waitUntil(async () => {
@@ -128,7 +129,7 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
       });
       await iapPurchasePlugin!.refetchProducts();
 
-      return true;
+      return purchase;
     },
     [purchaseProduct, iapPurchasePlugin],
   );
