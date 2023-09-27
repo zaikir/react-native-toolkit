@@ -1,6 +1,6 @@
 {
   "name": "@kirz/react-native-toolkit",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "files": [
     "react-native.config.js",
     "lib",
@@ -119,7 +119,7 @@
     "react-native-appsflyer": "^6.9.4",
     "react-native-bootsplash": "^4.4.0",
     "react-native-builder-bob": "^0.20.3",
-    "react-native-fbsdk-next": "^11.1.0",
+    "react-native-fbsdk-next": "^12.1.0",
     "react-native-iap": "^12.4.14",
     "react-native-purchases": "^5.4.0",
     "tsc-alias": "^1.8.2",

@@ -1,4 +1,6 @@
-import initializeRemoteConfig from '@react-native-firebase/remote-config';
+import initializeRemoteConfig, {
+  FirebaseRemoteConfigTypes,
+} from '@react-native-firebase/remote-config';
 
 import { timeout } from 'index';
 import { Plugin, PluginFeature } from 'plugins/Plugin';
@@ -10,14 +12,22 @@ export class FirebasePlugin extends Plugin implements IRemoteConfigPlugin {
   readonly initializationTimeout = null;
 
   _remoteConfig: RemoteConfig;
+  _firebaseConfig: FirebaseRemoteConfigTypes.ConfigSettings;
 
   get remoteValues() {
     return this._remoteConfig;
   }
 
-  constructor(options: { remoteConfig?: RemoteConfig }) {
+  constructor(options: {
+    remoteConfig?: RemoteConfig;
+    firebaseConfig?: FirebaseRemoteConfigTypes.ConfigSettings;
+  }) {
     super();
     this._remoteConfig = options.remoteConfig ?? {};
+    this._firebaseConfig = options.firebaseConfig ?? {
+      minimumFetchIntervalMillis: 0,
+      fetchTimeMillis: 5000,
+    };
   }
 
   async initialize() {
@@ -26,7 +36,7 @@ export class FirebasePlugin extends Plugin implements IRemoteConfigPlugin {
 
       try {
         await timeout(async () => {
-          await config.setConfigSettings({ minimumFetchIntervalMillis: 0 });
+          await config.setConfigSettings(this._firebaseConfig);
           await config.setDefaults({ ...this._remoteConfig });
 
           await config.fetch(0);

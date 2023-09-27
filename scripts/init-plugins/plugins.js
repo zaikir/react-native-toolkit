@@ -248,19 +248,19 @@ module.exports = {
         },
         {
           key: 'url-scheme-add',
-          value: 'fb$(FACEBOOK_APP_ID)',
+          value: '$(FACEBOOK_URL_SCHEME)',
         },
       ]);
 
       addLines(
         `ios/${appName}/AppDelegate.mm`,
         placeholders.ios.appDelegate.import,
-        `#import <FBSDKCoreKit/FBSDKCoreKit-Swift.h>`,
+        `#import <AuthenticationServices/AuthenticationServices.h>\n      #import <SafariServices/SafariServices.h>\n      #import <FBSDKCoreKit/FBSDKCoreKit-swift.h>`,
       );
       addLines(
         `ios/${appName}/AppDelegate.mm`,
         placeholders.ios.appDelegate.didFinishLaunchingWithOptions.start,
-        `  [[FBSDKApplicationDelegate sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];\n  [FBSDKApplicationDelegate.sharedInstance initializeSDK];`,
+        `  [[FBSDKApplicationDelegate sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];`,
       );
     },
     delete(appName) {
