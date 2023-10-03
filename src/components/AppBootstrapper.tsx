@@ -33,12 +33,14 @@ type Props = {
   children?: React.ReactNode;
   plugins?: PluginDef[];
   splashScreenProps?: Omit<AppSplashScreenProps, 'visible' | 'children'>;
+  debug?: boolean;
 };
 
 export function AppBootstrapper({
   children,
   plugins,
   splashScreenProps,
+  debug,
 }: Props) {
   const [isInitialized, setIsInitialized] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
@@ -104,6 +106,12 @@ export function AppBootstrapper({
         }
       } else {
         initializedPlugins.current.push(plugin);
+      }
+
+      if (debug) {
+        const lastPlugin =
+          initializedPlugins.current[initializedPlugins.current.length - 1];
+        console.log(`${lastPlugin.name} initialized`);
       }
     };
 
