@@ -8,7 +8,13 @@ import { AppSplashScreen } from 'components/AppSplashScreen';
 import type { AppSplashScreenProps } from 'components/AppSplashScreen';
 import { InAppPurchaseProvider } from 'contexts/InAppPurchaseContext/InAppPurchaseContext';
 import { PluginsBundleProvider } from 'contexts/PluginsBundleContext/PluginsBundleContext';
-import { ControlledPromise, scaleX, scaleY, timeout } from 'index';
+import {
+  ControlledPromise,
+  PromiseUtils,
+  scaleX,
+  scaleY,
+  timeout,
+} from 'index';
 import { Plugin, PluginFactoryOptions, PluginsBundle } from 'plugins/Plugin';
 
 const chalkCtx = new chalk.Instance({ level: 3 });
@@ -69,6 +75,18 @@ export function AppBootstrapper({
       group: string | null,
     ) => {
       const initializationStartTime = new Date().valueOf();
+      if (
+        'dependsOn' in plugin &&
+        plugin.dependsOn &&
+        plugin.dependsOn.length
+      ) {
+        await PromiseUtils.waitUntil(
+          () =>
+            !plugin.dependsOn!.find(
+              (x) => !initializedPlugins.current.find((y) => y.name === x),
+            ),
+        );
+      }
 
       try {
         if ('useValue' in plugin) {

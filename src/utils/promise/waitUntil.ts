@@ -1,7 +1,7 @@
 import { wait } from './wait';
 
 export async function waitUntil(
-  fn: () => Promise<boolean>,
+  fn: (() => boolean) | (() => Promise<boolean>),
   timeout?: number,
   retries?: number,
 ) {
