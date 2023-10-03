@@ -129,7 +129,7 @@ export function AppBootstrapper({
           [
             chalkCtx[group ? 'blue' : 'yellow'](`[${lastPlugin.name}]`),
             chalkCtx.green(
-              `Plugin ${group ? `{group: ${group}}` : ''} initialized`,
+              `Plugin${group ? ` {group: ${group}} ` : ' '}initialized`,
             ),
             chalkCtx[group ? 'blue' : 'yellow'](
               `+${(new Date().valueOf() - initializationStartTime).toFixed(
@@ -150,9 +150,9 @@ export function AppBootstrapper({
               [
                 chalkCtx[group ? 'blue' : 'yellow'](`[${pluginName}]`),
                 chalkCtx.red(
-                  `Plugin ${
-                    group ? `{group: ${group}}` : ''
-                  } initialization timeout`,
+                  `Plugin${
+                    group ? ` {group: ${group}} ` : ' '
+                  }initialization timeout`,
                 ),
                 chalkCtx[group ? 'blue' : 'yellow'](
                   `+${(new Date().valueOf() - initializationStartTime).toFixed(

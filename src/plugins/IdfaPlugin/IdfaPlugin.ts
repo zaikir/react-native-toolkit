@@ -22,15 +22,21 @@ export class IdfaPlugin extends Plugin {
 
   async initialize() {
     let subscription: NativeEventSubscription;
-    await new Promise<void>((resolve) => {
-      subscription = AppState.addEventListener('change', (nextAppState) => {
-        if (nextAppState === 'active') {
-          resolve();
-        }
-      });
-    });
 
-    subscription!.remove();
+    if (AppState.currentState !== 'active') {
+      await new Promise<void>((resolve) => {
+        subscription = AppState.addEventListener('change', (nextAppState) => {
+          if (nextAppState === 'active') {
+            resolve();
+          }
+        });
+      });
+    }
+
+    // @ts-ignore
+    if (subscription) {
+      subscription.remove();
+    }
 
     if (this.options.delay) {
       await wait(this.options.delay ?? 100);
