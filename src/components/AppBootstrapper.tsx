@@ -127,7 +127,7 @@ export function AppBootstrapper({
 
         console.info(
           [
-            chalkCtx.yellow(`$[${lastPlugin.name}]`),
+            chalkCtx.yellow(`[${lastPlugin.name}]`),
             chalkCtx.green(`${async ? 'Async plugin' : 'Plugin'} initialized`),
             chalkCtx.yellow(
               `+${(new Date().valueOf() - initializationStartTime).toFixed(
@@ -146,7 +146,7 @@ export function AppBootstrapper({
 
             console.error(
               [
-                chalkCtx.yellow(`$[${pluginName}]`),
+                chalkCtx.yellow(`[${pluginName}]`),
                 chalkCtx.red(
                   `${async ? 'Async plugin' : 'Plugin'} initialization timeout`,
                 ),
