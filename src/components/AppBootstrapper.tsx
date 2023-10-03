@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import PQueue from 'p-queue';
 import React, { useCallback, useRef, useState } from 'react';
 import { Alert, Button, StatusBar, Text, View } from 'react-native';
@@ -33,14 +34,12 @@ type Props = {
   children?: React.ReactNode;
   plugins?: PluginDef[];
   splashScreenProps?: Omit<AppSplashScreenProps, 'visible' | 'children'>;
-  debug?: boolean;
 };
 
 export function AppBootstrapper({
   children,
   plugins,
   splashScreenProps,
-  debug,
 }: Props) {
   const [isInitialized, setIsInitialized] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
@@ -66,52 +65,94 @@ export function AppBootstrapper({
       plugin: PluginDef,
       bundle: PluginsBundle,
     ) => {
-      if ('useValue' in plugin) {
-        await timeout(
-          plugin.useValue.initialize(bundle),
-          plugin.timeout === null
-            ? null
-            : plugin.timeout ?? plugin.useValue.initializationTimeout,
-        );
-        initializedPlugins.current.push(plugin.useValue);
-      } else if ('useFactory' in plugin) {
-        const initializedPlugin = await plugin.useFactory(bundle);
+      const initializationStartTime = new Date().valueOf();
 
-        if (initializedPlugin) {
+      try {
+        if ('useValue' in plugin) {
           await timeout(
-            initializedPlugin.initialize(bundle),
+            plugin.useValue.initialize(bundle),
             plugin.timeout === null
               ? null
-              : plugin.timeout ?? initializedPlugin.initializationTimeout,
+              : plugin.timeout ?? plugin.useValue.initializationTimeout,
+            `${plugin.useValue.name} timeout error`,
           );
-          initializedPlugins.current.push(initializedPlugin);
+          initializedPlugins.current.push(plugin.useValue);
+        } else if ('useFactory' in plugin) {
+          const initializedPlugin = await plugin.useFactory(bundle);
+
+          if (initializedPlugin) {
+            await timeout(
+              initializedPlugin.initialize(bundle),
+              plugin.timeout === null
+                ? null
+                : plugin.timeout ?? initializedPlugin.initializationTimeout,
+              `${initializedPlugin.name} timeout error`,
+            );
+            initializedPlugins.current.push(initializedPlugin);
+          }
+        } else if ('useDeferredFactory' in plugin) {
+          const promise = new ControlledPromise<void>();
+          const pluginName = plugin.name ?? 'DeferredPlugin';
+
+          const initializedPlugin = await timeout(
+            plugin.useDeferredFactory(bundle, promise.resolve, promise.reject),
+            plugin.timeout,
+            `${pluginName} timeout error`,
+          );
+
+          const [, additionalData] = await timeout(
+            Promise.all([
+              initializedPlugin?.initialize(bundle),
+              promise.wait(),
+            ]),
+            plugin.timeout === null
+              ? null
+              : plugin.timeout ?? initializedPlugin?.initializationTimeout,
+            `${pluginName} timeout error`,
+          );
+
+          if (initializedPlugin) {
+            initializedPlugin.payload = additionalData;
+            initializedPlugins.current.push(initializedPlugin);
+          }
+        } else {
+          initializedPlugins.current.push(plugin);
         }
-      } else if ('useDeferredFactory' in plugin) {
-        const promise = new ControlledPromise<void>();
-        const initializedPlugin = await timeout(
-          plugin.useDeferredFactory(bundle, promise.resolve, promise.reject),
-          plugin.timeout,
-        );
 
-        const [, additionalData] = await timeout(
-          Promise.all([initializedPlugin?.initialize(bundle), promise.wait()]),
-          plugin.timeout === null
-            ? null
-            : plugin.timeout ?? initializedPlugin?.initializationTimeout,
-        );
-
-        if (initializedPlugin) {
-          initializedPlugin.payload = additionalData;
-          initializedPlugins.current.push(initializedPlugin);
-        }
-      } else {
-        initializedPlugins.current.push(plugin);
-      }
-
-      if (debug) {
         const lastPlugin =
           initializedPlugins.current[initializedPlugins.current.length - 1];
-        console.log(`${lastPlugin.name} initialized`);
+
+        console.info(
+          `${chalk.yellow(`$[${lastPlugin.name}]`)} ${chalk.green(
+            `Plugin initialized (${(
+              (new Date().valueOf() - initializationStartTime) /
+              1000
+            ).toFixed(2)}s)`,
+          )}`,
+        );
+      } catch (err) {
+        if (err) {
+          const errorMessage =
+            err instanceof Error ? err.message : (err as any).toString();
+
+          if (errorMessage.includes('timeout error')) {
+            const pluginName = errorMessage.replace(' timeout error', '');
+
+            console.error(
+              `${chalk.yellow(`$[${pluginName}]`)} ${chalk.red(
+                `Initialization timeout (${(
+                  (new Date().valueOf() - initializationStartTime) /
+                  1000
+                ).toFixed(2)}s)`,
+              )}`,
+            );
+          }
+
+          // eslint-disable-next-line @typescript-eslint/no-throw-literal
+          throw err;
+        }
+
+        throw err;
       }
     };
 
@@ -147,18 +188,19 @@ export function AppBootstrapper({
         if ('optional' in plugin && plugin.optional) {
           continue;
         }
-        let errorMessage =
+        const errorMessage =
           err instanceof Error ? err.message : (err as any).toString();
 
         if (errorMessage === 'Timeout error') {
-          errorMessage = `Plugin timeout error`;
+          // no-op
+        } else {
+          console.error(errorMessage);
         }
 
         ErrorFallbackScreen.current =
           'fallbackScreen' in plugin ? plugin.fallbackScreen : null;
         setInitializationError(errorMessage);
 
-        console.error(errorMessage);
         throw new Error(errorMessage);
       }
     }

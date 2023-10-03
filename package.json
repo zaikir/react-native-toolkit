@@ -1,6 +1,6 @@
 {
   "name": "@kirz/react-native-toolkit",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "files": [
     "react-native.config.js",
     "lib",
@@ -136,6 +136,7 @@
   },
   "dependencies": {
     "@formatjs/intl": "^2.9.3",
+    "chalk": "^4.1.2",
     "font-color-contrast": "^11.1.0",
     "intl": "^1.2.5",
     "p-queue": "^6.6.2",
