@@ -11,6 +11,8 @@ import { PluginsBundleProvider } from 'contexts/PluginsBundleContext/PluginsBund
 import { ControlledPromise, scaleX, scaleY, timeout } from 'index';
 import { Plugin, PluginFactoryOptions, PluginsBundle } from 'plugins/Plugin';
 
+const chalkCtx = new chalk.Instance({ level: 3 });
+
 type PluginDef =
   | Plugin
   | ((
@@ -64,6 +66,7 @@ export function AppBootstrapper({
     const initializePlugin = async (
       plugin: PluginDef,
       bundle: PluginsBundle,
+      async: boolean,
     ) => {
       const initializationStartTime = new Date().valueOf();
 
@@ -123,12 +126,15 @@ export function AppBootstrapper({
           initializedPlugins.current[initializedPlugins.current.length - 1];
 
         console.info(
-          `${chalk.yellow(`$[${lastPlugin.name}]`)} ${chalk.green(
-            `Plugin initialized (${(
-              (new Date().valueOf() - initializationStartTime) /
-              1000
-            ).toFixed(2)}s)`,
-          )}`,
+          [
+            chalkCtx.yellow(`$[${lastPlugin.name}]`),
+            chalkCtx.green(`${async ? 'Async plugin' : 'Plugin'} initialized`),
+            chalkCtx.yellow(
+              `+${(new Date().valueOf() - initializationStartTime).toFixed(
+                0,
+              )}ms`,
+            ),
+          ].join(' '),
         );
       } catch (err) {
         if (err) {
@@ -139,12 +145,17 @@ export function AppBootstrapper({
             const pluginName = errorMessage.replace(' timeout error', '');
 
             console.error(
-              `${chalk.yellow(`$[${pluginName}]`)} ${chalk.red(
-                `Initialization timeout (${(
-                  (new Date().valueOf() - initializationStartTime) /
-                  1000
-                ).toFixed(2)}s)`,
-              )}`,
+              [
+                chalkCtx.yellow(`$[${pluginName}]`),
+                chalkCtx.red(
+                  `${async ? 'Async plugin' : 'Plugin'} initialization timeout`,
+                ),
+                chalkCtx.yellow(
+                  `+${(new Date().valueOf() - initializationStartTime).toFixed(
+                    0,
+                  )}ms`,
+                ),
+              ].join(' '),
             );
           }
 
@@ -171,7 +182,7 @@ export function AppBootstrapper({
         if ('async' in plugin && plugin.async) {
           asyncQueue.add(async () => {
             try {
-              await initializePlugin(plugin, bundle);
+              await initializePlugin(plugin, bundle, true);
             } catch {
               // no-op
             }
@@ -183,7 +194,7 @@ export function AppBootstrapper({
           continue;
         }
 
-        await initializePlugin(plugin, bundle);
+        await initializePlugin(plugin, bundle, false);
       } catch (err) {
         if ('optional' in plugin && plugin.optional) {
           continue;
@@ -191,7 +202,7 @@ export function AppBootstrapper({
         const errorMessage =
           err instanceof Error ? err.message : (err as any).toString();
 
-        if (errorMessage === 'Timeout error') {
+        if (errorMessage.includes('timeout error')) {
           // no-op
         } else {
           console.error(errorMessage);
