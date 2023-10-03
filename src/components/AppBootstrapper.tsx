@@ -66,7 +66,7 @@ export function AppBootstrapper({
     const initializePlugin = async (
       plugin: PluginDef,
       bundle: PluginsBundle,
-      async: boolean,
+      group: string | null,
     ) => {
       const initializationStartTime = new Date().valueOf();
 
@@ -127,9 +127,11 @@ export function AppBootstrapper({
 
         console.info(
           [
-            chalkCtx.yellow(`[${lastPlugin.name}]`),
-            chalkCtx.green(`${async ? 'Async plugin' : 'Plugin'} initialized`),
-            chalkCtx.yellow(
+            chalkCtx[group ? 'blue' : 'yellow'](`[${lastPlugin.name}]`),
+            chalkCtx.green(
+              `Plugin ${group ? `{group: ${group}}` : ''} initialized`,
+            ),
+            chalkCtx[group ? 'blue' : 'yellow'](
               `+${(new Date().valueOf() - initializationStartTime).toFixed(
                 0,
               )}ms`,
@@ -146,11 +148,13 @@ export function AppBootstrapper({
 
             console.error(
               [
-                chalkCtx.yellow(`[${pluginName}]`),
+                chalkCtx[group ? 'blue' : 'yellow'](`[${pluginName}]`),
                 chalkCtx.red(
-                  `${async ? 'Async plugin' : 'Plugin'} initialization timeout`,
+                  `Plugin ${
+                    group ? `{group: ${group}}` : ''
+                  } initialization timeout`,
                 ),
-                chalkCtx.yellow(
+                chalkCtx[group ? 'blue' : 'yellow'](
                   `+${(new Date().valueOf() - initializationStartTime).toFixed(
                     0,
                   )}ms`,
@@ -167,7 +171,7 @@ export function AppBootstrapper({
       }
     };
 
-    const asyncQueue = new PQueue({ concurrency: 1 });
+    const asyncQueue: Record<string, PQueue> = {};
 
     for (
       currentPluginIndex.current;
@@ -179,22 +183,28 @@ export function AppBootstrapper({
       try {
         const bundle = new PluginsBundle(initializedPlugins.current);
 
-        if ('async' in plugin && plugin.async) {
-          asyncQueue.add(async () => {
+        if ('group' in plugin && plugin.group) {
+          if (!asyncQueue[plugin.group]) {
+            asyncQueue[plugin.group] = new PQueue({ concurrency: 1 });
+          }
+
+          const queue = asyncQueue[plugin.group];
+
+          queue.add(async () => {
             try {
-              await initializePlugin(plugin, bundle, true);
+              await initializePlugin(plugin, bundle, plugin.group!);
             } catch {
               // no-op
             }
 
-            if (isInitializedRef.current && !asyncQueue.size) {
+            if (isInitializedRef.current && !queue.size) {
               setPluginsBundle(new PluginsBundle(initializedPlugins.current));
             }
           });
           continue;
         }
 
-        await initializePlugin(plugin, bundle, false);
+        await initializePlugin(plugin, bundle, null);
       } catch (err) {
         if ('optional' in plugin && plugin.optional) {
           continue;

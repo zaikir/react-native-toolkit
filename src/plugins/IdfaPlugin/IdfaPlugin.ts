@@ -1,4 +1,5 @@
 import ReactNativeIdfaAaid from '@sparkfabrik/react-native-idfa-aaid';
+import { AppState, NativeEventSubscription } from 'react-native';
 
 import { Plugin, PluginFeature } from 'plugins/Plugin';
 
@@ -20,15 +21,30 @@ export class IdfaPlugin extends Plugin {
   }
 
   async initialize() {
+    let subscription: NativeEventSubscription;
+    await new Promise<void>((resolve) => {
+      subscription = AppState.addEventListener('change', (nextAppState) => {
+        if (nextAppState === 'active') {
+          resolve();
+        }
+      });
+    });
+
+    subscription!.remove();
+
     if (this.options.delay) {
-      await wait(this.options.delay);
+      await wait(this.options.delay ?? 100);
     }
 
-    const res = await ReactNativeIdfaAaid.getAdvertisingInfo();
-    if (!res.id) {
-      return;
-    }
+    try {
+      const res = await ReactNativeIdfaAaid.getAdvertisingInfo();
+      if (!res.id) {
+        return;
+      }
 
-    this._idfa = res.id!;
+      this._idfa = res.id!;
+    } catch {
+      // no-op
+    }
   }
 }
