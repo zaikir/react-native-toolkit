@@ -37,17 +37,18 @@ export const InAppPurchaseContext = createContext<InAppPurchaseContextType>(
 
 export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
   const { bundle } = useContext(PluginsBundleContext);
-  const iapPurchasePlugin =
-    bundle.getByFeature<IAppPurchasePlugin>('InAppPurchase');
+  const iapPurchasePlugin = useMemo(() => {
+    return bundle.getByFeature<IAppPurchasePlugin>('InAppPurchase');
+  }, [bundle]);
   const [activeSubscription, setActiveSubscription] = useState<
     (PurchasedSubscriptionInfo & Subscription) | null
   >(null);
   const [hasPremiumAccess, setHasPremiumAccess] = useState(false);
   const lastUserDataFetchTimestamp = useRef(new Date().valueOf());
 
-  const fetchUserData = async () => {
+  const fetchUserData = useCallback(async () => {
     if (!iapPurchasePlugin) {
-      throw new Error('IAP plugin not found');
+      throw new Error('IAP is not initialized');
     }
 
     const results = await Promise.all([
@@ -80,11 +81,11 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
     lastUserDataFetchTimestamp.current = new Date().valueOf();
 
     return results[0];
-  };
+  }, [iapPurchasePlugin]);
 
   const restorePurchases = useCallback(async () => {
     if (!iapPurchasePlugin) {
-      throw new Error('IAP plugin not found');
+      throw new Error('IAP is not initialized');
     }
 
     await iapPurchasePlugin.receiptValidator.restorePurchases();
