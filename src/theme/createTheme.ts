@@ -1,6 +1,6 @@
 import type { TextStyle } from 'react-native';
 
-import type { ThemeColor } from './index';
+import type { ThemeColor, ThemeGradientValue } from './index';
 
 export function createTheme<
   TextVariant extends string,
@@ -8,6 +8,7 @@ export function createTheme<
   Color extends string,
   TextFont extends Font,
   Value extends string,
+  Gradient extends string,
 >(props: {
   typography: Record<
     TextVariant,
@@ -26,6 +27,7 @@ export function createTheme<
     text: ThemeColor;
     background: ThemeColor;
   } & Record<Color, ThemeColor>;
+  gradients: Record<Gradient, ThemeGradientValue>;
   values: Record<Value, number>;
 }) {
   return props;

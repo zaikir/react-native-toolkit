@@ -3,12 +3,13 @@ import React, { createContext, PropsWithChildren, useMemo } from 'react';
 import type { TextStyle } from 'react-native';
 
 import { useColorScheme } from 'hooks/useColorScheme';
-import type { Theme, ThemeColor } from 'theme';
+import type { Theme, ThemeColor, ThemeGradientValue } from 'theme';
 
 export type UseTheme<T extends Theme> = {
   typography: Record<keyof T['typography'], TextStyle>;
   fonts: T['fonts'];
   colors: Record<keyof T['colors'], string>;
+  gradients: Record<keyof T['gradients'], ThemeGradientValue>;
   values: Record<keyof T['values'], number>;
   getContrastColor: (color: string) => 'black' | 'white';
 };
