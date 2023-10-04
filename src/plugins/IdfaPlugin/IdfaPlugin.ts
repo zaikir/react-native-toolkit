@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import ReactNativeIdfaAaid from '@sparkfabrik/react-native-idfa-aaid';
 import { AppState, NativeEventSubscription } from 'react-native';
 
@@ -21,6 +22,12 @@ export class IdfaPlugin extends Plugin {
   }
 
   async initialize() {
+    const storedIdfa = await AsyncStorage.getItem('__IdfaPlugin__');
+    if (storedIdfa) {
+      this._idfa = storedIdfa === 'null' ? null : storedIdfa;
+      return;
+    }
+
     let subscription: NativeEventSubscription;
 
     if (AppState.currentState !== 'active') {
@@ -52,5 +59,10 @@ export class IdfaPlugin extends Plugin {
     } catch {
       // no-op
     }
+
+    await AsyncStorage.setItem(
+      '__IdfaPlugin__',
+      this._idfa ? this._idfa : 'null',
+    );
   }
 }
