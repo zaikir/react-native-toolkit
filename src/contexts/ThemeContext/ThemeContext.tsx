@@ -9,6 +9,7 @@ export type UseTheme<T extends Theme> = {
   typography: Record<keyof T['typography'], TextStyle>;
   fonts: T['fonts'];
   colors: Record<keyof T['colors'], string>;
+  values: Record<keyof T['values'], number>;
   getContrastColor: (color: string) => 'black' | 'white';
 };
 
