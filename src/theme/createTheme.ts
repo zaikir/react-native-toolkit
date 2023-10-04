@@ -7,6 +7,7 @@ export function createTheme<
   Font extends string,
   Color extends string,
   TextFont extends Font,
+  Value extends string,
 >(props: {
   typography: Record<
     TextVariant,
@@ -25,6 +26,7 @@ export function createTheme<
     text: ThemeColor;
     background: ThemeColor;
   } & Record<Color, ThemeColor>;
+  values: Record<Value, number>;
 }) {
   return props;
 }
