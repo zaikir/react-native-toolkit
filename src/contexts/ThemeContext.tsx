@@ -37,6 +37,7 @@ export function ThemeProvider({
     const colors = Object.fromEntries(
       Object.entries(colorsDef).map(([name, color]) => {
         if (typeof color === 'object') {
+          // @ts-ignore
           return [name, color[colorScheme]];
         }
 

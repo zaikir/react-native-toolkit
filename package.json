@@ -1,6 +1,6 @@
 {
   "name": "@kirz/react-native-toolkit",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "files": [
     "react-native.config.js",
     "lib",
@@ -141,8 +141,8 @@
     "intl": "^1.2.5",
     "p-queue": "^6.6.2",
     "plist": "^3.0.6",
-    "react-native-dropdownalert": "^4.5.1",
     "react-native-localize": "^3.0.2",
+    "react-native-modal": "^13.0.1",
     "use-async-effect": "^2.2.7"
   }
 }

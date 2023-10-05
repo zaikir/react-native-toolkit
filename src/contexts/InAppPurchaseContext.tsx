@@ -9,7 +9,6 @@ import React, {
   useRef,
 } from 'react';
 
-import { PluginsBundleContext } from 'contexts/PluginsBundleContext/PluginsBundleContext';
 import {
   IAppPurchasePlugin,
   Product,
@@ -19,6 +18,8 @@ import {
 } from 'plugins/types';
 import { waitUntil } from 'utils/promise/waitUntil';
 import type { FunctionWrapper, GenericFunction } from 'utils/types';
+
+import { PluginsBundleContext } from './PluginsBundleContext';
 
 export type InAppPurchaseContextType = {
   products: Product[];

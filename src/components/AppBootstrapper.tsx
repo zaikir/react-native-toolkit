@@ -6,8 +6,8 @@ import { useAsyncEffect } from 'use-async-effect';
 
 import { AppSplashScreen } from 'components/AppSplashScreen';
 import type { AppSplashScreenProps } from 'components/AppSplashScreen';
-import { InAppPurchaseProvider } from 'contexts/InAppPurchaseContext/InAppPurchaseContext';
-import { PluginsBundleProvider } from 'contexts/PluginsBundleContext/PluginsBundleContext';
+import { InAppPurchaseProvider } from 'contexts/InAppPurchaseContext';
+import { PluginsBundleProvider } from 'contexts/PluginsBundleContext';
 import {
   ControlledPromise,
   PromiseUtils,

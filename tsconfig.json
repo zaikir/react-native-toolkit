@@ -17,13 +17,7 @@
     "noUnusedParameters": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "esnext",
-    // "paths": {
-    //   "theme": ["./src/theme/*"],
-    //   "theme/*": ["./src/theme/*"],
-    //   "components/*": ["./src/components/*"],
-    //   "plugins/*": ["./src/plugins/*"]
-    // }
+    "target": "esnext"
   },
   "exclude": [
     "scripts"

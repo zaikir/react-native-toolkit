@@ -1,3 +1,5 @@
+import { ReactNode } from 'react';
+
 export * from './augmented';
 export { createTheme } from './createTheme';
 
@@ -14,13 +16,27 @@ export type ThemeGradient =
   | { dark: ThemeGradientValue; light: ThemeGradientValue }
   | ThemeGradientValue;
 
-export type ThemeAlertConfig = {
-  title: string;
-  text?: string;
-  cancelable?: boolean;
-  buttons: {
-    text: string;
-    style?: 'default' | 'cancel' | 'destructive';
-    onPress?: (resolve: any, reject: any) => void;
-  }[];
+export type AlertComponentProps = {
+  resolve: (value: any) => void;
+  reject: (reason?: any) => void;
 };
+
+export type ThemeAlertConfig =
+  | {
+      title: string;
+      message: string;
+      cancelable?: boolean;
+      buttons: {
+        text: string;
+        style?: 'default' | 'cancel' | 'destructive';
+        onPress?: (
+          resolve: AlertComponentProps['resolve'],
+          reject: AlertComponentProps['reject'],
+        ) => void;
+      }[];
+      onDismiss?: (
+        resolve: AlertComponentProps['resolve'],
+        reject: AlertComponentProps['reject'],
+      ) => void;
+    }
+  | { component: (props: AlertComponentProps) => ReactNode };
