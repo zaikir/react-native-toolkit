@@ -6,6 +6,7 @@ export type Theme = {
   colors: Colors;
   gradients: Gradients;
   values: Values;
+  alerts: Alerts;
 };
 
 export interface TextVariants {}
@@ -16,9 +17,11 @@ export interface Colors {
 }
 export interface Gradients {}
 export interface Values {}
+export interface Alerts {}
 
 export type TextVariant = keyof TextVariants;
 export type FontFamily = keyof FontFamilies;
 export type Color = keyof Colors;
 export type Gradient = keyof Gradients;
 export type Value = keyof Values;
+export type Alert = keyof Alerts;

@@ -9,6 +9,18 @@ export type ThemeGradientValue = {
   colors: string[];
   locations?: number[];
 };
+
 export type ThemeGradient =
   | { dark: ThemeGradientValue; light: ThemeGradientValue }
   | ThemeGradientValue;
+
+export type ThemeAlertConfig = {
+  title: string;
+  text?: string;
+  cancelable?: boolean;
+  buttons: {
+    text: string;
+    style?: 'default' | 'cancel' | 'destructive';
+    onPress?: (resolve: any, reject: any) => void;
+  }[];
+};
