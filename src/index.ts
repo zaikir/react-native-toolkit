@@ -37,7 +37,7 @@ export {
 } from './plugins/types';
 
 // hooks
-export { useAlerts } from './hooks/useAlerts';
+export { useAlert } from './hooks/useAlert';
 export { useRemoteConfig } from './hooks/useRemoteConfig';
 export { useTheme } from './hooks/useTheme';
 export { useStorage, useStoredState } from './hooks/useStorage';
