@@ -4,7 +4,7 @@ export { hide as hideSplash } from 'react-native-bootsplash';
 // components
 export { Text, type TextProps } from './components/Text';
 export { AppBootstrapper } from './components/AppBootstrapper';
-export { AlertsContextType } from './contexts/AlertsContext';
+export { AlertProvider } from './contexts/AlertsContext';
 export { ThemeProvider } from './contexts/ThemeContext';
 export { StorageProvider } from './contexts/StorageContext';
 export { ColorSchemeProvider } from './contexts/ColorSchemeContext';
