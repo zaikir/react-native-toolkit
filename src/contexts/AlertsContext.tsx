@@ -122,6 +122,7 @@ export function AlertsProvider({ children }: AlertsProviderProps) {
                 }
 
                 button?.onPress?.(resolve, reject);
+                dequeueAlert(alertDefinition);
               },
             })) ?? [],
             {
@@ -151,14 +152,21 @@ export function AlertsProvider({ children }: AlertsProviderProps) {
                 ...alertDefinition,
                 component: () => (
                   <alertDefinition.component
-                    resolve={resolve}
-                    reject={reject}
+                    resolve={(value: any) => {
+                      resolve(value);
+                      dequeueAlert(alertDefinition);
+                    }}
+                    reject={(value: any) => {
+                      reject(value);
+                      dequeueAlert(alertDefinition);
+                    }}
                     {...props}
                   />
                 ),
                 // @ts-ignore
                 onDismiss() {
                   resolve(false);
+                  dequeueAlert(alertDefinition);
                 },
               },
             ];

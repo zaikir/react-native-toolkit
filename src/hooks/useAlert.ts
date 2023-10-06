@@ -1,8 +1,9 @@
 import { useCallback, useContext } from 'react';
 
 import { AlertsContext } from 'contexts/AlertsContext';
+import { Alert } from 'theme';
 
-export function useAlert(name: string) {
+export function useAlert(name: Alert) {
   const { showAlert: showAlertBase, hideAlert: hideAlertBase } =
     useContext(AlertsContext);
 
