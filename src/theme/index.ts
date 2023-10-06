@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { FunctionComponent, ReactNode } from 'react';
 
 export * from './augmented';
 export { createTheme } from './createTheme';
@@ -39,4 +39,4 @@ export type ThemeAlertConfig =
         reject: AlertComponentProps['reject'],
       ) => void;
     }
-  | { component: (props: AlertComponentProps) => ReactNode };
+  | { component: FunctionComponent<AlertComponentProps> };
