@@ -1,4 +1,5 @@
-import { FunctionComponent, ReactNode } from 'react';
+import { FunctionComponent } from 'react';
+import { ModalProps } from 'react-native-modal';
 
 export * from './augmented';
 export { createTheme } from './createTheme';
@@ -23,6 +24,7 @@ export type AlertComponentProps = {
 
 export type ThemeAlertConfig =
   | {
+      type?: 'alert';
       title: string;
       message: string;
       cancelable?: boolean;
@@ -39,4 +41,8 @@ export type ThemeAlertConfig =
         reject: AlertComponentProps['reject'],
       ) => void;
     }
-  | { component: FunctionComponent<AlertComponentProps> };
+  | {
+      type?: 'modal';
+      modalProps?: ModalProps;
+      component: FunctionComponent<AlertComponentProps>;
+    };
