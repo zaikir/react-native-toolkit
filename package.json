@@ -1,6 +1,6 @@
 {
   "name": "@kirz/react-native-toolkit",
-  "version": "0.2.18",
+  "version": "0.3.0",
   "files": [
     "react-native.config.js",
     "lib",
