@@ -1,6 +1,6 @@
+import { BlurViewProps } from '@react-native-community/blur';
 import { FunctionComponent } from 'react';
 import { ModalProps } from 'react-native-modal';
-
 export * from './augmented';
 export { createTheme } from './createTheme';
 
@@ -23,6 +23,10 @@ export type AlertComponentProps = {
   options: any;
 };
 
+export type UseBackdropColor<T> = T extends BlurViewProps['blurType']
+  ? `blur-${T}`
+  : T;
+
 export type ThemeAlertConfig =
   | {
       type?: 'alert';
@@ -44,7 +48,11 @@ export type ThemeAlertConfig =
     }
   | {
       type?: 'modal';
-      modalProps?: Partial<ModalProps>;
+      modalProps?: Partial<
+        ModalProps & {
+          blurType?: BlurViewProps['blurType'];
+        }
+      >;
       component: FunctionComponent<AlertComponentProps>;
       componentProps?: Record<string, any>;
     };

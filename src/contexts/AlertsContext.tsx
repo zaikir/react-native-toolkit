@@ -248,6 +248,11 @@ export function AlertsProvider({ children }: AlertsProviderProps) {
             <Modal
               {...activeAlertRef.current.modalProps}
               isVisible={isActiveModalVisible}
+              backdropColor={
+                activeAlertRef.current.modalProps?.blurType
+                  ? undefined
+                  : activeAlertRef.current.modalProps?.backdropColor
+              }
               animationIn={
                 activeAlertRef.current.modalProps?.animationIn ?? 'bounceIn'
               }
