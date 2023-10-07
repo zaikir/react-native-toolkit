@@ -1,6 +1,6 @@
 {
   "name": "@kirz/react-native-toolkit",
-  "version": "0.2.15",
+  "version": "0.2.16",
   "files": [
     "react-native.config.js",
     "lib",
@@ -83,8 +83,8 @@
     "release": "npm publish --access public"
   },
   "peerDependencies": {
+    "@kirz/react-native-blur": "^1.0.0",
     "@react-native-async-storage/async-storage": "^1.17.11",
-    "@react-native-community/blur": "^4.3.2",
     "react": "~18.1.0",
     "react-native": "~0.70.6",
     "react-native-bootsplash": "^4.4.0",
@@ -96,8 +96,8 @@
     "@babel/runtime": "^7.12.5",
     "@kirz/react-native-apphud": "^1.0.6",
     "@kirz/react-native-appmetrica": "^2.1.0",
+    "@kirz/react-native-blur": "^1.0.0",
     "@react-native-async-storage/async-storage": "^1.17.11",
-    "@react-native-community/blur": "^4.3.2",
     "@react-native-firebase/analytics": "^14.12.0",
     "@react-native-firebase/app": "^14.12.0",
     "@react-native-firebase/remote-config": "^14.12.0",

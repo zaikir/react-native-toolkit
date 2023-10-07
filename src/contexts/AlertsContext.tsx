@@ -7,9 +7,10 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Alert, View } from 'react-native';
+import { Alert, Platform, View } from 'react-native';
 import Modal from 'react-native-modal';
 
+import { BlurView } from 'components/BlurView';
 import { ControlledPromise, ThemeAlertConfig, useTheme } from 'index';
 
 export type AlertsContextType = {
@@ -252,6 +253,26 @@ export function AlertsProvider({ children }: AlertsProviderProps) {
                 activeAlertRef.current.modalProps?.blurType
                   ? undefined
                   : activeAlertRef.current.modalProps?.backdropColor
+              }
+              customBackdrop={
+                activeAlertRef.current?.modalProps?.customBackdrop ??
+                (activeAlertRef.current.modalProps?.blurType ? (
+                  <BlurView
+                    {...activeAlertRef.current.modalProps?.blurProps}
+                    animated={
+                      activeAlertRef.current.modalProps?.blurProps?.animated ??
+                      true
+                    }
+                    blurType={
+                      activeAlertRef.current.modalProps?.blurType ??
+                      (Platform.OS === 'ios' ? 'transparent' : 'dark')
+                    }
+                    style={[
+                      { flex: 1 },
+                      activeAlertRef.current.modalProps?.blurProps?.style,
+                    ]}
+                  />
+                ) : undefined)
               }
               animationIn={
                 activeAlertRef.current.modalProps?.animationIn ?? 'bounceIn'
