@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Alert, Platform, View } from 'react-native';
+import { Alert, Platform, TouchableOpacity, View } from 'react-native';
 import Modal from 'react-native-modal';
 
 import { BlurView } from 'components/BlurView';
@@ -254,25 +254,60 @@ export function AlertsProvider({ children }: AlertsProviderProps) {
                   ? undefined
                   : activeAlertRef.current.modalProps?.backdropColor
               }
+              backdropOpacity={
+                activeAlertRef.current.modalProps?.blurType
+                  ? 1
+                  : activeAlertRef.current.modalProps?.backdropOpacity
+              }
               customBackdrop={
                 activeAlertRef.current?.modalProps?.customBackdrop ??
-                (activeAlertRef.current.modalProps?.blurType ? (
-                  <BlurView
-                    {...activeAlertRef.current.modalProps?.blurProps}
-                    animated={
-                      activeAlertRef.current.modalProps?.blurProps?.animated ??
-                      true
-                    }
-                    blurType={
-                      activeAlertRef.current.modalProps?.blurType ??
-                      (Platform.OS === 'ios' ? 'transparent' : 'dark')
-                    }
-                    style={[
-                      { flex: 1 },
-                      activeAlertRef.current.modalProps?.blurProps?.style,
-                    ]}
-                  />
-                ) : undefined)
+                (activeAlertRef.current.modalProps?.blurType
+                  ? (() => {
+                      const content = (
+                        <BlurView
+                          {...activeAlertRef.current.modalProps?.blurProps}
+                          animated={
+                            activeAlertRef.current.modalProps?.blurProps
+                              ?.animated ?? true
+                          }
+                          blurAmount={
+                            activeAlertRef.current.modalProps?.blurProps
+                              ?.blurAmount ?? 20
+                          }
+                          enteringAnimationDuration={
+                            activeAlertRef.current.modalProps?.blurProps
+                              ?.enteringAnimationDuration ?? 200
+                          }
+                          blurType={
+                            activeAlertRef.current.modalProps?.blurType ??
+                            (Platform.OS === 'ios' ? 'transparent' : 'dark')
+                          }
+                          style={[
+                            { flex: 1 },
+                            activeAlertRef.current.modalProps?.blurProps?.style,
+                          ]}
+                        />
+                      );
+
+                      if (
+                        !activeAlertRef.current?.modalProps?.onBackdropPress
+                      ) {
+                        return content;
+                      }
+
+                      return (
+                        <TouchableOpacity
+                          activeOpacity={1}
+                          onPress={
+                            activeAlertRef.current.modalProps.onBackdropPress
+                          }
+                          style={{ flex: 1 }}
+                        >
+                          {content}
+                        </TouchableOpacity>
+                      );
+                    })()
+                  : undefined)
               }
               animationIn={
                 activeAlertRef.current.modalProps?.animationIn ?? 'bounceIn'
