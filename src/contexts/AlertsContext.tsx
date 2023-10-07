@@ -24,67 +24,73 @@ export const AlertsContext = createContext<AlertsContextType>({} as any);
 export function AlertsProvider({ children }: AlertsProviderProps) {
   const theme = useTheme();
   const [isActiveModalVisible, setIsActiveModalVisible] = useState(false);
-  const alertsStack = useRef<ThemeAlertConfig[]>([]);
-  const activeAlertRef = useRef<ThemeAlertConfig | null>(null);
+  const alertsStack = useRef<(ThemeAlertConfig & { id: string })[]>([]);
+  const activeAlertRef = useRef<(ThemeAlertConfig & { id: string }) | null>(
+    null,
+  );
   const activeAlertAwaiter = useRef<ControlledPromise<void> | null>(null);
   const alertsQueue = useRef<PQueue>(new PQueue({ concurrency: 1 }));
 
   const alertsDefinition: Record<string, ThemeAlertConfig> = theme.alerts;
 
-  const dequeueAlert = useCallback((alertDefinition: ThemeAlertConfig) => {
-    return alertsQueue.current.add(async () => {
-      if (activeAlertRef.current !== alertDefinition) {
-        alertsStack.current = alertsStack.current.filter(
-          (x) => x !== alertDefinition,
-        );
-        return;
-      }
+  const dequeueAlert = useCallback(
+    (alertDefinition: ThemeAlertConfig & { id: string }) => {
+      return alertsQueue.current.add(async () => {
+        if (activeAlertRef.current?.id !== alertDefinition.id) {
+          alertsStack.current = alertsStack.current.filter(
+            (x) => x.id !== alertDefinition.id,
+          );
+          return;
+        }
 
-      if (!('component' in alertDefinition)) {
-        // can't hide system alert
-        alertsStack.current.pop();
-      } else {
-        activeAlertAwaiter.current = new ControlledPromise<void>();
-
-        setIsActiveModalVisible(false);
-
-        await activeAlertAwaiter.current.wait();
-        activeAlertAwaiter.current = null;
-      }
-
-      alertsStack.current.pop();
-      activeAlertRef.current =
-        alertsStack.current[alertsStack.current.length - 1] ?? null;
-
-      if (!activeAlertRef.current) {
-        return;
-      }
-
-      if (!('component' in activeAlertRef.current)) {
-        // @ts-ignore
-        Alert.alert(activeAlertRef.current.systemAlertProps);
-      } else {
-        if (
-          !activeAlertRef.current.type ||
-          activeAlertRef.current.type === 'modal'
-        ) {
+        if (!('component' in alertDefinition)) {
+          // can't hide system alert
+          alertsStack.current.pop();
+        } else {
           activeAlertAwaiter.current = new ControlledPromise<void>();
 
-          setIsActiveModalVisible(true);
+          setIsActiveModalVisible(false);
 
           await activeAlertAwaiter.current.wait();
           activeAlertAwaiter.current = null;
         }
-      }
-    });
-  }, []);
+
+        alertsStack.current.pop();
+        activeAlertRef.current =
+          alertsStack.current[alertsStack.current.length - 1] ?? null;
+
+        if (!activeAlertRef.current) {
+          return;
+        }
+
+        if (!('component' in activeAlertRef.current)) {
+          // @ts-ignore
+          Alert.alert(activeAlertRef.current.systemAlertProps);
+        } else {
+          if (
+            !activeAlertRef.current.type ||
+            activeAlertRef.current.type === 'modal'
+          ) {
+            activeAlertAwaiter.current = new ControlledPromise<void>();
+
+            setIsActiveModalVisible(true);
+
+            await activeAlertAwaiter.current.wait();
+            activeAlertAwaiter.current = null;
+          }
+        }
+      });
+    },
+    [],
+  );
 
   const enqueueAlert = useCallback(
     (
       alertDefinition: ThemeAlertConfig,
       resolve: (value: any) => void,
       reject: (reason?: any) => void,
-      props?: any,
+      props: any,
+      name: string,
     ) => {
       return alertsQueue.current.add(async () => {
         if (activeAlertRef.current) {
@@ -95,6 +101,9 @@ export function AlertsProvider({ children }: AlertsProviderProps) {
           await activeAlertAwaiter.current.wait();
           activeAlertAwaiter.current = null;
         }
+
+        const id = name;
+        const alertDefinitionWithId = { ...alertDefinition, id };
 
         if (!('component' in alertDefinition)) {
           const alertProps = [
@@ -111,37 +120,35 @@ export function AlertsProvider({ children }: AlertsProviderProps) {
                     button.style === 'destructive')
                 ) {
                   resolve(true);
-                  dequeueAlert(alertDefinition);
+                  dequeueAlert(alertDefinitionWithId);
                   return;
                 }
 
                 if (!button.onPress && button.style === 'cancel') {
                   resolve(false);
-                  dequeueAlert(alertDefinition);
+                  dequeueAlert(alertDefinitionWithId);
                   return;
                 }
 
                 button?.onPress?.(resolve, reject);
-                dequeueAlert(alertDefinition);
+                dequeueAlert(alertDefinitionWithId);
               },
             })) ?? [],
             {
-              cancelable: alertDefinition.cancelable,
-              onDismiss() {
-                resolve(false);
-                dequeueAlert(alertDefinition);
-              },
+              cancelable: false,
             },
           ] as const;
 
           alertsStack.current = [
             ...alertsStack.current,
             {
-              ...alertDefinition,
+              ...alertDefinitionWithId,
               ...({ systemAlertProps: alertProps } as any),
             },
           ];
-          activeAlertRef.current = alertDefinition;
+
+          activeAlertRef.current =
+            alertsStack.current[alertsStack.current.length - 1];
 
           Alert.alert(...alertProps);
         } else {
@@ -150,24 +157,23 @@ export function AlertsProvider({ children }: AlertsProviderProps) {
               ...alertsStack.current,
               {
                 ...alertDefinition,
+                id,
                 component: () => (
                   <alertDefinition.component
                     resolve={(value: any) => {
                       resolve(value);
-                      dequeueAlert(alertDefinition);
+                      dequeueAlert(alertDefinitionWithId);
                     }}
                     reject={(value: any) => {
                       reject(value);
-                      dequeueAlert(alertDefinition);
+                      dequeueAlert(alertDefinitionWithId);
                     }}
-                    {...props}
+                    options={{
+                      ...alertDefinition.componentProps,
+                      ...props,
+                    }}
                   />
                 ),
-                // @ts-ignore
-                onDismiss() {
-                  resolve(false);
-                  dequeueAlert(alertDefinition);
-                },
               },
             ];
 
@@ -195,7 +201,7 @@ export function AlertsProvider({ children }: AlertsProviderProps) {
       }
 
       return new Promise<any>((resolve, reject) => {
-        enqueueAlert(alertDefinition, resolve, reject, props);
+        enqueueAlert(alertDefinition, resolve, reject, props ?? {}, name);
       });
     },
     [alertsDefinition, enqueueAlert],
@@ -208,7 +214,7 @@ export function AlertsProvider({ children }: AlertsProviderProps) {
         throw new Error(`Alert "${name}" is not registered`);
       }
 
-      await dequeueAlert(alertDefinition);
+      await dequeueAlert({ ...alertDefinition, id: name });
     },
     [alertsDefinition, enqueueAlert],
   );
@@ -248,6 +254,9 @@ export function AlertsProvider({ children }: AlertsProviderProps) {
               animationOut={
                 activeAlertRef.current.modalProps?.animationOut ?? 'zoomOut'
               }
+              animationOutTiming={
+                activeAlertRef.current.modalProps?.animationOutTiming ?? 100
+              }
               useNativeDriverForBackdrop={
                 activeAlertRef.current.modalProps?.useNativeDriverForBackdrop ??
                 true
@@ -258,18 +267,12 @@ export function AlertsProvider({ children }: AlertsProviderProps) {
               onModalHide={() => {
                 activeAlertAwaiter.current!.resolve();
                 // @ts-ignore
-                activeAlertRef?.current?.modalProps?.onModalHide();
+                activeAlertRef?.current?.modalProps?.onModalHide?.();
               }}
               onModalShow={() => {
                 activeAlertAwaiter.current!.resolve();
                 // @ts-ignore
-                activeAlertRef?.current?.modalProps?.onModalShow();
-              }}
-              onDismiss={() => {
-                // @ts-ignore
-                activeAlertRef?.current?.onDismiss();
-                // @ts-ignore
-                activeAlertRef?.current?.modalProps?.onDismiss();
+                activeAlertRef?.current?.modalProps?.onModalShow?.();
               }}
               style={[
                 { margin: 0 },

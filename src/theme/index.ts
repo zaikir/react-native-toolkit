@@ -20,6 +20,7 @@ export type ThemeGradient =
 export type AlertComponentProps = {
   resolve: (value: any) => void;
   reject: (reason?: any) => void;
+  options: any;
 };
 
 export type ThemeAlertConfig =
@@ -43,6 +44,7 @@ export type ThemeAlertConfig =
     }
   | {
       type?: 'modal';
-      modalProps?: ModalProps;
+      modalProps?: Partial<ModalProps>;
       component: FunctionComponent<AlertComponentProps>;
+      componentProps?: Record<string, any>;
     };
