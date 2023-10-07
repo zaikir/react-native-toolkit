@@ -289,6 +289,7 @@ export function AlertsProvider({ children }: AlertsProviderProps) {
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}
+                pointerEvents="box-none"
               >
                 {activeAlertRef.current?.component && (
                   <activeAlertRef.current.component {...({} as any)} />
