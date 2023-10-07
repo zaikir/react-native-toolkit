@@ -2,19 +2,21 @@ import {
   BlurView as BlurViewBase,
   BlurViewProps as BlurViewPropsBase,
 } from '@kirz/react-native-blur';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated } from 'react-native';
 
 export type BlurViewProps = BlurViewPropsBase & {
   animated?: boolean;
-  animationTimeout?: number;
+  enteringAnimationDuration?: number;
 };
 
 export function BlurView({
   animated,
-  animationTimeout = 10,
+  enteringAnimationDuration = 200,
   blurAmount = 10,
   ...props
 }: BlurViewProps) {
+  const enteringAnimation = useRef(new Animated.Value(0)).current;
   const [animatedBlurAmount, setAnimatedBlurAmount] = useState(0);
 
   useEffect(() => {
@@ -22,19 +24,20 @@ export function BlurView({
       return;
     }
 
-    const interval = setInterval(() => {
-      setAnimatedBlurAmount((x) => {
-        if (x + 1 > blurAmount) {
-          clearInterval(interval);
-          return x;
-        }
+    const animation = Animated.timing(enteringAnimation, {
+      toValue: blurAmount,
+      duration: enteringAnimationDuration,
+      useNativeDriver: false,
+    });
 
-        return x + 1;
-      });
-    }, animationTimeout);
+    animation.start();
+    const listener = enteringAnimation.addListener(({ value }) => {
+      setAnimatedBlurAmount(value);
+    });
 
     return () => {
-      clearInterval(interval);
+      animation.stop();
+      enteringAnimation.removeListener(listener);
     };
   }, [animated]);
 
