@@ -51,8 +51,10 @@ export function View({ style, children, ...props }: ViewProps) {
 
   const baseStyle: ViewStyle = {
     position: 'absolute',
-    width: '100%',
-    height: '100%',
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
   };
 
   const borderRadiusStyle: ViewStyle = {
@@ -67,12 +69,22 @@ export function View({ style, children, ...props }: ViewProps) {
   };
 
   const borderWidthStyle: ViewStyle = {
-    borderWidth: flattenStyle.borderWidth,
-    borderBottomWidth: flattenStyle.borderBottomWidth,
-    borderLeftWidth: flattenStyle.borderLeftWidth,
-    borderRightWidth: flattenStyle.borderRightWidth,
-    borderStartWidth: flattenStyle.borderStartWidth,
-    borderTopWidth: flattenStyle.borderTopWidth,
+    borderLeftWidth:
+      flattenStyle.borderLeftWidth ?? flattenStyle.borderWidth ?? 0,
+    borderRightWidth:
+      flattenStyle.borderRightWidth ?? flattenStyle.borderWidth ?? 0,
+    borderBottomWidth:
+      flattenStyle.borderBottomWidth ?? flattenStyle.borderWidth ?? 0,
+    borderTopWidth:
+      flattenStyle.borderTopWidth ?? flattenStyle.borderWidth ?? 0,
+  };
+
+  const borderColorStyle: ViewStyle = {
+    borderLeftColor: flattenStyle.borderLeftColor ?? flattenStyle.borderColor,
+    borderRightColor: flattenStyle.borderRightColor ?? flattenStyle.borderColor,
+    borderTopColor: flattenStyle.borderTopColor ?? flattenStyle.borderColor,
+    borderBottomColor:
+      flattenStyle.borderBottomColor ?? flattenStyle.borderColor,
   };
 
   const borderWidthNegativeStyle: ViewStyle = {
@@ -94,17 +106,22 @@ export function View({ style, children, ...props }: ViewProps) {
     ),
   };
 
-  const borderColorStyle: ViewStyle = {
-    borderLeftColor: flattenStyle.borderLeftColor ?? flattenStyle.borderColor,
-    borderRightColor: flattenStyle.borderRightColor ?? flattenStyle.borderColor,
-    borderTopColor: flattenStyle.borderTopColor ?? flattenStyle.borderColor,
-    borderBottomColor:
-      flattenStyle.borderBottomColor ?? flattenStyle.borderColor,
-  };
-
-  const renderAbsolute = (content: ReactNode) => {
+  const renderAbsolute = (content: ReactNode, borderAdjust?: boolean) => {
     return (
-      <ViewBase style={baseStyle} pointerEvents="none">
+      <ViewBase
+        style={
+          borderAdjust
+            ? {
+                position: 'absolute',
+                left: borderWidthStyle.borderLeftWidth! > 0 ? 1 : 0,
+                top: borderWidthStyle.borderTopWidth! > 0 ? 1 : 0,
+                right: borderWidthStyle.borderRightWidth! > 0 ? 1 : 0,
+                bottom: borderWidthStyle.borderBottomWidth! > 0 ? 1 : 0,
+              }
+            : baseStyle
+        }
+        pointerEvents="none"
+      >
         <ViewBase
           style={[
             {
@@ -122,10 +139,10 @@ export function View({ style, children, ...props }: ViewProps) {
   };
 
   return (
-    <ViewBase {...props} style={flattenStyle}>
+    <ViewBase {...props} style={[flattenStyle]}>
       {/* Render background gradient */}
       {backgroundGradients.length > 0 &&
-        renderAbsolute(renderGradient(backgroundGradients))}
+        renderAbsolute(renderGradient(backgroundGradients), true)}
 
       {/* Render background blur */}
       {backgroundBlur &&
@@ -149,6 +166,7 @@ export function View({ style, children, ...props }: ViewProps) {
 
       {/* Render default border */}
       {backgroundGradients.length > 0 &&
+        !borderGradients.length &&
         renderAbsolute(
           <ViewBase
             style={[
@@ -164,14 +182,12 @@ export function View({ style, children, ...props }: ViewProps) {
       {borderGradients.length > 0 &&
         renderAbsolute(
           <MaskedView
-            style={[baseStyle]}
+            style={baseStyle}
             maskElement={
               <View style={[baseStyle, borderRadiusStyle, borderWidthStyle]} />
             }
           >
-            <ViewBase style={[baseStyle]}>
-              {renderGradient(borderGradients)}
-            </ViewBase>
+            {renderGradient(borderGradients)}
           </MaskedView>,
         )}
 
