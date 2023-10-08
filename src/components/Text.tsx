@@ -1,23 +1,73 @@
+import MaskedView from '@react-native-masked-view/masked-view';
 import React, { useMemo } from 'react';
 import { StyleProp, StyleSheet, Text as TextBase } from 'react-native';
-import type { TextProps as TextPropsBase, TextStyle } from 'react-native';
+import type {
+  TextProps as TextPropsBase,
+  TextStyle as TextStyleBase,
+} from 'react-native';
 
-import { useTheme } from 'index';
+import { View, useTheme } from 'index';
 import type { FontFamily, TextVariant } from 'theme/augmented';
+import { GradientProps } from 'types';
 import { getFontWeightName } from 'utils/getFontWeightName';
+import { textStyleKeys } from 'utils/styles';
 
-export type TextProps = TextPropsBase & {
-  variant?: 'default' | TextVariant;
-  style?: StyleProp<TextStyle> & {
-    fontFamily?: FontFamily;
-  };
+export type TextStyle = TextStyleBase & {
+  fontFamily?: FontFamily;
+  gradient?: GradientProps | GradientProps[];
 };
 
-export function Text(props: TextProps) {
+export type TextProps = Omit<TextPropsBase, 'style'> & {
+  variant?: 'default' | TextVariant;
+  style?: StyleProp<TextStyle>;
+};
+
+export function Text({ style, ...props }: TextProps) {
   const theme = useTheme();
 
-  const flattenStyles = StyleSheet.flatten(props.style) || {};
-  const { fontFamily, fontWeight } = flattenStyles;
+  const {
+    textStyle,
+    flattenStyle: { gradient: gradientProp, ...flattenStyle },
+  } = useMemo(() => {
+    return Object.entries(StyleSheet.flatten(style) ?? {}).reduce(
+      (acc, x) => {
+        if (textStyleKeys.includes(x[0])) {
+          return {
+            flattenStyle: acc.flattenStyle,
+            textStyle: {
+              ...acc.textStyle,
+              [x[0]]: x[1],
+            },
+          };
+        }
+
+        return {
+          flattenStyle: {
+            ...acc.flattenStyle,
+            [x[0]]: x[1],
+          },
+          textStyle: acc.textStyle,
+        };
+      },
+      {
+        flattenStyle: {},
+        textStyle: {},
+      } as {
+        flattenStyle: TextStyle;
+        textStyle: TextStyle;
+      },
+    );
+  }, [style]);
+
+  const gradients = !gradientProp
+    ? []
+    : typeof gradientProp === 'function'
+    ? [gradientProp]
+    : 'length' in gradientProp
+    ? gradientProp
+    : [gradientProp];
+
+  const { fontFamily, fontWeight } = textStyle;
 
   // @ts-ignore
   const variant = theme.typography[props.variant ?? 'default'] as TextStyle;
@@ -46,16 +96,42 @@ export function Text(props: TextProps) {
     return `${font}-${name}`;
   }, [fontFamily, fontWeight, theme.fonts, variant]);
 
+  const renderTextNode = (otherProps: TextProps) => {
+    return (
+      <TextBase
+        {...props}
+        {...otherProps}
+        allowFontScaling={
+          otherProps.allowFontScaling ?? props.allowFontScaling ?? false
+        }
+        style={[
+          {
+            color: theme.colors.text,
+            ...variant,
+            ...textStyle,
+            ...(fontAssetName && { fontFamily: fontAssetName }),
+          },
+          otherProps.style,
+        ]}
+      />
+    );
+  };
+
+  if (!gradients.length) {
+    return renderTextNode({
+      style: flattenStyle,
+    });
+  }
+
   return (
-    <TextBase
-      {...props}
-      allowFontScaling={props.allowFontScaling ?? false}
-      style={{
-        color: theme.colors.text,
-        ...variant,
-        ...flattenStyles,
-        ...(fontAssetName && { fontFamily: fontAssetName }),
-      }}
-    />
+    <MaskedView
+      maskElement={renderTextNode({
+        style: flattenStyle,
+      })}
+    >
+      <View style={[flattenStyle, { backgroundGradient: gradients }]}>
+        {renderTextNode({})}
+      </View>
+    </MaskedView>
   );
 }

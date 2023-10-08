@@ -1,5 +1,5 @@
 import MaskedView from '@react-native-masked-view/masked-view';
-import React, { FunctionComponent, ReactNode, useMemo } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import {
   StyleProp,
   StyleSheet,
@@ -7,18 +7,11 @@ import {
   ViewProps as ViewPropsBase,
   ViewStyle,
 } from 'react-native';
-import LinearGradient, {
-  LinearGradientProps,
-} from 'react-native-linear-gradient';
+
+import { GradientProps } from 'types';
+import { renderGradient } from 'utils/renderGradient';
 
 import { BlurView, BlurViewProps } from './BlurView';
-
-type GradientProps =
-  | FunctionComponent
-  | Pick<
-      LinearGradientProps,
-      'style' | 'start' | 'end' | 'locations' | 'colors'
-    >;
 
 export type ViewProps = Omit<ViewPropsBase, 'style'> & {
   style?: StyleProp<
@@ -107,36 +100,6 @@ export function View({ style, children, ...props }: ViewProps) {
     borderTopColor: flattenStyle.borderTopColor ?? flattenStyle.borderColor,
     borderBottomColor:
       flattenStyle.borderBottomColor ?? flattenStyle.borderColor,
-  };
-
-  const renderGradient = (gradients: GradientProps[]) => {
-    return (
-      <>
-        {gradients.map((gradient, gradientIdx) => {
-          if (typeof gradient === 'function') {
-            const Component = gradient;
-            return <Component key={gradientIdx} />;
-          }
-
-          return (
-            <LinearGradient
-              key={gradientIdx}
-              {...gradient}
-              start={gradient.start ?? { x: 0, y: 0 }}
-              end={gradient.end ?? { x: 1, y: 1 }}
-              style={[
-                {
-                  position: 'absolute',
-                  width: '100%',
-                  height: '100%',
-                },
-                gradient.style,
-              ]}
-            />
-          );
-        })}
-      </>
-    );
   };
 
   const renderAbsolute = (content: ReactNode) => {
