@@ -2,6 +2,8 @@ export * from './theme';
 export { hide as hideSplash } from 'react-native-bootsplash';
 
 // components
+export { View, type ViewProps } from './components/View';
+export { BlurView, type BlurViewProps } from './components/BlurView';
 export { Text, type TextProps } from './components/Text';
 export { AppBootstrapper } from './components/AppBootstrapper';
 export { AlertsProvider } from './contexts/AlertsContext';

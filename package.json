@@ -1,6 +1,6 @@
 {
   "name": "@kirz/react-native-toolkit",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "files": [
     "react-native.config.js",
     "lib",
@@ -85,9 +85,11 @@
   "peerDependencies": {
     "@kirz/react-native-blur": "^1.0.0",
     "@react-native-async-storage/async-storage": "^1.17.11",
+    "@react-native-masked-view/masked-view": "^0.3.0",
     "react": "~18.1.0",
     "react-native": "~0.70.6",
     "react-native-bootsplash": "^4.4.0",
+    "react-native-linear-gradient": "^2.8.3",
     "react-native-localize": "^3.0.2"
   },
   "devDependencies": {
@@ -101,6 +103,7 @@
     "@react-native-firebase/analytics": "^14.12.0",
     "@react-native-firebase/app": "^14.12.0",
     "@react-native-firebase/remote-config": "^14.12.0",
+    "@react-native-masked-view/masked-view": "^0.3.0",
     "@sentry/integrations": "^7.28.1",
     "@sentry/react-native": "^5.0.0-alpha.10",
     "@sparkfabrik/react-native-idfa-aaid": "^0.8.5",
@@ -123,6 +126,7 @@
     "react-native-builder-bob": "^0.20.3",
     "react-native-fbsdk-next": "^12.1.0",
     "react-native-iap": "^12.4.14",
+    "react-native-linear-gradient": "^2.8.3",
     "react-native-purchases": "^5.4.0",
     "tsc-alias": "^1.8.2",
     "typescript": "^4.8.4"
