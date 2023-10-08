@@ -5,7 +5,7 @@ import {
   StyleSheet,
   View as ViewBase,
   ViewProps as ViewPropsBase,
-  ViewStyle,
+  ViewStyle as ViewStyleBase,
 } from 'react-native';
 
 import { GradientProps } from 'types';
@@ -13,15 +13,15 @@ import { renderGradient } from 'utils/renderGradient';
 
 import { BlurView, BlurViewProps } from './BlurView';
 
+export type ViewStyle = ViewStyleBase & {
+  backgroundGradient?: GradientProps | GradientProps[];
+  backgroundBlur?: BlurViewProps['blurType'];
+  backgroundBlurProps?: BlurViewProps;
+  borderGradient?: GradientProps | GradientProps[];
+};
+
 export type ViewProps = Omit<ViewPropsBase, 'style'> & {
-  style?: StyleProp<
-    ViewStyle & {
-      backgroundGradient?: GradientProps | GradientProps[];
-      backgroundBlur?: BlurViewProps['blurType'];
-      backgroundBlurProps?: BlurViewProps;
-      borderGradient?: GradientProps | GradientProps[];
-    }
-  >;
+  style?: StyleProp<ViewStyle>;
 };
 
 export function View({ style, children, ...props }: ViewProps) {

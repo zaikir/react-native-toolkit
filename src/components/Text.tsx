@@ -130,7 +130,9 @@ export function Text({ style, ...props }: TextProps) {
       })}
     >
       <View style={[flattenStyle, { backgroundGradient: gradients }]}>
-        {renderTextNode({})}
+        {renderTextNode({
+          style: { opacity: 0 },
+        })}
       </View>
     </MaskedView>
   );
