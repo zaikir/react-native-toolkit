@@ -160,46 +160,56 @@ export function View({ style, children, ...props }: ViewProps) {
 
   return (
     <ViewBase {...props} style={flattenStyle}>
+      {/* Render background gradient */}
       {backgroundGradients.length > 0 &&
-        renderAbsolute(
-          <>
-            {renderGradient(backgroundGradients)}
-            <ViewBase
-              style={[
-                baseStyle,
-                borderColorStyle,
-                borderRadiusStyle,
-                borderWidthStyle,
-              ]}
-            />
-          </>,
-        )}
+        renderAbsolute(renderGradient(backgroundGradients))}
 
-      {borderGradients.length > 0 &&
-        renderAbsolute(
-          <>
-            <MaskedView
-              style={[baseStyle]}
-              maskElement={
-                <View
-                  style={[baseStyle, borderRadiusStyle, borderWidthStyle]}
-                />
-              }
-            >
-              <ViewBase style={[baseStyle]}>
-                {renderGradient(borderGradients)}
-              </ViewBase>
-            </MaskedView>
-          </>,
-        )}
-
+      {/* Render background blur */}
       {backgroundBlur &&
         renderAbsolute(
-          <BlurView
-            {...backgroundBlurProps}
-            style={[baseStyle, backgroundBlurProps?.style]}
-            blurType={backgroundBlurProps?.blurType ?? backgroundBlur}
+          <ViewBase
+            style={[
+              baseStyle,
+              borderColorStyle,
+              borderRadiusStyle,
+              borderWidthStyle,
+              { borderColor: 'transparent' },
+            ]}
+          >
+            <BlurView
+              {...backgroundBlurProps}
+              style={[{ flex: 1 }, backgroundBlurProps?.style]}
+              blurType={backgroundBlurProps?.blurType ?? backgroundBlur}
+            />
+          </ViewBase>,
+        )}
+
+      {/* Render default border */}
+      {backgroundGradients.length > 0 &&
+        renderAbsolute(
+          <ViewBase
+            style={[
+              baseStyle,
+              borderColorStyle,
+              borderRadiusStyle,
+              borderWidthStyle,
+            ]}
           />,
+        )}
+
+      {/* Render gradient border */}
+      {borderGradients.length > 0 &&
+        renderAbsolute(
+          <MaskedView
+            style={[baseStyle]}
+            maskElement={
+              <View style={[baseStyle, borderRadiusStyle, borderWidthStyle]} />
+            }
+          >
+            <ViewBase style={[baseStyle]}>
+              {renderGradient(borderGradients)}
+            </ViewBase>
+          </MaskedView>,
         )}
 
       {children}
