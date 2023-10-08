@@ -1,6 +1,21 @@
 {
   "name": "@kirz/react-native-toolkit",
   "version": "0.3.3",
+  "license": "MIT",
+  "description": "Toolkit to speed up React Native development",
+  "author": "Kirill Zaidulin <zaidulinkirill@gmail.com>",
+  "homepage": "https://github.com/zaikir/react-native-toolkit",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zaikir/react-native-toolkit.git"
+  },
+  "keywords": [
+    "react-native-toolkit",
+    "react-native",
+    "toolkit",
+    "devkit",
+    "tools"
+  ],
   "files": [
     "react-native.config.js",
     "lib",
