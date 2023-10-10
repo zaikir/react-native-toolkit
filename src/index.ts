@@ -39,6 +39,7 @@ export {
 } from './plugins/types';
 
 // hooks
+export { usePermissions } from './hooks/usePermissions';
 export { useAlert } from './hooks/useAlert';
 export { useRemoteConfig } from './hooks/useRemoteConfig';
 export { useTheme } from './hooks/useTheme';

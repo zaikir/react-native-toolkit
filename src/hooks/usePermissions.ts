@@ -1,5 +1,10 @@
 import { useCallback } from 'react';
-import { check, Permission, request } from 'react-native-permissions';
+import {
+  check,
+  Permission,
+  request,
+  openSettings,
+} from 'react-native-permissions';
 
 export function usePermissions() {
   const isPermissionGranted = useCallback(async (permission: Permission) => {
@@ -22,5 +27,6 @@ export function usePermissions() {
 
   return {
     isPermissionGranted,
+    openSettings,
   };
 }
