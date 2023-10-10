@@ -1,32 +1,84 @@
 import { useCallback } from 'react';
 import {
-  check,
+  checkMultiple,
+  requestMultiple,
   Permission,
-  request,
   openSettings,
 } from 'react-native-permissions';
 
 export function usePermissions() {
-  const isPermissionGranted = useCallback(async (permission: Permission) => {
-    const status = await check(permission);
-    if (status === 'unavailable' || status === 'blocked') {
-      return false;
-    }
+  const checkPermissionStatus = useCallback(
+    async (permission: Permission | Permission[], request = true) => {
+      const permissions =
+        typeof permission === 'string' ? [permission] : permission;
 
-    if (status === 'granted' || status === 'limited') {
-      return true;
-    }
+      const statusesMap = await checkMultiple(permissions);
+      const statuses = Object.entries(statusesMap).map((x) => ({
+        permission: x[0] as Permission,
+        status: x[1],
+      }));
 
-    const newStatus = await request(permission);
-    if (newStatus === 'granted' || newStatus === 'limited') {
-      return true;
-    }
+      const grantedPermissions = statuses.filter(
+        (x) => x.status === 'granted' || x.status === 'limited',
+      );
 
-    return false;
-  }, []);
+      if (grantedPermissions.length === permissions.length) {
+        return { status: 'granted' };
+      }
+
+      const blockedPermissions = statuses.filter(
+        (x) => x.status === 'blocked' || x.status === 'unavailable',
+      );
+
+      if (blockedPermissions.length) {
+        return {
+          status: 'blocked',
+          permissions: blockedPermissions.map((x) => x.permission),
+        };
+      }
+
+      const deniedPermissions = statuses.filter((x) => x.status === 'denied');
+
+      if (!request) {
+        return {
+          status: 'blocked',
+          permissions: deniedPermissions.map((x) => x.permission),
+        };
+      }
+
+      const newStatusesMap = await requestMultiple(
+        deniedPermissions.map((x) => x.permission),
+      );
+
+      const newStatuses = Object.entries(newStatusesMap).map((x) => ({
+        permission: x[0] as Permission,
+        status: x[1],
+      }));
+
+      const newGrantedPermissions = newStatuses.filter(
+        (x) => x.status === 'granted' || x.status === 'limited',
+      );
+
+      // ToDo: await limited image picker here
+
+      if (newGrantedPermissions.length === deniedPermissions.length) {
+        return { status: 'granted' };
+      }
+
+      const newBlockedPermissions = newStatuses.filter(
+        (x) => x.status === 'blocked' || x.status === 'unavailable',
+      );
+
+      return {
+        status: 'blocked',
+        permissions: newBlockedPermissions.map((x) => x.permission),
+      };
+    },
+    [],
+  );
 
   return {
-    isPermissionGranted,
+    checkPermissionStatus,
     openSettings,
   };
 }
