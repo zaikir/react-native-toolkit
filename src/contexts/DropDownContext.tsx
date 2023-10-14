@@ -4,14 +4,11 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
-import DropdownAlert, {
-  DropdownAlertData,
-  DropdownAlertType,
-} from 'react-native-dropdownalert';
+import DropdownAlert, { DropdownAlertData } from 'react-native-dropdownalert';
 
 export type DropDownContextType = {
   showDropdown: (
-    type: DropdownAlertType,
+    type: 'info' | 'warn' | 'error' | 'success',
     title?: string,
     text?: string,
   ) => void;
