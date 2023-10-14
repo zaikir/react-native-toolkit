@@ -6,9 +6,11 @@ import { useAsyncEffect } from 'use-async-effect';
 
 import { AppSplashScreen } from 'components/AppSplashScreen';
 import type { AppSplashScreenProps } from 'components/AppSplashScreen';
+import { DropDownProvider } from 'contexts/DropDownContext';
 import { InAppPurchaseProvider } from 'contexts/InAppPurchaseContext';
 import { PluginsBundleProvider } from 'contexts/PluginsBundleContext';
 import {
+  AlertsProvider,
   ControlledPromise,
   PromiseUtils,
   scaleX,
@@ -315,7 +317,11 @@ export function AppBootstrapper({
     <AppSplashScreen visible={!isInitialized} {...splashScreenProps}>
       {!initializationError ? (
         <PluginsBundleProvider bundle={pluginsBundle}>
-          <InAppPurchaseProvider>{children}</InAppPurchaseProvider>
+          <AlertsProvider>
+            <DropDownProvider>
+              <InAppPurchaseProvider>{children}</InAppPurchaseProvider>
+            </DropDownProvider>
+          </AlertsProvider>
         </PluginsBundleProvider>
       ) : (
         renderError()

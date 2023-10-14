@@ -1,6 +1,6 @@
 {
   "name": "@kirz/react-native-toolkit",
-  "version": "0.3.10",
+  "version": "0.4.0",
   "license": "MIT",
   "description": "Toolkit to speed up React Native development",
   "author": "Kirill Zaidulin <zaidulinkirill@gmail.com>",
@@ -164,6 +164,7 @@
     "intl": "^1.2.5",
     "p-queue": "^6.6.2",
     "plist": "^3.0.6",
+    "react-native-dropdownalert": "^5.1.0",
     "react-native-localize": "^3.0.2",
     "react-native-modal": "^13.0.1",
     "use-async-effect": "^2.2.7"

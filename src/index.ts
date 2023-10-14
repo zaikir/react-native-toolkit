@@ -11,6 +11,7 @@ export { ThemeProvider } from './contexts/ThemeContext';
 export { StorageProvider } from './contexts/StorageContext';
 export { ColorSchemeProvider } from './contexts/ColorSchemeContext';
 export { PluginsBundleContext } from './contexts/PluginsBundleContext';
+export { DropDownContext, DropDownProvider } from './contexts/DropDownContext';
 export {
   KeyboardDismissView,
   type KeyboardDismissViewProps,
@@ -39,6 +40,7 @@ export {
 } from './plugins/types';
 
 // hooks
+export { useDropdown } from './hooks/useDropdown';
 export { usePermissions } from './hooks/usePermissions';
 export { useAlert } from './hooks/useAlert';
 export { useRemoteConfig } from './hooks/useRemoteConfig';
