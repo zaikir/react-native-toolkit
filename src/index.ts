@@ -8,6 +8,14 @@ export {
   type FullscreenCarouselRef,
   type FullscreenCarouselContext,
 } from './components/FullscreenCarousel';
+export {
+  AutoplayCarouselProgressBar,
+  type AutoplayCarouselProgressBarProps,
+} from './components/AutoplayCarouselProgressBar';
+export {
+  AutoplayCarouselProgressBarItem,
+  type AutoplayCarouselProgressBarItemProps,
+} from './components/AutoplayCarouselProgressBarItem';
 export { View, type ViewProps, type ViewStyle } from './components/View';
 export { BlurView, type BlurViewProps } from './components/BlurView';
 export { Text, type TextProps, type TextStyle } from './components/Text';
