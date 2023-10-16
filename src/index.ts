@@ -2,6 +2,12 @@ export * from './theme';
 export { hide as hideSplash } from 'react-native-bootsplash';
 
 // components
+export {
+  FullscreenCarousel,
+  type FullscreenCarouselProps,
+  type FullscreenCarouselRef,
+  type FullscreenCarouselContext,
+} from './components/FullscreenCarousel';
 export { View, type ViewProps, type ViewStyle } from './components/View';
 export { BlurView, type BlurViewProps } from './components/BlurView';
 export { Text, type TextProps, type TextStyle } from './components/Text';
