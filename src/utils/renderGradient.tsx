@@ -1,6 +1,7 @@
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 
+import { RadialGradient } from 'components/RadialGradient';
 import { GradientProps } from 'types';
 
 export const renderGradient = (gradients: GradientProps[]) => {
@@ -10,6 +11,16 @@ export const renderGradient = (gradients: GradientProps[]) => {
         if (typeof gradient === 'function') {
           const Component = gradient;
           return <Component key={gradientIdx} />;
+        }
+
+        if ('type' in gradient && gradient.type === 'radial') {
+          return (
+            <RadialGradient
+              key={gradientIdx}
+              {...gradient}
+              style={{ position: 'absolute', left: 0, top: 0 }}
+            />
+          );
         }
 
         return (
