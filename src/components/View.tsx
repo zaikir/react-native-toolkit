@@ -12,6 +12,7 @@ import { GradientProps, InsetShadowProps } from 'types';
 import { renderGradient } from 'utils/renderGradient';
 
 import { BlurView, BlurViewProps } from './BlurView';
+import { ViewInsetShadow } from './ViewInsetShadow';
 
 export type ViewStyle = ViewStyleBase & {
   backgroundGradient?: GradientProps | GradientProps[];
@@ -31,6 +32,7 @@ export function View({ style, children, ...props }: ViewProps) {
     borderGradient: borderGradientProp,
     backgroundBlur,
     backgroundBlurProps,
+    insetShadow,
     ...flattenStyle
   } = useMemo(() => StyleSheet.flatten(style) ?? {}, [style]);
 
@@ -161,6 +163,27 @@ export function View({ style, children, ...props }: ViewProps) {
               {...backgroundBlurProps}
               style={[{ flex: 1 }, backgroundBlurProps?.style]}
               blurType={backgroundBlurProps?.blurType ?? backgroundBlur}
+            />
+          </ViewBase>,
+        )}
+
+      {/* Render inset shadow */}
+      {insetShadow &&
+        renderAbsolute(
+          <ViewBase
+            style={[
+              baseStyle,
+              borderColorStyle,
+              borderRadiusStyle,
+              borderWidthStyle,
+            ]}
+          >
+            <ViewInsetShadow
+              {...insetShadow}
+              wrapperProps={{
+                style: [baseStyle, borderWidthNegativeStyle],
+              }}
+              style={[baseStyle, borderRadiusStyle]}
             />
           </ViewBase>,
         )}
