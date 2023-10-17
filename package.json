@@ -1,6 +1,6 @@
 {
   "name": "@kirz/react-native-toolkit",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "license": "MIT",
   "description": "Toolkit to speed up React Native development",
   "author": "Kirill Zaidulin <zaidulinkirill@gmail.com>",
@@ -108,7 +108,8 @@
     "react-native-localize": "^3.0.2",
     "react-native-permissions": "^3.9.3",
     "react-native-reanimated": "^2.17.0",
-    "react-native-svg": "^13.7.0"
+    "react-native-svg": "^13.7.0",
+    "react-native-view-shot": "^3.7.0"
   },
   "devDependencies": {
     "@amplitude/analytics-react-native": "^1.1.7",
@@ -149,6 +150,7 @@
     "react-native-purchases": "^5.4.0",
     "react-native-reanimated": "^2.17.0",
     "react-native-svg": "^13.7.0",
+    "react-native-view-shot": "^3.7.0",
     "tsc-alias": "^1.8.2",
     "typescript": "^4.8.4"
   },

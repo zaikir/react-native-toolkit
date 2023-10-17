@@ -12,3 +12,10 @@ export type GradientProps =
   | ({
       type: 'radial';
     } & Omit<RadialGradientProps, 'svgProps' | 'style'>);
+
+export type InsetShadowProps = {
+  offsetX?: number;
+  offsetY?: number;
+  color?: string;
+  blurRadius?: number;
+};
