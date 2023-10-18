@@ -1,0 +1,1 @@
+export { AdaptyPlugin } from './AdaptyPlugin';

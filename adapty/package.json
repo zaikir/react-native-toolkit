@@ -1,0 +1,5 @@
+{
+  "main": "../lib/commonjs/plugins/AdaptyPlugin/index.js",
+  "module": "../lib/module/plugins/AdaptyPlugin/index.js",
+  "types": "../lib/typescript/plugins/AdaptyPlugin/index.d.ts"
+}

@@ -416,6 +416,9 @@ module.exports = {
   ApphudPlugin: {
     dependencies: ['@kirz/react-native-apphud'],
   },
+  AdaptyPlugin: {
+    dependencies: ['react-native-adapty'],
+  },
   IdfaPlugin: {
     dependencies: ['@sparkfabrik/react-native-idfa-aaid'],
     add(appName) {

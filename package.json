@@ -20,6 +20,7 @@
     "react-native.config.js",
     "lib",
     "scripts",
+    "adapty",
     "sentry",
     "firebase",
     "facebook",
@@ -44,6 +45,11 @@
       "types": "./lib/typescript/plugins/Sentry/index.d.ts",
       "import": "./lib/module/plugins/Sentry/index.js",
       "default": "./lib/commonjs/plugins/Sentry/index.js"
+    },
+    "./adapty": {
+      "types": "./lib/typescript/plugins/AdaptyPlugin/index.d.ts",
+      "import": "./lib/module/plugins/AdaptyPlugin/index.js",
+      "default": "./lib/commonjs/plugins/AdaptyPlugin/index.js"
     },
     "./firebase": {
       "types": "./lib/typescript/plugins/FirebasePlugin/index.d.ts",
@@ -140,6 +146,7 @@
     "prettier": "^2.8.3",
     "react": "^18.1.0",
     "react-native": "^0.70.6",
+    "react-native-adapty": "^2.6.0",
     "react-native-appsflyer": "^6.9.4",
     "react-native-bootsplash": "^4.4.0",
     "react-native-builder-bob": "^0.20.3",
