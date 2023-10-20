@@ -246,7 +246,10 @@ export function FullscreenCarousel<
         <View
           {...section.wrapperProps}
           key={sectionIdx}
-          style={{ marginBottom: spacing }}
+          style={[
+            { marginBottom: position === 'slide' ? 0 : spacing },
+            section.wrapperProps?.style,
+          ]}
         >
           {(() => {
             if (section.type === 'indicator') {
@@ -390,45 +393,46 @@ export function FullscreenCarousel<
           style={[flatListProps?.style]}
           contentContainerStyle={flatListProps?.contentContainerStyle}
         />
-        {renderStaticLayout('slide')}
-      </View>
 
-      {autoplay && (
-        <View
-          style={{
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-          }}
-          pointerEvents="box-none"
-        >
+        {renderStaticLayout('slide')}
+
+        {autoplay && (
           <View
             style={{
-              position: 'relative',
-              flex: 1,
-              marginHorizontal: -edgeOffset,
+              position: 'absolute',
+              width: '100%',
+              height: '100%',
             }}
+            pointerEvents="box-none"
           >
-            <TouchableOpacity
-              onPress={scrollToPrev}
+            <View
               style={{
-                position: 'absolute',
-                width: '30%',
-                height: '100%',
+                position: 'relative',
+                flex: 1,
+                marginHorizontal: -edgeOffset,
               }}
-            />
-            <TouchableOpacity
-              onPress={scrollToNext}
-              style={{
-                position: 'absolute',
-                width: '30%',
-                height: '100%',
-                right: 0,
-              }}
-            />
+            >
+              <TouchableOpacity
+                onPress={scrollToPrev}
+                style={{
+                  position: 'absolute',
+                  width: '30%',
+                  height: '100%',
+                }}
+              />
+              <TouchableOpacity
+                onPress={scrollToNext}
+                style={{
+                  position: 'absolute',
+                  width: '30%',
+                  height: '100%',
+                  right: 0,
+                }}
+              />
+            </View>
           </View>
-        </View>
-      )}
+        )}
+      </View>
 
       {renderStaticLayout('bottom')}
     </View>
