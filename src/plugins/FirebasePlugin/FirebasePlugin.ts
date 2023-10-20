@@ -1,14 +1,22 @@
+import analytics from '@react-native-firebase/analytics';
 import initializeRemoteConfig, {
   FirebaseRemoteConfigTypes,
 } from '@react-native-firebase/remote-config';
 
 import { timeout } from 'index';
 import { Plugin, PluginFeature } from 'plugins/Plugin';
-import type { IRemoteConfigPlugin, RemoteConfig } from 'plugins/types';
+import type {
+  IAnalyticsProvider,
+  IRemoteConfigPlugin,
+  RemoteConfig,
+} from 'plugins/types';
 
-export class FirebasePlugin extends Plugin implements IRemoteConfigPlugin {
+export class FirebasePlugin
+  extends Plugin
+  implements IRemoteConfigPlugin, IAnalyticsProvider
+{
   readonly name = 'FirebasePlugin';
-  readonly features: PluginFeature[] = ['RemoteConfig'];
+  readonly features: PluginFeature[] = ['RemoteConfig', 'Analytics'];
   readonly initializationTimeout = null;
 
   _remoteConfig: RemoteConfig;
@@ -78,5 +86,9 @@ export class FirebasePlugin extends Plugin implements IRemoteConfigPlugin {
         // no op
       }
     }
+  }
+
+  async logEvent(event: string, parameters?: Record<string, any> | undefined) {
+    await analytics().logEvent(event, parameters);
   }
 }

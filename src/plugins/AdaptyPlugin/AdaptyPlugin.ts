@@ -8,13 +8,18 @@ import {
 import { Plugin, PluginFeature } from 'plugins/Plugin';
 import type {
   IReceiptValidator,
+  IRemoteConfigPlugin,
   PurchasedProductInfo,
   PurchasedSubscriptionInfo,
+  RemoteConfig,
 } from 'plugins/types';
 
-export class AdaptyPlugin extends Plugin implements IReceiptValidator {
+export class AdaptyPlugin
+  extends Plugin
+  implements IReceiptValidator, IRemoteConfigPlugin
+{
   readonly name = 'AdaptyPlugin';
-  readonly features: PluginFeature[] = ['IAPReceiptValidator'];
+  readonly features: PluginFeature[] = ['IAPReceiptValidator', 'RemoteConfig'];
   readonly initializationTimeout = 15000;
 
   readonly premiumAccessLevelKey: string;
@@ -22,15 +27,23 @@ export class AdaptyPlugin extends Plugin implements IReceiptValidator {
   paywall?: AdaptyPaywall;
   products?: AdaptyPaywallProduct[];
 
+  _remoteConfig: RemoteConfig;
+
+  get remoteValues() {
+    return this._remoteConfig;
+  }
+
   constructor(
     readonly options: Omit<ActivateParamsInput, 'observerMode'> & {
       apiKey: string;
+      remoteConfig?: RemoteConfig;
       paywallId?: string;
       premiumAccessLevelKey?: string;
     },
   ) {
     super();
 
+    this._remoteConfig = options.remoteConfig ?? {};
     this.premiumAccessLevelKey = options?.premiumAccessLevelKey ?? 'premium';
   }
 
@@ -39,7 +52,11 @@ export class AdaptyPlugin extends Plugin implements IReceiptValidator {
     this.paywall = await adapty.getPaywall(
       this.options.paywallId ?? 'placement-1',
     );
+
     this.products = await adapty.getPaywallProducts(this.paywall);
+
+    // @ts-ignore
+    this._remoteConfig = this.paywall.remoteConfig;
   }
 
   async isTrialAvailable(subscriptionId: string): Promise<boolean> {
