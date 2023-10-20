@@ -74,7 +74,7 @@ export type StaticLayoutSection = (
       wrapperProps?: ViewProps;
     }
 ) & {
-  position: 'top' | 'bottom';
+  position: 'top' | 'slide' | 'bottom';
 };
 
 export type FullscreenCarouselProps<
@@ -239,7 +239,7 @@ export function FullscreenCarousel<
     [slideLayout],
   );
 
-  const renderStaticLayout = (position: 'top' | 'bottom') => {
+  const renderStaticLayout = (position: 'top' | 'slide' | 'bottom') => {
     return staticLayout.sections
       .filter((section) => section.position === position)
       .map((section, sectionIdx) => (
@@ -369,27 +369,29 @@ export function FullscreenCarousel<
     >
       {renderStaticLayout('top')}
 
-      <Animated.FlatList
-        {...flatListProps}
-        ref={flatListRef}
-        data={slides}
-        renderItem={renderItem}
-        horizontal
-        pagingEnabled
-        scrollEnabled={!autoplay}
-        {...(!autoplay && {
-          onScroll,
-          scrollEventThrottle: 16,
-        })}
-        style={[
-          {
-            flex: 1,
-            marginHorizontal: -edgeOffset,
-          },
-          flatListProps?.style,
-        ]}
-        contentContainerStyle={flatListProps?.contentContainerStyle}
-      />
+      <View
+        style={{
+          flex: 1,
+          marginHorizontal: -edgeOffset,
+        }}
+      >
+        <Animated.FlatList
+          {...flatListProps}
+          ref={flatListRef}
+          data={slides}
+          renderItem={renderItem}
+          horizontal
+          pagingEnabled
+          scrollEnabled={!autoplay}
+          {...(!autoplay && {
+            onScroll,
+            scrollEventThrottle: 16,
+          })}
+          style={[flatListProps?.style]}
+          contentContainerStyle={flatListProps?.contentContainerStyle}
+        />
+        {renderStaticLayout('slide')}
+      </View>
 
       {autoplay && (
         <View
@@ -427,6 +429,7 @@ export function FullscreenCarousel<
           </View>
         </View>
       )}
+
       {renderStaticLayout('bottom')}
     </View>
   );
