@@ -44,6 +44,7 @@ export type SlideLayoutSection<T> = (
   | {
       type: 'image';
       valueGetter: (item: T) => ImageSourcePropType;
+      renderItem?: (item: T) => ReactNode;
       imageProps?: ((item: T) => ImageProps) | ImageProps;
       imageContainerProps?: ((item: T) => ViewProps) | ViewProps;
       wrapperProps?: ((item: T) => ViewProps) | ViewProps;
@@ -82,6 +83,7 @@ export type FullscreenCarouselProps<
   controlRef?: Ref<FullscreenCarouselRef>;
   spacing?: number;
   edgeOffset?: number;
+  progressValue?: SharedValue<number>;
   slides: T[];
   slideLayout: {
     sections: SlideLayoutSection<T>[];
@@ -111,6 +113,7 @@ export function FullscreenCarousel<
   controlRef,
   slides,
   spacing,
+  progressValue,
   edgeOffset = 0,
   autoplay = false,
   autoplayInterval = 7000,
@@ -121,7 +124,8 @@ export function FullscreenCarousel<
   onSlideChanged,
   ...props
 }: FullscreenCarouselProps<T>) {
-  const slideProgress = useSharedValue(0);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const slideProgress = progressValue ? progressValue : useSharedValue(0);
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
 
   const autoplayTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -338,6 +342,16 @@ export function FullscreenCarousel<
       );
     })();
   }, [activeSlideIndex, autoplay, scrollToNext, startAutoplay]);
+
+  useEffect(() => {
+    (async () => {
+      if (autoplay) {
+        return;
+      }
+
+      onSlideChanged?.(activeSlideIndex);
+    })();
+  }, [activeSlideIndex, autoplay]);
 
   useImperativeHandle(
     controlRef,
