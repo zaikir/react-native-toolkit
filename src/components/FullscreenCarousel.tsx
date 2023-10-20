@@ -247,7 +247,9 @@ export function FullscreenCarousel<
           {...section.wrapperProps}
           key={sectionIdx}
           style={[
-            { marginBottom: position === 'slide' ? 0 : spacing },
+            position !== 'slide'
+              ? { marginBottom: spacing }
+              : { paddingBottom: spacing },
             section.wrapperProps?.style,
           ]}
         >
