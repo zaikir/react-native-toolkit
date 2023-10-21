@@ -125,6 +125,7 @@ export function Text({ style, ...props }: TextProps) {
 
   return (
     <MaskedView
+      style={flattenStyle}
       maskElement={renderTextNode({
         style: flattenStyle,
       })}

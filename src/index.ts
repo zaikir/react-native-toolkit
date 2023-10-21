@@ -76,3 +76,4 @@ export { ScaleReference, scaleX, scaleY } from './utils/scale';
 export { timeout } from './utils/promise/timeout';
 export { wait } from './utils/promise/wait';
 export { waitUntil } from './utils/promise/waitUntil';
+export { SvgUtils } from './utils/svg';
