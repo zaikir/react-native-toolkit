@@ -28,7 +28,7 @@ import { View, ViewProps } from './View';
 
 export type FullscreenCarouselContext = {
   progress: SharedValue<number>;
-  currentSlideRef: { current: number };
+  slideRef: { current: number };
   slidesCount: number;
 };
 
@@ -41,24 +41,24 @@ export type FullscreenCarouselRef = {
 export type SlideLayoutSection<T> = (
   | {
       type: 'image';
-      valueGetter: (item: T) => ImageSourcePropType;
-      renderItem?: (item: T) => ReactNode;
-      imageProps?: ((item: T) => ImageProps) | ImageProps;
-      imageContainerProps?: ((item: T) => ViewProps) | ViewProps;
-      wrapperProps?: ((item: T) => ViewProps) | ViewProps;
+      valueGetter: (item: T, index: number) => ImageSourcePropType;
+      renderItem?: (item: T, index: number) => ReactNode;
+      imageProps?: ((item: T, index: number) => ImageProps) | ImageProps;
+      imageContainerProps?: ((item: T, index: number) => ViewProps) | ViewProps;
+      wrapperProps?: ((item: T, index: number) => ViewProps) | ViewProps;
     }
   | {
       type: 'text';
-      valueGetter: (item: T) => string;
-      textProps?: ((item: T) => TextProps) | TextProps;
-      wrapperProps?: ((item: T) => ViewProps) | ViewProps;
+      valueGetter: (item: T, index: number) => string;
+      textProps?: ((item: T, index: number) => TextProps) | TextProps;
+      wrapperProps?: ((item: T, index: number) => ViewProps) | ViewProps;
     }
   | {
       type: 'custom';
-      renderItem?: (item: T) => ReactNode;
-      wrapperProps?: ((item: T) => ViewProps) | ViewProps;
+      renderItem?: (item: T, index: number) => ReactNode;
+      wrapperProps?: ((item: T, index: number) => ViewProps) | ViewProps;
     }
-) & { hidden?: (item: T) => boolean };
+) & { hidden?: (item: T, index: number) => boolean };
 
 export type StaticLayoutSection = (
   | {
@@ -79,7 +79,6 @@ export type FullscreenCarouselProps<
   T extends Record<string, any> = Record<string, any>,
 > = {
   controlRef?: Ref<FullscreenCarouselRef>;
-  loop: boolean;
   spacing?: number;
   edgeOffset?: number;
   progressValue?: SharedValue<number>;
@@ -113,7 +112,6 @@ export function FullscreenCarousel<
 >({
   controlRef,
   slides,
-  loop,
   spacing = 0,
   progressValue,
   edgeOffset = 0,
@@ -138,7 +136,7 @@ export function FullscreenCarousel<
   } | null>(null);
 
   const renderItem = useCallback<NonNullable<FlatListProps<T>['renderItem']>>(
-    ({ item }) => {
+    ({ item, index }) => {
       return (
         <View
           style={{
@@ -150,7 +148,7 @@ export function FullscreenCarousel<
           }}
         >
           {slideLayout.sections.map((section, sectionIdx) => {
-            if (section?.hidden?.(item)) {
+            if (section?.hidden?.(item, index)) {
               return null;
             }
 
@@ -203,7 +201,7 @@ export function FullscreenCarousel<
                       >
                         <Image
                           {...imageProps}
-                          source={section.valueGetter(item)}
+                          source={section.valueGetter(item, index)}
                           resizeMode="contain"
                           style={[
                             {
@@ -230,12 +228,12 @@ export function FullscreenCarousel<
                           textProps?.style,
                         ]}
                       >
-                        {section.valueGetter(item)}
+                        {section.valueGetter(item, index)}
                       </Text>
                     );
                   }
 
-                  return section.renderItem?.(item);
+                  return section.renderItem?.(item, index);
                 })()}
               </View>
             );
@@ -264,7 +262,7 @@ export function FullscreenCarousel<
             const ctx: FullscreenCarouselContext = {
               progress: autoplay ? autoplayProgress : slideProgress,
               slidesCount: slides.length,
-              currentSlideRef: activeSlideIndexRef,
+              slideRef: activeSlideIndexRef,
             };
 
             if (section.type === 'indicator') {
