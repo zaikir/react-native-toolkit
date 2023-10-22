@@ -69,6 +69,7 @@ export { useAppActivityEffect } from './hooks/useAppActivityEffect';
 
 // other
 export { default as SyncStorage } from './utils/SyncStorage';
+export { AutoplayAction } from './utils/AutoplayAction';
 export { ControlledPromise } from './utils/promise/control';
 export { PromiseUtils } from './utils/promise/utils';
 export { MathUtils } from './utils/math';

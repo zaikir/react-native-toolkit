@@ -6,7 +6,6 @@ import React, {
   useEffect,
   useImperativeHandle,
   useRef,
-  useState,
 } from 'react';
 import {
   Dimensions,
@@ -14,30 +13,28 @@ import {
   Image,
   ImageProps,
   ImageSourcePropType,
-  TouchableOpacity,
 } from 'react-native';
 import Animated, {
-  Easing,
   SharedValue,
-  cancelAnimation,
-  runOnJS,
   useAnimatedScrollHandler,
   useSharedValue,
-  withTiming,
 } from 'react-native-reanimated';
+
+import { ControlledPromise } from 'index';
+import { AutoplayAction } from 'utils/AutoplayAction';
 
 import { Text, TextProps } from './Text';
 import { View, ViewProps } from './View';
 
 export type FullscreenCarouselContext = {
   progress: SharedValue<number>;
-  activeSlide: number;
   slidesCount: number;
 };
 
 export type FullscreenCarouselRef = {
-  scrollToPrev: () => void;
-  scrollToNext: () => void;
+  scrollTo: (index: number, animated?: boolean) => Promise<boolean>;
+  scrollToPrev: (animated?: boolean) => Promise<boolean>;
+  scrollToNext: (animated?: boolean) => Promise<boolean>;
 };
 
 export type SlideLayoutSection<T> = (
@@ -81,6 +78,7 @@ export type FullscreenCarouselProps<
   T extends Record<string, any> = Record<string, any>,
 > = {
   controlRef?: Ref<FullscreenCarouselRef>;
+  loop: boolean;
   spacing?: number;
   edgeOffset?: number;
   progressValue?: SharedValue<number>;
@@ -92,9 +90,11 @@ export type FullscreenCarouselProps<
     sections: StaticLayoutSection[];
   };
   flatListProps?: Omit<FlatListProps<T>, 'data' | 'renderItem' | 'horizontal'>;
-  autoplay?: boolean;
-  autoplayInterval?: number;
-  autoplaySlideChangeDuration?: number;
+  autoplay?: {
+    interval: number;
+    delay?: number;
+    resetDuration?: number;
+  };
   style?: FlatListProps<T>['style'];
   onSlideChanged?: (slideIndex: number) => void;
 };
@@ -112,24 +112,29 @@ export function FullscreenCarousel<
 >({
   controlRef,
   slides,
-  spacing,
+  loop,
+  spacing = 0,
   progressValue,
   edgeOffset = 0,
-  autoplay = false,
-  autoplayInterval = 7000,
-  autoplaySlideChangeDuration = 400,
+  autoplay,
   flatListProps,
   slideLayout,
   staticLayout,
   onSlideChanged,
   ...props
 }: FullscreenCarouselProps<T>) {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const slideProgress = progressValue ? progressValue : useSharedValue(0);
-  const [activeSlideIndex, setActiveSlideIndex] = useState(0);
-
-  const autoplayTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const flatListRef = useRef<any>(null);
+  const activeSlideIndexRef = useRef(0);
+  const targetSlideIndexRef = useRef(activeSlideIndexRef.current);
+  const allowLastSlideAutoplay = useRef(true);
+  const slideProgress = useSharedValue(0);
+  const autoplayProgress = useSharedValue(0);
+  const autoplayActionRef = useRef<AutoplayAction>();
+
+  const scrollToIndexAwaiterRef = useRef<{
+    awaiter: ControlledPromise<boolean>;
+    target: number;
+  } | null>(null);
 
   const renderItem = useCallback<NonNullable<FlatListProps<T>['renderItem']>>(
     ({ item }) => {
@@ -140,6 +145,7 @@ export function FullscreenCarousel<
             width: SCREEN_WIDTH,
             overflow: 'hidden',
             paddingHorizontal: edgeOffset,
+            marginBottom: -spacing,
           }}
         >
           {slideLayout.sections.map((section, sectionIdx) => {
@@ -254,117 +260,145 @@ export function FullscreenCarousel<
           ]}
         >
           {(() => {
+            const ctx: FullscreenCarouselContext = {
+              progress: autoplay ? autoplayProgress : slideProgress,
+              slidesCount: slides.length,
+            };
+
             if (section.type === 'indicator') {
-              return (
-                <section.component
-                  progress={slideProgress}
-                  slidesCount={slides.length}
-                  activeSlide={activeSlideIndex}
-                />
-              );
+              return <section.component {...ctx} />;
             }
 
-            return section.renderItem({
-              activeSlide: activeSlideIndex,
-              progress: slideProgress,
-              slidesCount: slides.length,
-            });
+            return section.renderItem(ctx);
           })()}
         </View>
       ));
   };
 
-  const scrollToPrev = useCallback(() => {
-    setActiveSlideIndex((prev) => {
-      if (prev <= 0) {
-        return prev;
+  const scrollTo = useCallback(
+    async (index: number, animated = true) => {
+      const targetIndex =
+        index < 0 ? 0 : index >= slides.length - 1 ? slides.length - 1 : index;
+
+      if (targetIndex === targetSlideIndexRef.current) {
+        return true;
       }
 
-      return prev - 1;
-    });
-  }, [slides.length]);
+      autoplayActionRef.current?.pause();
 
-  const scrollToNext = useCallback(() => {
-    setActiveSlideIndex((prev) => {
-      if (prev >= slides.length - 1) {
-        return prev;
+      targetSlideIndexRef.current = targetIndex;
+
+      if (scrollToIndexAwaiterRef.current) {
+        scrollToIndexAwaiterRef.current.awaiter.resolve(false);
+        scrollToIndexAwaiterRef.current = null;
       }
 
-      return prev + 1;
-    });
-  }, [slides.length]);
+      scrollToIndexAwaiterRef.current = {
+        awaiter: new ControlledPromise<boolean>(),
+        target: targetIndex,
+      };
 
-  const startAutoplay = useCallback(() => {
-    if (autoplayTimeoutRef.current) {
-      clearTimeout(autoplayTimeoutRef.current);
-      autoplayTimeoutRef.current = null;
+      flatListRef?.current?.scrollToIndex({
+        index: targetIndex,
+        animated,
+      });
+
+      startAutoplay(targetIndex);
+
+      return scrollToIndexAwaiterRef.current.awaiter.wait();
+    },
+    [slides.length],
+  );
+
+  const scrollToPrev = useCallback(async (animated?: boolean) => {
+    return scrollTo(targetSlideIndexRef.current - 1, animated);
+  }, []);
+
+  const scrollToNext = useCallback(async (animated?: boolean) => {
+    return scrollTo(targetSlideIndexRef.current + 1, animated);
+  }, []);
+
+  const startAutoplay = useCallback(
+    async (slideIndex = activeSlideIndexRef.current) => {
+      const isLastSlide = slideIndex === slides.length - 1;
+
+      if (isLastSlide && !allowLastSlideAutoplay.current) {
+        return;
+      }
+
+      if (isLastSlide) {
+        allowLastSlideAutoplay.current = false;
+      }
+
+      autoplayActionRef.current?.start(slideIndex);
+    },
+    [],
+  );
+
+  const onScroll = useAnimatedScrollHandler((event) => {
+    slideProgress.value = event.contentOffset.x / SCREEN_WIDTH;
+
+    flatListProps?.onScroll?.(event as any);
+  }, []);
+
+  const onViewableItemsChanged = useCallback<
+    NonNullable<FlatListProps<T>['onViewableItemsChanged']>
+  >(({ viewableItems }) => {
+    const visibleItem = viewableItems[0];
+    if (!visibleItem) {
+      return;
     }
 
+    activeSlideIndexRef.current = visibleItem.index!;
+    targetSlideIndexRef.current = activeSlideIndexRef.current;
+
+    if (
+      scrollToIndexAwaiterRef.current &&
+      scrollToIndexAwaiterRef.current.target === visibleItem.index!
+    ) {
+      scrollToIndexAwaiterRef.current.awaiter.resolve(true);
+      scrollToIndexAwaiterRef.current = null;
+    }
+
+    if (visibleItem.index! < slides.length - 1) {
+      allowLastSlideAutoplay.current = true;
+    }
+
+    onSlideChanged?.(visibleItem.index!);
+  }, []);
+
+  useEffect(() => {
     if (!autoplay) {
       return;
     }
 
-    cancelAnimation(slideProgress);
+    autoplayActionRef.current = new AutoplayAction(
+      autoplayProgress,
+      autoplay.interval,
+      {
+        delay: autoplay.delay ?? 1000,
+        resetDuration: autoplay.resetDuration ?? 300,
+        async onFinish() {
+          scrollToNext();
+        },
+      },
+    );
 
-    slideProgress.value = withTiming(activeSlideIndex + 1, {
-      duration: autoplayInterval,
-      easing: Easing.linear,
-    });
+    startAutoplay();
 
-    autoplayTimeoutRef.current = setTimeout(() => {
-      scrollToNext();
-    }, autoplayInterval);
-  }, [activeSlideIndex, autoplay, scrollToNext]);
-
-  const onScroll = useAnimatedScrollHandler((event) => {
-    slideProgress.value = event.contentOffset.x / SCREEN_WIDTH;
+    return () => {
+      autoplayActionRef.current?.reset();
+    };
   }, []);
-
-  useEffect(() => {
-    (async () => {
-      if (!autoplay) {
-        return;
-      }
-
-      flatListRef?.current.scrollToIndex({
-        index: activeSlideIndex,
-      });
-
-      onSlideChanged?.(activeSlideIndex);
-
-      cancelAnimation(slideProgress);
-
-      slideProgress.value = withTiming(
-        activeSlideIndex,
-        {
-          duration: autoplaySlideChangeDuration,
-        },
-        (isFinished) => {
-          if (isFinished) {
-            runOnJS(startAutoplay)();
-          }
-        },
-      );
-    })();
-  }, [activeSlideIndex, autoplay, scrollToNext, startAutoplay]);
-
-  useEffect(() => {
-    (async () => {
-      if (autoplay) {
-        return;
-      }
-
-      onSlideChanged?.(activeSlideIndex);
-    })();
-  }, [activeSlideIndex, autoplay]);
 
   useImperativeHandle(
     controlRef,
     () => ({
+      scrollTo,
       scrollToPrev,
       scrollToNext,
     }),
-    [scrollToPrev, scrollToNext],
+    [scrollTo, scrollToPrev, scrollToNext],
   );
 
   return (
@@ -387,53 +421,37 @@ export function FullscreenCarousel<
           renderItem={renderItem}
           horizontal
           pagingEnabled
-          scrollEnabled={!autoplay}
-          {...(!autoplay && {
-            onScroll,
-            scrollEventThrottle: 16,
-          })}
-          style={[flatListProps?.style]}
+          showsHorizontalScrollIndicator={
+            flatListProps?.showsHorizontalScrollIndicator ?? false
+          }
+          onScroll={onScroll}
+          scrollEventThrottle={flatListProps?.scrollEventThrottle ?? 16}
+          onViewableItemsChanged={onViewableItemsChanged}
+          viewabilityConfig={{
+            viewAreaCoveragePercentThreshold: 60,
+          }}
+          onScrollBeginDrag={(e) => {
+            autoplayActionRef.current?.pause();
+
+            flatListProps?.onScrollBeginDrag?.(e);
+          }}
+          onScrollEndDrag={(e) => {
+            const slideWidth = e.nativeEvent.layoutMeasurement.width;
+            const targetSlide = Math.round(
+              e.nativeEvent.targetContentOffset?.x! / slideWidth,
+            );
+
+            startAutoplay(targetSlide);
+
+            flatListProps?.onScrollEndDrag?.(e);
+
+            allowLastSlideAutoplay.current = true;
+          }}
+          style={[{ marginBottom: spacing ?? 0 }, flatListProps?.style]}
           contentContainerStyle={flatListProps?.contentContainerStyle}
         />
 
         {renderStaticLayout('slide')}
-
-        {autoplay && (
-          <View
-            style={{
-              position: 'absolute',
-              width: '100%',
-              height: '100%',
-            }}
-            pointerEvents="box-none"
-          >
-            <View
-              style={{
-                position: 'relative',
-                flex: 1,
-                marginHorizontal: -edgeOffset,
-              }}
-            >
-              <TouchableOpacity
-                onPress={scrollToPrev}
-                style={{
-                  position: 'absolute',
-                  width: '30%',
-                  height: '100%',
-                }}
-              />
-              <TouchableOpacity
-                onPress={scrollToNext}
-                style={{
-                  position: 'absolute',
-                  width: '30%',
-                  height: '100%',
-                  right: 0,
-                }}
-              />
-            </View>
-          </View>
-        )}
       </View>
 
       {renderStaticLayout('bottom')}

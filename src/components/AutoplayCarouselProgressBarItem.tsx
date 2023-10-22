@@ -2,20 +2,21 @@ import React from 'react';
 import { View, ViewProps } from 'react-native';
 import Animated, {
   Extrapolation,
-  SharedValue,
   interpolate,
   useAnimatedStyle,
 } from 'react-native-reanimated';
 
 import { scaleX } from 'index';
 
+import { FullscreenCarouselContext } from './FullscreenCarousel';
+
 export type AutoplayCarouselProgressBarItemProps = {
   index: number;
-  progress: SharedValue<number>;
   activeColor: string;
   inactiveColor: string;
   spacing?: number;
-} & ViewProps;
+} & ViewProps &
+  FullscreenCarouselContext;
 
 export function AutoplayCarouselProgressBarItem({
   index,
@@ -25,17 +26,18 @@ export function AutoplayCarouselProgressBarItem({
   spacing = scaleX(5),
   ...props
 }: AutoplayCarouselProgressBarItemProps) {
-  const progressStyle = useAnimatedStyle(
-    () => ({
-      width: `${interpolate(
-        progress.value,
-        [index, index + 1],
-        [0, 100],
-        Extrapolation.CLAMP,
-      )}%`,
-    }),
-    [index],
-  );
+  const progressStyle = useAnimatedStyle(() => {
+    const scrollValue = interpolate(
+      progress.value,
+      [index, index + 1],
+      [0, 100],
+      Extrapolation.CLAMP,
+    );
+
+    return {
+      width: `${scrollValue}%`,
+    };
+  }, [index]);
 
   return (
     <View
@@ -54,6 +56,7 @@ export function AutoplayCarouselProgressBarItem({
       <Animated.View
         style={[
           {
+            position: 'absolute',
             backgroundColor: activeColor,
             height: '100%',
           },
