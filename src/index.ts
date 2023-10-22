@@ -17,6 +17,7 @@ export {
   type AutoplayCarouselProgressBarItemProps,
 } from './components/AutoplayCarouselProgressBarItem';
 export { View, type ViewProps, type ViewStyle } from './components/View';
+export { FadeView, type FadeViewProps } from './components/FadeView';
 export { BlurView, type BlurViewProps } from './components/BlurView';
 export { Text, type TextProps, type TextStyle } from './components/Text';
 export { AppBootstrapper } from './components/AppBootstrapper';
