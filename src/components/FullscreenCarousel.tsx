@@ -28,6 +28,7 @@ import { View, ViewProps } from './View';
 
 export type FullscreenCarouselContext = {
   progress: SharedValue<number>;
+  currentSlideRef: { current: number };
   slidesCount: number;
 };
 
@@ -263,6 +264,7 @@ export function FullscreenCarousel<
             const ctx: FullscreenCarouselContext = {
               progress: autoplay ? autoplayProgress : slideProgress,
               slidesCount: slides.length,
+              currentSlideRef: activeSlideIndexRef,
             };
 
             if (section.type === 'indicator') {
