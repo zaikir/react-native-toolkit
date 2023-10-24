@@ -59,201 +59,233 @@ export function AppBootstrapper({
   const [pluginsBundle, setPluginsBundle] = useState<PluginsBundle>(
     new PluginsBundle([]),
   );
-  const initializedPlugins = useRef<Plugin[]>([]);
+  const initializedPlugins = useRef<{ plugin: Plugin; id: number }[]>([]);
   const ErrorFallbackScreen = useRef<
     PluginFactoryOptions['fallbackScreen'] | null
   >(null);
-  const currentPluginIndex = useRef(0);
+
   const isInitializedRef = useRef(false);
 
-  const initialize = useCallback(async () => {
-    if (!plugins) {
-      return;
-    }
-
-    const initializePlugin = async (
-      plugin: PluginDef,
-      bundle: PluginsBundle,
-      group: string | null,
-    ) => {
-      const initializationStartTime = new Date().valueOf();
-      if (
-        'dependsOn' in plugin &&
-        plugin.dependsOn &&
-        plugin.dependsOn.length
-      ) {
-        await PromiseUtils.waitUntil(
-          () =>
-            !plugin.dependsOn!.find(
-              (x) => !initializedPlugins.current.find((y) => y.name === x),
-            ),
-        );
+  const initialize = useCallback(
+    async (async = true) => {
+      if (!plugins) {
+        return;
       }
 
-      try {
-        if ('useValue' in plugin) {
-          await timeout(
-            plugin.useValue.initialize(bundle),
-            plugin.timeout === null
-              ? null
-              : plugin.timeout ?? plugin.useValue.initializationTimeout,
-            `${plugin.useValue.name} timeout error`,
+      const initializePlugin = async (
+        plugin: PluginDef,
+        bundle: PluginsBundle,
+        group: string | null,
+        id: number,
+      ) => {
+        const initializationStartTime = new Date().valueOf();
+        if (
+          'dependsOn' in plugin &&
+          plugin.dependsOn &&
+          plugin.dependsOn.length
+        ) {
+          await PromiseUtils.waitUntil(
+            () =>
+              !plugin.dependsOn!.find(
+                (x) =>
+                  !initializedPlugins.current.find((y) => y.plugin.name === x),
+              ),
           );
-          initializedPlugins.current.push(plugin.useValue);
-        } else if ('useFactory' in plugin) {
-          const initializedPlugin = await plugin.useFactory(bundle);
-
-          if (initializedPlugin) {
-            await timeout(
-              initializedPlugin.initialize(bundle),
-              plugin.timeout === null
-                ? null
-                : plugin.timeout ?? initializedPlugin.initializationTimeout,
-              `${initializedPlugin.name} timeout error`,
-            );
-            initializedPlugins.current.push(initializedPlugin);
-          }
-        } else if ('useDeferredFactory' in plugin) {
-          const promise = new ControlledPromise<void>();
-          const pluginName = plugin.name ?? 'DeferredPlugin';
-
-          const initializedPlugin = await timeout(
-            plugin.useDeferredFactory(bundle, promise.resolve, promise.reject),
-            plugin.timeout,
-            `${pluginName} timeout error`,
-          );
-
-          const [, additionalData] = await timeout(
-            Promise.all([
-              initializedPlugin?.initialize(bundle),
-              promise.wait(),
-            ]),
-            plugin.timeout === null
-              ? null
-              : plugin.timeout ?? initializedPlugin?.initializationTimeout,
-            `${pluginName} timeout error`,
-          );
-
-          if (initializedPlugin) {
-            initializedPlugin.payload = additionalData;
-            initializedPlugins.current.push(initializedPlugin);
-          }
-        } else {
-          initializedPlugins.current.push(plugin);
         }
 
-        const lastPlugin =
-          initializedPlugins.current[initializedPlugins.current.length - 1];
+        try {
+          if ('useValue' in plugin) {
+            await timeout(
+              plugin.useValue.initialize(bundle),
+              plugin.timeout === null
+                ? null
+                : plugin.timeout ?? plugin.useValue.initializationTimeout,
+              `${plugin.useValue.name} timeout error`,
+            );
+            initializedPlugins.current.push({
+              plugin: plugin.useValue,
+              id,
+            });
+          } else if ('useFactory' in plugin) {
+            const initializedPlugin = await timeout(
+              plugin.useFactory(bundle),
+              plugin.timeout === null ? null : plugin.timeout,
+              `${plugin.name} timeout error`,
+            );
 
-        console.info(
-          [
-            chalkCtx[group ? 'blue' : 'yellow'](`[${lastPlugin.name}]`),
-            chalkCtx.green(
-              `Plugin${group ? ` {group: ${group}} ` : ' '}initialized`,
-            ),
-            chalkCtx[group ? 'blue' : 'yellow'](
-              `+${(new Date().valueOf() - initializationStartTime).toFixed(
-                0,
-              )}ms`,
-            ),
-          ].join(' '),
-        );
-      } catch (err) {
-        if (err) {
+            if (initializedPlugin) {
+              await timeout(
+                initializedPlugin.initialize(bundle),
+                plugin.timeout === null
+                  ? null
+                  : plugin.timeout ?? initializedPlugin.initializationTimeout,
+                `${initializedPlugin.name} timeout error`,
+              );
+              initializedPlugins.current.push({
+                plugin: initializedPlugin,
+                id,
+              });
+            }
+          } else if ('useDeferredFactory' in plugin) {
+            const promise = new ControlledPromise<void>();
+            const pluginName = plugin.name ?? 'DeferredPlugin';
+
+            const initializedPlugin = await timeout(
+              plugin.useDeferredFactory(
+                bundle,
+                promise.resolve,
+                promise.reject,
+              ),
+              plugin.timeout,
+              `${pluginName} timeout error`,
+            );
+
+            const [, additionalData] = await timeout(
+              Promise.all([
+                initializedPlugin?.initialize(bundle),
+                promise.wait(),
+              ]),
+              plugin.timeout === null
+                ? null
+                : plugin.timeout ?? initializedPlugin?.initializationTimeout,
+              `${pluginName} timeout error`,
+            );
+
+            if (initializedPlugin) {
+              initializedPlugin.payload = additionalData;
+              initializedPlugins.current.push({
+                plugin: initializedPlugin,
+                id,
+              });
+            }
+          } else {
+            initializedPlugins.current.push({ plugin, id });
+          }
+
+          const lastPlugin =
+            initializedPlugins.current[initializedPlugins.current.length - 1]
+              .plugin;
+
+          console.info(
+            [
+              chalkCtx[group ? 'blue' : 'yellow'](`[${lastPlugin.name}]`),
+              chalkCtx.green(
+                `Plugin${group ? ` {group: ${group}} ` : ' '}initialized`,
+              ),
+              chalkCtx[group ? 'blue' : 'yellow'](
+                `+${(new Date().valueOf() - initializationStartTime).toFixed(
+                  0,
+                )}ms`,
+              ),
+            ].join(' '),
+          );
+        } catch (err) {
+          if (err) {
+            const errorMessage =
+              err instanceof Error ? err.message : (err as any).toString();
+
+            if (errorMessage.includes('timeout error')) {
+              const pluginName = errorMessage.replace(' timeout error', '');
+
+              console.error(
+                [
+                  chalkCtx[group ? 'blue' : 'yellow'](`[${pluginName}]`),
+                  chalkCtx.red(
+                    `Plugin${
+                      group ? ` {group: ${group}} ` : ' '
+                    }initialization timeout`,
+                  ),
+                  chalkCtx[group ? 'blue' : 'yellow'](
+                    `+${(
+                      new Date().valueOf() - initializationStartTime
+                    ).toFixed(0)}ms`,
+                  ),
+                ].join(' '),
+              );
+            }
+
+            // eslint-disable-next-line @typescript-eslint/no-throw-literal
+            throw err;
+          }
+
+          throw err;
+        }
+      };
+
+      const asyncQueue: Record<string, PQueue> = {};
+
+      for (let i = 0; i < plugins.length; i += 1) {
+        const plugin = plugins[i];
+        const id = i;
+
+        if (initializedPlugins.current.find((y) => y.id === id)) {
+          continue;
+        }
+
+        try {
+          const bundle = new PluginsBundle(
+            initializedPlugins.current.map((x) => x.plugin),
+          );
+
+          if ('group' in plugin && plugin.group && async) {
+            if (!asyncQueue[plugin.group]) {
+              asyncQueue[plugin.group] = new PQueue({ concurrency: 1 });
+            }
+
+            const queue = asyncQueue[plugin.group];
+
+            queue.add(async () => {
+              try {
+                await initializePlugin(plugin, bundle, plugin.group!, id);
+              } catch {
+                // no-op
+              }
+
+              if (isInitializedRef.current && !queue.size) {
+                setPluginsBundle(
+                  new PluginsBundle(
+                    initializedPlugins.current.map((x) => x.plugin),
+                  ),
+                );
+              }
+            });
+            continue;
+          }
+
+          await initializePlugin(plugin, bundle, null, id);
+        } catch (err) {
+          if ('optional' in plugin && plugin.optional) {
+            continue;
+          }
           const errorMessage =
             err instanceof Error ? err.message : (err as any).toString();
 
           if (errorMessage.includes('timeout error')) {
-            const pluginName = errorMessage.replace(' timeout error', '');
-
-            console.error(
-              [
-                chalkCtx[group ? 'blue' : 'yellow'](`[${pluginName}]`),
-                chalkCtx.red(
-                  `Plugin${
-                    group ? ` {group: ${group}} ` : ' '
-                  }initialization timeout`,
-                ),
-                chalkCtx[group ? 'blue' : 'yellow'](
-                  `+${(new Date().valueOf() - initializationStartTime).toFixed(
-                    0,
-                  )}ms`,
-                ),
-              ].join(' '),
-            );
+            // no-op
+          } else {
+            console.error(errorMessage);
           }
 
-          // eslint-disable-next-line @typescript-eslint/no-throw-literal
-          throw err;
-        }
+          ErrorFallbackScreen.current =
+            'fallbackScreen' in plugin ? plugin.fallbackScreen : null;
+          setInitializationError(errorMessage);
 
-        throw err;
+          throw new Error(errorMessage);
+        }
       }
-    };
 
-    const asyncQueue: Record<string, PQueue> = {};
-
-    for (
-      currentPluginIndex.current;
-      currentPluginIndex.current < plugins.length;
-      currentPluginIndex.current += 1
-    ) {
-      const plugin = plugins[currentPluginIndex.current];
-
-      try {
-        const bundle = new PluginsBundle(initializedPlugins.current);
-
-        if ('group' in plugin && plugin.group) {
-          if (!asyncQueue[plugin.group]) {
-            asyncQueue[plugin.group] = new PQueue({ concurrency: 1 });
-          }
-
-          const queue = asyncQueue[plugin.group];
-
-          queue.add(async () => {
-            try {
-              await initializePlugin(plugin, bundle, plugin.group!);
-            } catch {
-              // no-op
-            }
-
-            if (isInitializedRef.current && !queue.size) {
-              setPluginsBundle(new PluginsBundle(initializedPlugins.current));
-            }
-          });
-          continue;
-        }
-
-        await initializePlugin(plugin, bundle, null);
-      } catch (err) {
-        if ('optional' in plugin && plugin.optional) {
-          continue;
-        }
-        const errorMessage =
-          err instanceof Error ? err.message : (err as any).toString();
-
-        if (errorMessage.includes('timeout error')) {
-          // no-op
-        } else {
-          console.error(errorMessage);
-        }
-
-        ErrorFallbackScreen.current =
-          'fallbackScreen' in plugin ? plugin.fallbackScreen : null;
-        setInitializationError(errorMessage);
-
-        throw new Error(errorMessage);
-      }
-    }
-
-    setPluginsBundle(new PluginsBundle(initializedPlugins.current));
-    isInitializedRef.current = true;
-  }, [plugins]);
+      setPluginsBundle(
+        new PluginsBundle(initializedPlugins.current.map((x) => x.plugin)),
+      );
+      isInitializedRef.current = true;
+    },
+    [plugins],
+  );
 
   const retryInitialization = useCallback(async () => {
     try {
       setIsRetrying(true);
-      await initialize();
+      await initialize(false);
 
       setInitializationError(null);
     } catch (err) {
@@ -265,7 +297,7 @@ export function AppBootstrapper({
 
   useAsyncEffect(async () => {
     try {
-      await initialize();
+      await initialize(true);
     } catch {
       // no-op
     } finally {
@@ -316,7 +348,10 @@ export function AppBootstrapper({
   return (
     <AppSplashScreen visible={!isInitialized} {...splashScreenProps}>
       {!initializationError ? (
-        <PluginsBundleProvider bundle={pluginsBundle}>
+        <PluginsBundleProvider
+          bundle={pluginsBundle}
+          retryInitialization={retryInitialization}
+        >
           <AlertsProvider>
             <DropDownProvider>
               <InAppPurchaseProvider>{children}</InAppPurchaseProvider>

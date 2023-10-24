@@ -4,6 +4,7 @@ import type { PluginsBundle } from 'plugins/Plugin';
 
 export type PluginsBundleContextType = {
   bundle: PluginsBundle;
+  retryInitialization: () => Promise<void>;
 };
 
 export const PluginsBundleContext = createContext<PluginsBundleContextType>(
@@ -13,10 +14,14 @@ export const PluginsBundleContext = createContext<PluginsBundleContextType>(
 export function PluginsBundleProvider({
   children,
   bundle,
-}: PropsWithChildren<{ bundle: PluginsBundle }>) {
+  retryInitialization,
+}: PropsWithChildren<{
+  bundle: PluginsBundle;
+  retryInitialization: () => Promise<void>;
+}>) {
   const contextData = useMemo<PluginsBundleContextType>(
-    () => ({ bundle }),
-    [bundle],
+    () => ({ bundle, retryInitialization }),
+    [bundle, retryInitialization],
   );
 
   return (
