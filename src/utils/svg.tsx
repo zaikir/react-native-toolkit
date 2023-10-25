@@ -13,7 +13,14 @@ export class SvgUtils {
 
   static createGraphPath(
     length: number,
-    functions: ((x: number) => number)[],
+    functions:
+      | (
+          | ((x: number) => number)
+          | {
+              function: (x: number) => number;
+              operator: '+' | '-' | '*' | '/';
+            }
+        )[],
     parameters?: {
       offsetY?: number;
       quantization?: number;
@@ -22,17 +29,39 @@ export class SvgUtils {
     'worklet';
 
     let x = 0;
-    let path = `M${x} ${functions.reduce(
-      (acc, item) => acc + item(x),
-      parameters?.offsetY ?? 0,
-    )}`;
+    let path = `M${x} ${functions.reduce((acc, item) => {
+      if (typeof item === 'function') {
+        return acc + item(x);
+      } else if (item.operator === '+') {
+        return acc + item.function(x);
+      } else if (item.operator === '-') {
+        return acc - item.function(x);
+      } else if (item.operator === '*') {
+        return acc * item.function(x);
+      } else if (item.operator === '/') {
+        return acc / item.function(x);
+      }
+
+      throw new Error('Not implemented');
+    }, parameters?.offsetY ?? 0)}`;
 
     do {
       const clamped = x > length ? length : x;
-      path += `L${clamped} ${functions.reduce(
-        (acc, item) => acc + item(clamped),
-        parameters?.offsetY ?? 0,
-      )}`;
+      path += `L${clamped} ${functions.reduce((acc, item) => {
+        if (typeof item === 'function') {
+          return acc + item(clamped);
+        } else if (item.operator === '+') {
+          return acc + item.function(clamped);
+        } else if (item.operator === '-') {
+          return acc - item.function(clamped);
+        } else if (item.operator === '*') {
+          return acc * item.function(clamped);
+        } else if (item.operator === '/') {
+          return acc / item.function(clamped);
+        }
+
+        throw new Error('Not implemented');
+      }, parameters?.offsetY ?? 0)}`;
 
       x += parameters?.quantization ?? 2;
     } while (x <= length);
