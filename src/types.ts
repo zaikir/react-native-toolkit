@@ -5,7 +5,10 @@ import { RadialGradientProps } from 'components/RadialGradient';
 
 export type GradientProps =
   | FunctionComponent
-  | ({ type?: 'linear' } & Pick<
+  | ({
+      type?: 'linear';
+      direction?: 'up-bottom' | 'bottom-up' | 'left-right' | 'right-left';
+    } & Pick<
       LinearGradientProps,
       'style' | 'start' | 'end' | 'locations' | 'colors'
     >)
