@@ -5,6 +5,7 @@ const path = require('path');
 
 const declareAssets = require('./scripts/declare-assets');
 const initPlugins = require('./scripts/init-plugins');
+const installPeers = require('./scripts/install-peers');
 const loadFonts = require('./scripts/load-fonts');
 const tsStart = require('./scripts/ts-start');
 
@@ -81,6 +82,14 @@ module.exports = {
       options: [],
       func: () => {
         declareAssets();
+      },
+    },
+    {
+      name: 'install-peers',
+      description: 'Install peer dependencies',
+      options: [],
+      func: () => {
+        installPeers();
       },
     },
   ],
