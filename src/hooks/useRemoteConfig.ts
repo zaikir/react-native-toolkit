@@ -5,16 +5,13 @@ import type { IRemoteConfigPlugin, RemoteConfig } from 'plugins/types';
 
 export function useRemoteConfig() {
   const { bundle } = useContext(PluginsBundleContext);
-  const remoteConfigPlugin =
-    bundle.getByFeature<IRemoteConfigPlugin>('RemoteConfig');
 
-  if (!remoteConfigPlugin) {
-    throw new Error('None of RemoteConfig plugins were initialized');
-  }
+  const remoteConfigPlugins = bundle.plugins.filter((x) =>
+    x.features.includes('RemoteConfig'),
+  ) as unknown as IRemoteConfigPlugin[];
 
-  const parameters = Object.assign(
-    remoteConfigPlugin.remoteValues,
+  return Object.assign(
+    {},
+    ...remoteConfigPlugins.map((x) => x.remoteValues),
   ) as RemoteConfig;
-
-  return parameters;
 }
