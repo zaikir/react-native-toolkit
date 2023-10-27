@@ -23,10 +23,12 @@ export const renderGradient = (gradients: GradientProps[]) => {
           );
         }
 
+        const { direction, ...props } = gradient;
+
         return (
           <LinearGradient
             key={gradientIdx}
-            {...gradient}
+            {...props}
             style={[
               {
                 position: 'absolute',
@@ -37,29 +39,29 @@ export const renderGradient = (gradients: GradientProps[]) => {
               },
               gradient.style,
             ]}
-            {...(gradient.direction === 'left-right'
+            {...(direction === 'left-right'
               ? {
                   start: { x: 0, y: 0.5 },
                   end: { x: 1, y: 0.5 },
                 }
-              : gradient.direction === 'right-left'
+              : direction === 'right-left'
               ? {
                   start: { x: 1, y: 0.5 },
                   end: { x: 0, y: 0.5 },
                 }
-              : gradient.direction === 'up-bottom'
+              : direction === 'up-bottom'
               ? {
                   start: { x: 0.5, y: 0 },
                   end: { x: 0.5, y: 1 },
                 }
-              : gradient.direction === 'bottom-up'
+              : direction === 'bottom-up'
               ? {
                   start: { x: 0.5, y: 1 },
                   end: { x: 0.5, y: 0 },
                 }
               : {
-                  start: gradient.start ?? { x: 0, y: 0.5 },
-                  end: gradient.end ?? { x: 1, y: 0.5 },
+                  start: props.start ?? { x: 0, y: 0.5 },
+                  end: props.end ?? { x: 1, y: 0.5 },
                 })}
           />
         );
