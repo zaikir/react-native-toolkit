@@ -1,1 +1,5 @@
-export { ListView, type ListViewProps } from './ListView';
+export {
+  ListView,
+  type ListViewProps,
+  type ListViewLayoutProps,
+} from './ListView';

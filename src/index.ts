@@ -20,7 +20,11 @@ export { View, type ViewProps, type ViewStyle } from './components/View';
 export { FadeView, type FadeViewProps } from './components/FadeView';
 export { BlurView, type BlurViewProps } from './components/BlurView';
 export { Text, type TextProps, type TextStyle } from './components/Text';
-export { ListView, ListViewProps } from './components/ListView';
+export {
+  ListView,
+  type ListViewProps,
+  type ListViewLayoutProps,
+} from './components/ListView';
 export { AppBootstrapper } from './components/AppBootstrapper';
 export { AlertsProvider } from './contexts/AlertsContext';
 export { ThemeProvider } from './contexts/ThemeContext';
