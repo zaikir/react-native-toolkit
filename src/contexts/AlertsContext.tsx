@@ -144,6 +144,7 @@ export function AlertsProvider({ children }: AlertsProviderProps) {
             {
               ...alertDefinition,
               ...({ systemAlertProps: alertProps } as any),
+              id,
             },
           ];
 
