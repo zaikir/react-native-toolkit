@@ -35,12 +35,10 @@ export function AlertsProvider({ children }: AlertsProviderProps) {
   const alertsDefinition: Record<string, ThemeAlertConfig> = theme.alerts;
 
   const dequeueAlert = useCallback(
-    (alertDefinition: ThemeAlertConfig & { id: string }) => {
+    (alertDefinition: ThemeAlertConfig, id: string) => {
       return alertsQueue.current.add(async () => {
-        if (activeAlertRef.current?.id !== alertDefinition.id) {
-          alertsStack.current = alertsStack.current.filter(
-            (x) => x.id !== alertDefinition.id,
-          );
+        if (activeAlertRef.current?.id !== id) {
+          alertsStack.current = alertsStack.current.filter((x) => x.id !== id);
           return;
         }
 
@@ -87,7 +85,7 @@ export function AlertsProvider({ children }: AlertsProviderProps) {
 
   const enqueueAlert = useCallback(
     (
-      alertDefinition: ThemeAlertConfig,
+      alert: ThemeAlertConfig,
       resolve: (value: any) => void,
       reject: (reason?: any) => void,
       props: any,
@@ -104,7 +102,8 @@ export function AlertsProvider({ children }: AlertsProviderProps) {
         }
 
         const id = name;
-        const alertDefinitionWithId = { ...alertDefinition, id };
+        const alertDefinition =
+          typeof alert === 'function' ? alert(props ?? {}) : alert;
 
         if (!('component' in alertDefinition)) {
           const alertProps = [
@@ -121,18 +120,18 @@ export function AlertsProvider({ children }: AlertsProviderProps) {
                     button.style === 'destructive')
                 ) {
                   resolve(true);
-                  dequeueAlert(alertDefinitionWithId);
+                  dequeueAlert(alertDefinition, id);
                   return;
                 }
 
                 if (!button.onPress && button.style === 'cancel') {
                   resolve(false);
-                  dequeueAlert(alertDefinitionWithId);
+                  dequeueAlert(alertDefinition, id);
                   return;
                 }
 
                 button?.onPress?.(resolve, reject);
-                dequeueAlert(alertDefinitionWithId);
+                dequeueAlert(alertDefinition, id);
               },
             })) ?? [],
             {
@@ -143,7 +142,7 @@ export function AlertsProvider({ children }: AlertsProviderProps) {
           alertsStack.current = [
             ...alertsStack.current,
             {
-              ...alertDefinitionWithId,
+              ...alertDefinition,
               ...({ systemAlertProps: alertProps } as any),
             },
           ];
@@ -163,11 +162,11 @@ export function AlertsProvider({ children }: AlertsProviderProps) {
                   <alertDefinition.component
                     resolve={(value: any) => {
                       resolve(value);
-                      dequeueAlert(alertDefinitionWithId);
+                      dequeueAlert(alertDefinition, id);
                     }}
                     reject={(value: any) => {
                       reject(value);
-                      dequeueAlert(alertDefinitionWithId);
+                      dequeueAlert(alertDefinition, id);
                     }}
                     options={{
                       ...alertDefinition.componentProps,
@@ -215,7 +214,7 @@ export function AlertsProvider({ children }: AlertsProviderProps) {
         throw new Error(`Alert "${name}" is not registered`);
       }
 
-      await dequeueAlert({ ...alertDefinition, id: name });
+      await dequeueAlert(alertDefinition, name);
     },
     [alertsDefinition, enqueueAlert],
   );

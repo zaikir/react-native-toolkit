@@ -69,7 +69,7 @@ module.exports = () => {
         return;
       }
 
-      if (!['.png', '.jpg', '.jpeg'].includes(extension)) {
+      if (!['.png', '.jpg', '.jpeg', '.gif'].includes(extension)) {
         console.warn(`Wrong image extension detected for ${fullname}`);
         return;
       }
@@ -108,7 +108,8 @@ declare module '*.svg' {
 
 declare module '*.png' { const img: any; export default img; }
 declare module '*.jpg' { const img: any; export default img; }
-declare module '*.jpeg' { const img: any; export default img; }`.trim();
+declare module '*.jpeg' { const img: any; export default img; }
+declare module '*.gif' { const img: any; export default img; }`.trim();
 
   fs.writeFileSync(declarationFilename, declaration, 'utf-8');
 };

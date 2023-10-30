@@ -24,7 +24,7 @@ export type AlertComponentProps = {
   options: any;
 };
 
-export type ThemeAlertConfig =
+type ThemeAlertConfigData =
   | {
       type?: 'alert';
       title: string;
@@ -54,3 +54,7 @@ export type ThemeAlertConfig =
       component: FunctionComponent<AlertComponentProps>;
       componentProps?: Record<string, any>;
     };
+
+export type ThemeAlertConfig =
+  | ThemeAlertConfigData
+  | ((props: any) => ThemeAlertConfigData);
