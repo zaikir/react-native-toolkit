@@ -362,8 +362,8 @@ function ListViewInner<T extends ListViewItem = ListViewItem>({
       }
       ItemSeparatorComponent={Separator}
       getItemLayout={getItemLayout}
-      keyExtractor={keyExtractor}
-      listKey={keyExtractor as any}
+      keyExtractor={flatListProps?.keyExtractor ?? keyExtractor}
+      listKey={(flatListProps?.keyExtractor ?? keyExtractor) as any}
     />
   );
 }
