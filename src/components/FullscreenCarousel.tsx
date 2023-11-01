@@ -43,7 +43,9 @@ export type SlideLayoutSection<T> = (
       type: 'image';
       valueGetter: (item: T, index: number) => ImageSourcePropType;
       renderItem?: (item: T, index: number) => ReactNode;
-      imageProps?: ((item: T, index: number) => ImageProps) | ImageProps;
+      imageProps?:
+        | ((item: T, index: number) => Partial<ImageProps>)
+        | Partial<ImageProps>;
       imageContainerProps?: ((item: T, index: number) => ViewProps) | ViewProps;
       wrapperProps?: ((item: T, index: number) => ViewProps) | ViewProps;
     }
