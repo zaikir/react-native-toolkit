@@ -1,3 +1,4 @@
+import Color from 'color';
 import fontColorContrast from 'font-color-contrast';
 import React, { createContext, PropsWithChildren, useMemo } from 'react';
 import type { TextStyle } from 'react-native';
@@ -10,6 +11,9 @@ import type {
   ThemeGradientValue,
 } from 'theme';
 
+type ColorData = ConstructorParameters<typeof Color>[0];
+type ColorModel = ConstructorParameters<typeof Color>[1];
+
 export type UseTheme<T extends Theme> = {
   typography: Record<keyof T['typography'], TextStyle>;
   fonts: T['fonts'];
@@ -18,6 +22,7 @@ export type UseTheme<T extends Theme> = {
   values: Record<keyof T['values'], number>;
   alerts: Record<keyof T['alerts'], ThemeAlertConfig>;
   getContrastColor: (color: string) => 'black' | 'white';
+  parseColor: (obj: ColorData, model: ColorModel) => Color;
 };
 
 export type ThemeContextType = {
@@ -63,6 +68,7 @@ export function ThemeProvider({
         typography,
         getContrastColor: (color) =>
           fontColorContrast(color) === '#ffffff' ? 'white' : 'black',
+        parseColor: (obj, model) => new Color(obj, model),
       },
     };
   }, [theme, colorScheme]);

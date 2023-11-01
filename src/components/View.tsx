@@ -13,6 +13,7 @@ import { renderGradient } from 'utils/renderGradient';
 
 import { BlurView, BlurViewProps } from './BlurView';
 import { ViewInsetShadow } from './ViewInsetShadow';
+import { ViewSkeleton } from './ViewSkeleton';
 
 export type ViewStyle = ViewStyleBase & {
   backgroundGradient?: GradientProps | GradientProps[];
@@ -24,9 +25,17 @@ export type ViewStyle = ViewStyleBase & {
 
 export type ViewProps = Omit<ViewPropsBase, 'style'> & {
   style?: StyleProp<ViewStyle>;
+  skeleton?: boolean;
+  skeletonProps?: object;
 };
 
-export function View({ style, children, ...props }: ViewProps) {
+export function View({
+  style,
+  children,
+  skeleton,
+  skeletonProps,
+  ...props
+}: ViewProps) {
   const {
     backgroundGradient: backgroundGradientProp,
     borderGradient: borderGradientProp,
@@ -216,6 +225,20 @@ export function View({ style, children, ...props }: ViewProps) {
         )}
 
       {children}
+
+      {/* Render skeleton */}
+      {skeleton &&
+        renderAbsolute(
+          <ViewSkeleton
+            style={[
+              baseStyle,
+              borderColorStyle,
+              borderRadiusStyle,
+              borderWidthStyle,
+            ]}
+            {...skeletonProps}
+          />,
+        )}
     </ViewBase>
   );
 }
