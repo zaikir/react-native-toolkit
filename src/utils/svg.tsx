@@ -1,5 +1,5 @@
-export class SvgUtils {
-  static sinusoidFunction(
+export const SvgUtils = {
+  sinusoidFunction(
     offsetX: number,
     offsetY: number,
     amplitude: number,
@@ -9,9 +9,8 @@ export class SvgUtils {
     return (x: number) => {
       return amplitude * Math.sin(x / (1 / frequency) + offsetX) + offsetY;
     };
-  }
-
-  static createGraphPath(
+  },
+  createGraphPath(
     length: number,
     functions:
       | (
@@ -67,5 +66,5 @@ export class SvgUtils {
     } while (x <= length);
 
     return path;
-  }
-}
+  },
+};

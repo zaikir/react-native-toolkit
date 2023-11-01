@@ -363,6 +363,7 @@ function ListViewInner<T extends ListViewItem = ListViewItem>({
       ItemSeparatorComponent={Separator}
       getItemLayout={getItemLayout}
       keyExtractor={flatListProps?.keyExtractor ?? keyExtractor}
+      // @ts-ignore
       listKey={(flatListProps?.keyExtractor ?? keyExtractor) as any}
     />
   );

@@ -30,7 +30,7 @@ export function ViewInsetShadow({
 
     const result = await viewShotRef.current.capture();
 
-    setImage(result);
+    setImage(result.replace(/(\r\n|\n|\r|\s)/gm, ''));
   };
 
   const invisibleBorderWidth = 20;
