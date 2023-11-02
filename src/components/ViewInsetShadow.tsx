@@ -9,6 +9,8 @@ export type ViewInsetShadowProps = {
 } & InsetShadowProps &
   ViewProps;
 
+const cachedShadows: Record<string, string> = {};
+
 export function ViewInsetShadow({
   offsetX,
   offsetY,
@@ -21,18 +23,6 @@ export function ViewInsetShadow({
   const [image, setImage] = useState<string>();
   const onLayoutCalled = useRef(false);
 
-  const redrawShadow = async () => {
-    if (!viewShotRef.current?.capture) {
-      return;
-    }
-
-    onLayoutCalled.current = true;
-
-    const result = await viewShotRef.current.capture();
-
-    setImage(result.replace(/(\r\n|\n|\r|\s)/gm, ''));
-  };
-
   const invisibleBorderWidth = 20;
 
   const borderWidth = {
@@ -43,6 +33,28 @@ export function ViewInsetShadow({
   const margin = {
     x: borderWidth.x,
     y: borderWidth.y,
+  };
+
+  const redrawShadow = async () => {
+    if (!viewShotRef.current?.capture) {
+      return;
+    }
+
+    onLayoutCalled.current = true;
+
+    const key = `${color}_${blurRadius}_${offsetX}_${offsetY}_${JSON.stringify(
+      wrapperProps?.style ?? {},
+    )}_${JSON.stringify(props.style)}_${JSON.stringify(margin)}`;
+
+    if (cachedShadows[key]) {
+      setImage(cachedShadows[key]);
+      return;
+    }
+
+    const result = await viewShotRef.current.capture();
+
+    cachedShadows[key] = result.replace(/(\r\n|\n|\r|\s)/gm, '');
+    setImage(cachedShadows[key]);
   };
 
   useEffect(() => {
