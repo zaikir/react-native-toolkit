@@ -111,14 +111,10 @@ export function View({ style, children, skeleton, ...props }: ViewProps) {
     ),
   };
 
-  const renderAbsolute = (
-    content: ReactNode,
-    borderAdjust?: boolean,
-    isSkeletonView?: boolean,
-  ) => {
+  const renderAbsolute = (content: ReactNode, borderAdjust?: boolean) => {
     return (
       <ViewBase
-        style={[
+        style={
           borderAdjust
             ? {
                 position: 'absolute',
@@ -127,9 +123,8 @@ export function View({ style, children, skeleton, ...props }: ViewProps) {
                 right: borderWidthStyle.borderRightWidth! > 0 ? 1 : 0,
                 bottom: borderWidthStyle.borderBottomWidth! > 0 ? 1 : 0,
               }
-            : baseStyle,
-          ...(!isSkeletonView ? [{ opacity: skeleton ? 1 : 0 }] : []),
-        ]}
+            : baseStyle
+        }
         pointerEvents="none"
       >
         <ViewBase
@@ -222,25 +217,23 @@ export function View({ style, children, skeleton, ...props }: ViewProps) {
           </MaskedView>,
         )}
 
-      {skeleton ? <View style={{ opacity: 0 }}>{children}</View> : children}
+      {children}
 
       {/* Render skeleton */}
-      {skeleton &&
-        renderAbsolute(
-          <ViewSkeleton
-            style={[
-              {
-                position: 'absolute',
-                left: 0,
-                top: 0,
-                right: 0,
-                bottom: 0,
-              },
-            ]}
-          />,
-          false,
-          true,
-        )}
+      {skeleton && (
+        <ViewSkeleton
+          style={[
+            {
+              position: 'absolute',
+              left: -1,
+              top: -1,
+              right: -1,
+              bottom: -1,
+            },
+            borderRadiusStyle,
+          ]}
+        />
+      )}
     </ViewBase>
   );
 }
