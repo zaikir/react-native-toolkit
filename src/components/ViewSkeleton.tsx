@@ -4,7 +4,7 @@ import Animated from 'react-native-reanimated';
 
 import { ThemeContext } from 'contexts/ThemeContext';
 
-export type ViewSkeletonProps = object & ViewProps;
+export type ViewSkeletonProps = ViewProps;
 
 export function ViewSkeleton({ ...props }: ViewSkeletonProps) {
   const { skeletonStyle } = useContext(ThemeContext);

@@ -26,9 +26,16 @@ export type ViewStyle = ViewStyleBase & {
 export type ViewProps = Omit<ViewPropsBase, 'style'> & {
   style?: StyleProp<ViewStyle>;
   skeleton?: boolean;
+  skeletonStyle?: StyleProp<ViewStyle>;
 };
 
-export function View({ style, children, skeleton, ...props }: ViewProps) {
+export function View({
+  style,
+  children,
+  skeleton,
+  skeletonStyle,
+  ...props
+}: ViewProps) {
   const {
     backgroundGradient: backgroundGradientProp,
     borderGradient: borderGradientProp,
@@ -231,6 +238,7 @@ export function View({ style, children, skeleton, ...props }: ViewProps) {
               bottom: -1,
             },
             borderRadiusStyle,
+            skeletonStyle,
           ]}
         />
       )}
