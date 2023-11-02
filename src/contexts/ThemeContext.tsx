@@ -58,7 +58,7 @@ export function ThemeProvider({
     const colorsDef = theme.colors as Record<string, ThemeColor>;
     const colors = Object.fromEntries(
       Object.entries(colorsDef).map(([name, color]) => {
-        if (typeof color === 'object' && name !== 'skeleton') {
+        if (typeof color === 'object' && typeof color !== 'function') {
           // @ts-ignore
           return [name, color[colorScheme]];
         }
@@ -78,10 +78,29 @@ export function ThemeProvider({
       }),
     ) as any;
 
-    return {
+    const tempTheme = {
       ...theme,
       colors: colors as any,
       typography,
+      getContrastColor: (color) =>
+        fontColorContrast(color) === '#ffffff' ? 'white' : 'black',
+      parseColor: (obj, model) => new Color(obj, model),
+    } as UseTheme<Theme>;
+
+    const finalColors = Object.fromEntries(
+      Object.entries(colors).map(([name, color]) => {
+        if (typeof color === 'function') {
+          // @ts-ignore
+          return [name, color(tempTheme)];
+        }
+
+        return [name, color];
+      }),
+    );
+
+    return {
+      ...tempTheme,
+      colors: finalColors as any,
       getContrastColor: (color) =>
         fontColorContrast(color) === '#ffffff' ? 'white' : 'black',
       parseColor: (obj, model) => new Color(obj, model),
@@ -89,21 +108,13 @@ export function ThemeProvider({
   }, [theme, colorScheme]);
 
   const skeletonDef = useMemo(() => {
-    const skeletonDef = computedTheme.colors.skeleton
-      ? typeof computedTheme.colors.skeleton === 'string'
-        ? {
-            color: computedTheme.colors.skeleton,
-            transform: 0.3,
-            interval: 800,
-          }
-        : computedTheme.colors.skeleton
-      : {
-          color: 'rgba(223,223,223,1)',
-          transform: 0.3,
-          interval: 800,
-        };
-
-    return skeletonDef;
+    return {
+      color: computedTheme.colors.skeleton,
+      // @ts-ignore
+      interval: computedTheme.values.skeletonAnimationInterval ?? 800,
+      // @ts-ignore
+      transform: computedTheme.values.skeletonColorTransform ?? 0.3,
+    };
   }, [computedTheme]);
 
   const skeletonColors = useMemo(() => {

@@ -2,10 +2,16 @@ import { FunctionComponent } from 'react';
 import { ModalProps } from 'react-native-modal';
 
 import { BlurViewProps } from 'components/BlurView';
+import { UseTheme } from 'contexts/ThemeContext';
+
+import { Theme } from './augmented';
 export * from './augmented';
 export { createTheme } from './createTheme';
 
-export type ThemeColor = { dark: string; light: string } | string;
+export type ThemeColor =
+  | string
+  | { dark: string; light: string }
+  | ((theme: UseTheme<Theme>) => string);
 
 export type ThemeGradientValue = {
   start?: { x: number; y: number };

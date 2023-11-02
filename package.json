@@ -1,6 +1,6 @@
 {
   "name": "@kirz/react-native-toolkit",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "license": "MIT",
   "description": "Toolkit to speed up React Native development",
   "author": "Kirill Zaidulin <zaidulinkirill@gmail.com>",
