@@ -11,7 +11,12 @@ export { createTheme } from './createTheme';
 export type ThemeColor =
   | string
   | { dark: string; light: string }
-  | ((theme: UseTheme<Theme>) => string);
+  | ((
+      theme: Omit<
+        UseTheme<Theme>,
+        'colors' & { colors: Record<string, string> }
+      >,
+    ) => string);
 
 export type ThemeGradientValue = {
   start?: { x: number; y: number };

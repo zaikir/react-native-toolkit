@@ -17,7 +17,10 @@ export interface Colors {
   skeleton?: ThemeColor | { color: ThemeColor; transform: number };
 }
 export interface Gradients {}
-export interface Values {}
+export interface Values {
+  skeletonColorTransform?: number;
+  skeletonAnimationInterval?: number;
+}
 export interface Alerts {}
 
 export type TextVariant = keyof TextVariants;

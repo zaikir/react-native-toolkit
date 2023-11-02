@@ -30,7 +30,10 @@ export function createTheme<
     skeleton?: ThemeColor | { color: ThemeColor; transform: number };
   } & Record<Color, ThemeColor>;
   gradients: Record<Gradient, ThemeGradientValue>;
-  values: Record<Value, number>;
+  values: {
+    skeletonColorTransform?: number;
+    skeletonAnimationInterval?: number;
+  } & Record<Value, number>;
   alerts: Record<Alert, ThemeAlertConfig>;
 }) {
   return props;
