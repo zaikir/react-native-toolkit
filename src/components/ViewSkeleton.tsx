@@ -2,12 +2,12 @@ import React, { useContext } from 'react';
 import { ViewProps } from 'react-native';
 import Animated from 'react-native-reanimated';
 
-import { SkeletonContext } from 'contexts/SkeletonContext';
+import { ThemeContext } from 'contexts/ThemeContext';
 
 export type ViewSkeletonProps = object & ViewProps;
 
 export function ViewSkeleton({ ...props }: ViewSkeletonProps) {
-  const { style } = useContext(SkeletonContext);
+  const { skeletonStyle } = useContext(ThemeContext);
 
-  return <Animated.View {...props} style={[props.style, style]} />;
+  return <Animated.View {...props} style={[props.style, skeletonStyle]} />;
 }

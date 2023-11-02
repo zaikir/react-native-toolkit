@@ -48,7 +48,7 @@ type Props = {
   children?: React.ReactNode;
   plugins?: PluginDef[];
   splashScreenProps?: Omit<AppSplashScreenProps, 'visible' | 'children'>;
-  skeletonProps?: SkeletonProviderProps;
+  skeletonProps?: Omit<SkeletonProviderProps, 'children'>;
 };
 
 export function AppBootstrapper({
