@@ -14,7 +14,7 @@ import {
 } from 'react-native-reanimated';
 
 import { useTheme } from 'index';
-import { Color } from 'theme';
+import { Theme } from 'theme';
 
 export type ColorScheme = 'light' | 'dark';
 
@@ -27,28 +27,25 @@ export const SkeletonContext = createContext<SkeletonContextType>({} as any);
 export type SkeletonProviderProps = PropsWithChildren<{
   interval?: number;
   colorTransform?: number;
-  color?: Color;
+  color?: string | ((theme: Theme) => string);
 }>;
 
 export function SkeletonProvider({
   children,
   interval = 800,
   colorTransform = 0.3,
-  color = 'skeleton' as any,
+  color,
 }: SkeletonProviderProps) {
   const theme = useTheme();
   const skeletonValue = useSharedValue(0);
 
-  // @ts-ignore
-  const color1 = theme?.colors?.[color] ?? 'rgba(223,223,223,1)';
-  const colorObj = theme.parseColor(color1, 'rgb');
-  const color2 = (
+  const color1 =
+    typeof color === 'function' ? color(theme) : 'rgba(223,223,223,1)';
+  const colorObj =
     colorTransform < 0
-      ? colorObj.darken(colorTransform)
-      : colorObj.lighten(colorTransform)
-  )
-    .rgb()
-    .string();
+      ? theme.parseColor(color1, 'rgb').darken(colorTransform)
+      : theme.parseColor(color1, 'rgb').lighten(colorTransform);
+  const color2 = `rgba(${colorObj.red()},${colorObj.green()},${colorObj.blue()},${colorObj.alpha()})`;
 
   const style = useAnimatedStyle(
     () => ({
