@@ -44,6 +44,10 @@ export function View({
     insetShadow,
     ...flattenStyle
   } = useMemo(() => StyleSheet.flatten(style) ?? {}, [style]);
+  const flattenSkeletonStyle = useMemo(
+    () => StyleSheet.flatten(skeletonStyle) ?? {},
+    [skeletonStyle],
+  );
 
   const backgroundGradients = !backgroundGradientProp
     ? []
@@ -118,10 +122,14 @@ export function View({
     ),
   };
 
-  const renderAbsolute = (content: ReactNode, borderAdjust?: boolean) => {
+  const renderAbsolute = (
+    content: ReactNode,
+    borderAdjust?: boolean,
+    isSkeletonView?: boolean,
+  ) => {
     return (
       <ViewBase
-        style={
+        style={[
           borderAdjust
             ? {
                 position: 'absolute',
@@ -130,8 +138,9 @@ export function View({
                 right: borderWidthStyle.borderRightWidth! > 0 ? 1 : 0,
                 bottom: borderWidthStyle.borderBottomWidth! > 0 ? 1 : 0,
               }
-            : baseStyle
-        }
+            : baseStyle,
+          ...(!isSkeletonView && skeleton ? [{ opacity: 0 }] : []),
+        ]}
         pointerEvents="none"
       >
         <ViewBase
@@ -224,7 +233,7 @@ export function View({
           </MaskedView>,
         )}
 
-      {children}
+      {skeleton ? <View style={{ opacity: 0 }}>{children}</View> : children}
 
       {/* Render skeleton */}
       {skeleton && (
@@ -237,8 +246,33 @@ export function View({
               right: -1,
               bottom: -1,
             },
-            borderRadiusStyle,
             skeletonStyle,
+            {
+              borderBottomLeftRadius:
+                flattenSkeletonStyle.borderBottomLeftRadius ??
+                flattenStyle.borderBottomLeftRadius ??
+                flattenSkeletonStyle.borderRadius ??
+                flattenStyle.borderRadius ??
+                0,
+              borderBottomRightRadius:
+                flattenSkeletonStyle.borderBottomRightRadius ??
+                flattenStyle.borderBottomRightRadius ??
+                flattenSkeletonStyle.borderRadius ??
+                flattenStyle.borderRadius ??
+                0,
+              borderTopLeftRadius:
+                flattenSkeletonStyle.borderTopLeftRadius ??
+                flattenStyle.borderTopLeftRadius ??
+                flattenSkeletonStyle.borderRadius ??
+                flattenStyle.borderRadius ??
+                0,
+              borderTopRightRadius:
+                flattenSkeletonStyle.borderTopRightRadius ??
+                flattenStyle.borderTopRightRadius ??
+                flattenSkeletonStyle.borderRadius ??
+                flattenStyle.borderRadius ??
+                0,
+            },
           ]}
         />
       )}
