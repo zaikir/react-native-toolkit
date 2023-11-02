@@ -26,16 +26,9 @@ export type ViewStyle = ViewStyleBase & {
 export type ViewProps = Omit<ViewPropsBase, 'style'> & {
   style?: StyleProp<ViewStyle>;
   skeleton?: boolean;
-  skeletonProps?: object;
 };
 
-export function View({
-  style,
-  children,
-  skeleton,
-  skeletonProps,
-  ...props
-}: ViewProps) {
+export function View({ style, children, skeleton, ...props }: ViewProps) {
   const {
     backgroundGradient: backgroundGradientProp,
     borderGradient: borderGradientProp,
@@ -231,12 +224,17 @@ export function View({
         renderAbsolute(
           <ViewSkeleton
             style={[
-              baseStyle,
+              {
+                position: 'absolute',
+                left: -1,
+                top: -1,
+                right: -1,
+                bottom: -1,
+              },
               borderColorStyle,
               borderRadiusStyle,
               borderWidthStyle,
             ]}
-            {...skeletonProps}
           />,
         )}
     </ViewBase>

@@ -14,6 +14,7 @@ export interface FontFamilies {}
 export interface Colors {
   text: ThemeColor;
   background: ThemeColor;
+  skeleton?: ThemeColor | { color: ThemeColor; transform: number };
 }
 export interface Gradients {}
 export interface Values {}

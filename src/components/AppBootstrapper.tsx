@@ -10,10 +10,6 @@ import { DropDownProvider } from 'contexts/DropDownContext';
 import { InAppPurchaseProvider } from 'contexts/InAppPurchaseContext';
 import { PluginsBundleProvider } from 'contexts/PluginsBundleContext';
 import {
-  SkeletonProvider,
-  SkeletonProviderProps,
-} from 'contexts/SkeletonContext';
-import {
   AlertsProvider,
   ControlledPromise,
   PromiseUtils,
@@ -48,14 +44,12 @@ type Props = {
   children?: React.ReactNode;
   plugins?: PluginDef[];
   splashScreenProps?: Omit<AppSplashScreenProps, 'visible' | 'children'>;
-  skeletonProps?: Omit<SkeletonProviderProps, 'children'>;
 };
 
 export function AppBootstrapper({
   children,
   plugins,
   splashScreenProps,
-  skeletonProps,
 }: Props) {
   const [isInitialized, setIsInitialized] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
@@ -352,23 +346,21 @@ export function AppBootstrapper({
   ]);
 
   return (
-    <SkeletonProvider {...skeletonProps}>
-      <AppSplashScreen visible={!isInitialized} {...splashScreenProps}>
-        {!initializationError ? (
-          <PluginsBundleProvider
-            bundle={pluginsBundle}
-            retryInitialization={retryInitialization}
-          >
-            <AlertsProvider>
-              <DropDownProvider>
-                <InAppPurchaseProvider>{children}</InAppPurchaseProvider>
-              </DropDownProvider>
-            </AlertsProvider>
-          </PluginsBundleProvider>
-        ) : (
-          renderError()
-        )}
-      </AppSplashScreen>
-    </SkeletonProvider>
+    <AppSplashScreen visible={!isInitialized} {...splashScreenProps}>
+      {!initializationError ? (
+        <PluginsBundleProvider
+          bundle={pluginsBundle}
+          retryInitialization={retryInitialization}
+        >
+          <AlertsProvider>
+            <DropDownProvider>
+              <InAppPurchaseProvider>{children}</InAppPurchaseProvider>
+            </DropDownProvider>
+          </AlertsProvider>
+        </PluginsBundleProvider>
+      ) : (
+        renderError()
+      )}
+    </AppSplashScreen>
   );
 }

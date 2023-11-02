@@ -3,11 +3,18 @@ import fontColorContrast from 'font-color-contrast';
 import React, {
   createContext,
   PropsWithChildren,
-  useContext,
+  useEffect,
   useMemo,
 } from 'react';
 import type { TextStyle } from 'react-native';
-import { interpolateColor, useAnimatedStyle } from 'react-native-reanimated';
+import {
+  cancelAnimation,
+  interpolateColor,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 
 import { useColorScheme } from 'hooks/useColorScheme';
 import { ViewStyle } from 'index';
@@ -17,8 +24,6 @@ import type {
   ThemeColor,
   ThemeGradientValue,
 } from 'theme';
-
-import { SkeletonContext } from './SkeletonContext';
 
 type ColorData = ConstructorParameters<typeof Color>[0];
 type ColorModel = ConstructorParameters<typeof Color>[1];
@@ -46,14 +51,14 @@ export function ThemeProvider({
   theme,
 }: PropsWithChildren<{ theme: Theme }>) {
   const { colorScheme } = useColorScheme();
-  const skeletonContext = useContext(SkeletonContext);
+  const skeletonValue = useSharedValue(0);
 
   const computedTheme = useMemo<UseTheme<Theme>>(() => {
     // @ts-ignore
     const colorsDef = theme.colors as Record<string, ThemeColor>;
     const colors = Object.fromEntries(
       Object.entries(colorsDef).map(([name, color]) => {
-        if (typeof color === 'object') {
+        if (typeof color === 'object' && name !== 'skeleton') {
           // @ts-ignore
           return [name, color[colorScheme]];
         }
@@ -83,16 +88,27 @@ export function ThemeProvider({
     };
   }, [theme, colorScheme]);
 
-  const skeletonColors = useMemo(() => {
-    if (!skeletonContext) {
-      return null;
-    }
+  const skeletonDef = useMemo(() => {
+    const skeletonDef = computedTheme.colors.skeleton
+      ? typeof computedTheme.colors.skeleton === 'string'
+        ? {
+            color: computedTheme.colors.skeleton,
+            transform: 0.3,
+            interval: 800,
+          }
+        : computedTheme.colors.skeleton
+      : {
+          color: 'rgba(223,223,223,1)',
+          transform: 0.3,
+          interval: 800,
+        };
 
-    const skeletonColorTransform = skeletonContext.colorTransform ?? 0.3;
-    const color1 =
-      typeof skeletonContext.color === 'function'
-        ? skeletonContext.color(computedTheme)
-        : 'rgba(223,223,223,1)';
+    return skeletonDef;
+  }, [computedTheme]);
+
+  const skeletonColors = useMemo(() => {
+    const skeletonColorTransform = skeletonDef.transform;
+    const color1 = skeletonDef.color;
     const colorObj =
       skeletonColorTransform < 0
         ? computedTheme
@@ -104,12 +120,12 @@ export function ThemeProvider({
     const color2 = `rgba(${colorObj.red()},${colorObj.green()},${colorObj.blue()},${colorObj.alpha()})`;
 
     return { color1, color2 };
-  }, [skeletonContext, computedTheme]);
+  }, [computedTheme, skeletonDef]);
 
   const skeletonStyle = useAnimatedStyle(
     () => ({
       backgroundColor: interpolateColor(
-        skeletonContext ? skeletonContext.skeletonValue.value : 0,
+        skeletonValue.value,
         [0, 1],
         [
           skeletonColors?.color1 ?? 'rgba(255,255,255,0.3)',
@@ -117,7 +133,7 @@ export function ThemeProvider({
         ],
       ),
     }),
-    [skeletonColors, skeletonContext],
+    [skeletonColors],
   );
 
   const contextData = useMemo<ThemeContextType>(() => {
@@ -126,6 +142,18 @@ export function ThemeProvider({
       skeletonStyle,
     };
   }, [computedTheme, skeletonStyle]);
+
+  useEffect(() => {
+    skeletonValue.value = withRepeat(
+      withTiming(1, { duration: skeletonDef.interval }),
+      -1,
+      true,
+    );
+
+    return () => {
+      cancelAnimation(skeletonValue);
+    };
+  }, [skeletonDef.interval]);
 
   return (
     <ThemeContext.Provider value={contextData}>
