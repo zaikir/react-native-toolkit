@@ -36,7 +36,7 @@ export type UseTheme<T extends Theme> = {
   values: Record<keyof T['values'], number>;
   alerts: Record<keyof T['alerts'], ThemeAlertConfig>;
   getContrastColor: (color: string) => 'black' | 'white';
-  parseColor: (obj: ColorData, model: ColorModel) => Color;
+  parseColor: (obj: ColorData, model?: ColorModel) => Color;
 };
 
 export type ThemeContextType = {
