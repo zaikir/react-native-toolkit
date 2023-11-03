@@ -204,7 +204,7 @@ export function FullscreenCarousel<
                         <Image
                           {...imageProps}
                           source={section.valueGetter(item, index)}
-                          resizeMode="contain"
+                          resizeMode={imageProps?.resizeMode ?? 'contain'}
                           style={[
                             {
                               width: '100%',
