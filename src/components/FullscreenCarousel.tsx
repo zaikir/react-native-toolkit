@@ -6,6 +6,7 @@ import React, {
   useEffect,
   useImperativeHandle,
   useRef,
+  useState,
 } from 'react';
 import {
   Dimensions,
@@ -91,6 +92,7 @@ export type FullscreenCarouselProps<
   staticLayout: {
     sections: StaticLayoutSection[];
   };
+  width?: number | null;
   flatListProps?: Omit<FlatListProps<T>, 'data' | 'renderItem' | 'horizontal'>;
   autoplay?: {
     interval: number;
@@ -121,9 +123,11 @@ export function FullscreenCarousel<
   flatListProps,
   slideLayout,
   staticLayout,
+  width: widthProp = SCREEN_WIDTH,
   onSlideChanged,
   ...props
 }: FullscreenCarouselProps<T>) {
+  const [width, setWidth] = useState(widthProp);
   const flatListRef = useRef<any>(null);
   const activeSlideIndexRef = useRef(0);
   const targetSlideIndexRef = useRef(activeSlideIndexRef.current);
@@ -143,7 +147,7 @@ export function FullscreenCarousel<
         <View
           style={{
             flex: 1,
-            width: SCREEN_WIDTH,
+            width,
             overflow: 'hidden',
             paddingHorizontal: edgeOffset,
             marginBottom: -spacing,
@@ -338,7 +342,7 @@ export function FullscreenCarousel<
   );
 
   const onScroll = useAnimatedScrollHandler((event) => {
-    slideProgress.value = event.contentOffset.x / SCREEN_WIDTH;
+    slideProgress.value = event.contentOffset.x / width!;
 
     flatListProps?.onScroll?.(event as any);
   }, []);
@@ -407,6 +411,13 @@ export function FullscreenCarousel<
     <View
       {...props}
       style={[{ flex: 1, marginBottom: -(spacing ?? 0) }, props.style]}
+      {...(width == null
+        ? {
+            onLayout: (e) => {
+              setWidth(e.nativeEvent.layout.width);
+            },
+          }
+        : {})}
     >
       {renderStaticLayout('top')}
 
@@ -416,47 +427,49 @@ export function FullscreenCarousel<
           marginHorizontal: -edgeOffset,
         }}
       >
-        <Animated.FlatList
-          {...flatListProps}
-          ref={flatListRef}
-          data={slides}
-          renderItem={renderItem}
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={
-            flatListProps?.showsHorizontalScrollIndicator ?? false
-          }
-          onScroll={onScroll}
-          scrollEventThrottle={flatListProps?.scrollEventThrottle ?? 16}
-          onViewableItemsChanged={onViewableItemsChanged}
-          viewabilityConfig={{
-            viewAreaCoveragePercentThreshold: 60,
-          }}
-          onScrollBeginDrag={(e) => {
-            autoplayActionRef.current?.pause();
+        {!!width && (
+          <>
+            <Animated.FlatList
+              {...flatListProps}
+              ref={flatListRef}
+              data={slides}
+              renderItem={renderItem}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={
+                flatListProps?.showsHorizontalScrollIndicator ?? false
+              }
+              onScroll={onScroll}
+              scrollEventThrottle={flatListProps?.scrollEventThrottle ?? 16}
+              onViewableItemsChanged={onViewableItemsChanged}
+              viewabilityConfig={{
+                viewAreaCoveragePercentThreshold: 60,
+              }}
+              onScrollBeginDrag={(e) => {
+                autoplayActionRef.current?.pause();
 
-            flatListProps?.onScrollBeginDrag?.(e);
-          }}
-          onScrollEndDrag={(e) => {
-            const slideWidth = e.nativeEvent.layoutMeasurement.width;
-            const targetSlide = Math.round(
-              e.nativeEvent.targetContentOffset?.x! / slideWidth,
-            );
+                flatListProps?.onScrollBeginDrag?.(e);
+              }}
+              onScrollEndDrag={(e) => {
+                const slideWidth = e.nativeEvent.layoutMeasurement.width;
+                const targetSlide = Math.round(
+                  e.nativeEvent.targetContentOffset?.x! / slideWidth,
+                );
 
-            startAutoplay(targetSlide);
+                startAutoplay(targetSlide);
 
-            flatListProps?.onScrollEndDrag?.(e);
+                flatListProps?.onScrollEndDrag?.(e);
 
-            allowLastSlideAutoplay.current = true;
-          }}
-          style={[{ marginBottom: spacing ?? 0 }, flatListProps?.style]}
-          contentContainerStyle={flatListProps?.contentContainerStyle}
-        />
-
-        {renderStaticLayout('slide')}
+                allowLastSlideAutoplay.current = true;
+              }}
+              style={[{ marginBottom: spacing ?? 0 }, flatListProps?.style]}
+              contentContainerStyle={flatListProps?.contentContainerStyle}
+            />
+            {renderStaticLayout('slide')}
+          </>
+        )}
       </View>
-
-      {renderStaticLayout('bottom')}
+      {!!width && renderStaticLayout('bottom')}
     </View>
   );
 }

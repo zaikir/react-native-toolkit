@@ -19,6 +19,10 @@ export {
 export { View, type ViewProps, type ViewStyle } from './components/View';
 export { FadeView, type FadeViewProps } from './components/FadeView';
 export { BlurView, type BlurViewProps } from './components/BlurView';
+export {
+  RefreshControl,
+  type RefreshControlProps,
+} from './components/RefreshControl';
 export { Text, type TextProps, type TextStyle } from './components/Text';
 export {
   ListView,
