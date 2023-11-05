@@ -1,3 +1,4 @@
+import { atom, createStore, useAtom } from 'jotai';
 import React, {
   FunctionComponent,
   ReactNode,
@@ -5,6 +6,7 @@ import React, {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -15,6 +17,7 @@ import {
   ImageProps,
   ImageSourcePropType,
   TouchableOpacity,
+  TouchableOpacityProps,
 } from 'react-native';
 import Animated, {
   SharedValue,
@@ -30,7 +33,7 @@ import { View, ViewProps } from './View';
 
 export type FullscreenCarouselContext = {
   progress: SharedValue<number>;
-  slideRef: { current: number };
+  slideIndex: number;
   slidesCount: number;
 };
 
@@ -79,6 +82,31 @@ export type StaticLayoutSection = (
   position: 'top' | 'slide' | 'bottom';
 };
 
+export const SelectedSlideIndexAtom = atom(0);
+
+function ControlButton({
+  direction,
+  slidesCount,
+  ...props
+}: TouchableOpacityProps & {
+  slidesCount: number;
+  direction: 'left' | 'right';
+}) {
+  const [slideIndex] = useAtom(SelectedSlideIndexAtom);
+  const isDisabled =
+    (direction === 'left' && slideIndex <= 0) ||
+    (direction === 'right' && slideIndex >= slidesCount - 1);
+
+  return (
+    <TouchableOpacity
+      {...props}
+      hitSlop={scaleX(20)}
+      disabled={isDisabled}
+      style={[props.style, isDisabled && { opacity: 0.3 }]}
+    />
+  );
+}
+
 export type FullscreenCarouselProps<
   T extends Record<string, any> = Record<string, any>,
 > = {
@@ -94,7 +122,7 @@ export type FullscreenCarouselProps<
     sections: StaticLayoutSection[];
   };
   width?: number | 'auto' | 'screen';
-  controls: {
+  controls?: {
     type: 'none' | 'buttons' | 'fullscreen';
     buttonsOffset?: number;
     leftIcon?: ReactNode;
@@ -135,6 +163,8 @@ export function FullscreenCarousel<
   onSlideChanged,
   ...props
 }: FullscreenCarouselProps<T>) {
+  const store = useMemo(() => createStore(), []);
+
   const [width, setWidth] = useState(
     widthProp === 'screen'
       ? SCREEN_WIDTH
@@ -282,7 +312,7 @@ export function FullscreenCarousel<
             const ctx: FullscreenCarouselContext = {
               progress: autoplay ? autoplayProgress : slideProgress,
               slidesCount: slides.length,
-              slideRef: activeSlideIndexRef,
+              slideIndex: store.get(SelectedSlideIndexAtom),
             };
 
             if (section.type === 'indicator') {
@@ -384,8 +414,13 @@ export function FullscreenCarousel<
       allowLastSlideAutoplay.current = true;
     }
 
+    store.set(SelectedSlideIndexAtom, visibleItem.index!);
     onSlideChanged?.(visibleItem.index!);
   }, []);
+
+  useEffect(() => {
+    store.set(SelectedSlideIndexAtom, flatListProps?.initialScrollIndex ?? 0);
+  }, [store]);
 
   useEffect(() => {
     if (!autoplay) {
@@ -483,83 +518,102 @@ export function FullscreenCarousel<
           </>
         )}
 
-        {controls?.type === 'fullscreen' && (
+        {(controls?.type === 'buttons' || controls?.type === 'fullscreen') && (
           <View
             style={{
               position: 'absolute',
-              width: '100%',
-              height: '100%',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: spacing ?? 0,
             }}
-            pointerEvents="box-none"
           >
-            <View
-              style={{
-                position: 'relative',
-                flex: 1,
-              }}
-            >
-              <TouchableOpacity
-                onPress={() => {
-                  scrollToPrev();
-                }}
+            {controls.type === 'fullscreen' && (
+              <View
                 style={{
                   position: 'absolute',
-                  width: '50%',
+                  width: '100%',
                   height: '100%',
-                  justifyContent: 'center',
-                  alignItems: 'center',
                 }}
+                pointerEvents="box-none"
               >
-                {controls?.leftIcon}
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  scrollToPrev();
-                }}
-                style={{
-                  position: 'absolute',
-                  width: '50%',
-                  height: '100%',
-                  right: 0,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                {controls?.rightIcon}
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
+                <View
+                  style={{
+                    position: 'relative',
+                    flex: 1,
+                  }}
+                >
+                  <ControlButton
+                    onPress={() => {
+                      scrollToPrev();
+                    }}
+                    direction="left"
+                    style={{
+                      position: 'absolute',
+                      width: '50%',
+                      height: '100%',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                    slidesCount={slides.length}
+                  >
+                    {controls?.leftIcon}
+                  </ControlButton>
+                  <ControlButton
+                    onPress={() => {
+                      scrollToNext();
+                    }}
+                    direction="right"
+                    style={{
+                      position: 'absolute',
+                      width: '50%',
+                      height: '100%',
+                      right: 0,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                    slidesCount={slides.length}
+                  >
+                    {controls?.rightIcon}
+                  </ControlButton>
+                </View>
+              </View>
+            )}
 
-        {controls?.type === 'buttons' && (
-          <View
-            style={{
-              position: 'absolute',
-              width: '100%',
-              height: '100%',
-              paddingHorizontal: controls?.buttonsOffset ?? scaleX(10),
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}
-            pointerEvents="box-none"
-          >
-            <TouchableOpacity
-              hitSlop={scaleX(20)}
-              onPress={() => {
-                scrollToPrev();
-              }}
-            >
-              {controls?.leftIcon}
-            </TouchableOpacity>
-            <View style={{ flex: 1 }} />
-            <TouchableOpacity
-              hitSlop={scaleX(20)}
-              onPress={() => {
-                scrollToNext();
-              }}
-            >
-              {controls?.rightIcon}
-            </TouchableOpacity>
+            {controls.type === 'buttons' && (
+              <View
+                style={{
+                  position: 'absolute',
+                  width: '100%',
+                  height: '100%',
+                  paddingHorizontal: controls?.buttonsOffset ?? scaleX(10),
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}
+                pointerEvents="box-none"
+              >
+                <ControlButton
+                  onPress={() => {
+                    scrollToPrev();
+                  }}
+                  direction="left"
+                  slidesCount={slides.length}
+                >
+                  {controls?.leftIcon}
+                </ControlButton>
+
+                <View style={{ flex: 1 }} />
+                <ControlButton
+                  onPress={() => {
+                    scrollToNext();
+                  }}
+                  direction="right"
+                  slidesCount={slides.length}
+                >
+                  {controls?.rightIcon}
+                </ControlButton>
+              </View>
+            )}
           </View>
         )}
       </View>
