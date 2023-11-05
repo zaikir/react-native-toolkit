@@ -529,6 +529,7 @@ export function FullscreenCarousel<
                 right: 0,
                 bottom: spacing ?? 0,
               }}
+              pointerEvents="box-none"
             >
               {controls.type === 'fullscreen' && (
                 <View
