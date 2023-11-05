@@ -28,6 +28,7 @@ export {
   ListView,
   type ListViewProps,
   type ListViewLayoutProps,
+  type ListViewSection,
 } from './components/ListView';
 export { AppBootstrapper } from './components/AppBootstrapper';
 export { AlertsProvider } from './contexts/AlertsContext';
