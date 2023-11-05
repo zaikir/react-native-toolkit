@@ -92,7 +92,7 @@ export type FullscreenCarouselProps<
   staticLayout: {
     sections: StaticLayoutSection[];
   };
-  width?: number | null;
+  width?: number | 'auto' | 'screen';
   flatListProps?: Omit<FlatListProps<T>, 'data' | 'renderItem' | 'horizontal'>;
   autoplay?: {
     interval: number;
@@ -123,11 +123,17 @@ export function FullscreenCarousel<
   flatListProps,
   slideLayout,
   staticLayout,
-  width: widthProp = SCREEN_WIDTH,
+  width: widthProp = 'screen',
   onSlideChanged,
   ...props
 }: FullscreenCarouselProps<T>) {
-  const [width, setWidth] = useState(widthProp);
+  const [width, setWidth] = useState(
+    widthProp === 'screen'
+      ? SCREEN_WIDTH
+      : typeof widthProp === 'number'
+      ? widthProp
+      : 0,
+  );
   const flatListRef = useRef<any>(null);
   const activeSlideIndexRef = useRef(0);
   const targetSlideIndexRef = useRef(activeSlideIndexRef.current);
@@ -411,7 +417,7 @@ export function FullscreenCarousel<
     <View
       {...props}
       style={[{ flex: 1, marginBottom: -(spacing ?? 0) }, props.style]}
-      {...(width == null
+      {...(widthProp === 'auto'
         ? {
             onLayout: (e) => {
               setWidth(e.nativeEvent.layout.width);
