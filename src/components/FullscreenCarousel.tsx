@@ -1,4 +1,4 @@
-import { atom, createStore, useAtom } from 'jotai';
+import { atom, createStore, useAtom, Provider } from 'jotai';
 import React, {
   FunctionComponent,
   ReactNode,
@@ -457,167 +457,170 @@ export function FullscreenCarousel<
   );
 
   return (
-    <View
-      {...props}
-      style={[{ flex: 1, marginBottom: -(spacing ?? 0) }, props.style]}
-      {...(widthProp === 'auto'
-        ? {
-            onLayout: (e) => {
-              setWidth(e.nativeEvent.layout.width);
-            },
-          }
-        : {})}
-    >
-      {renderStaticLayout('top')}
-
+    <Provider store={store}>
       <View
-        style={{
-          flex: 1,
-          marginHorizontal: -edgeOffset,
-        }}
+        {...props}
+        style={[{ flex: 1, marginBottom: -(spacing ?? 0) }, props.style]}
+        {...(widthProp === 'auto'
+          ? {
+              onLayout: (e) => {
+                setWidth(e.nativeEvent.layout.width);
+              },
+            }
+          : {})}
       >
-        {!!width && (
-          <>
-            <Animated.FlatList
-              {...flatListProps}
-              ref={flatListRef}
-              data={slides}
-              renderItem={renderItem}
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={
-                flatListProps?.showsHorizontalScrollIndicator ?? false
-              }
-              onScroll={onScroll}
-              scrollEventThrottle={flatListProps?.scrollEventThrottle ?? 16}
-              onViewableItemsChanged={onViewableItemsChanged}
-              viewabilityConfig={{
-                viewAreaCoveragePercentThreshold: 60,
-              }}
-              onScrollBeginDrag={(e) => {
-                autoplayActionRef.current?.pause();
+        {renderStaticLayout('top')}
 
-                flatListProps?.onScrollBeginDrag?.(e);
-              }}
-              onScrollEndDrag={(e) => {
-                const slideWidth = e.nativeEvent.layoutMeasurement.width;
-                const targetSlide = Math.round(
-                  e.nativeEvent.targetContentOffset?.x! / slideWidth,
-                );
-
-                startAutoplay(targetSlide);
-
-                flatListProps?.onScrollEndDrag?.(e);
-
-                allowLastSlideAutoplay.current = true;
-              }}
-              style={[{ marginBottom: spacing ?? 0 }, flatListProps?.style]}
-              contentContainerStyle={flatListProps?.contentContainerStyle}
-            />
-            {renderStaticLayout('slide')}
-          </>
-        )}
-
-        {(controls?.type === 'buttons' || controls?.type === 'fullscreen') && (
-          <View
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: spacing ?? 0,
-            }}
-          >
-            {controls.type === 'fullscreen' && (
-              <View
-                style={{
-                  position: 'absolute',
-                  width: '100%',
-                  height: '100%',
+        <View
+          style={{
+            flex: 1,
+            marginHorizontal: -edgeOffset,
+          }}
+        >
+          {!!width && (
+            <>
+              <Animated.FlatList
+                {...flatListProps}
+                ref={flatListRef}
+                data={slides}
+                renderItem={renderItem}
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={
+                  flatListProps?.showsHorizontalScrollIndicator ?? false
+                }
+                onScroll={onScroll}
+                scrollEventThrottle={flatListProps?.scrollEventThrottle ?? 16}
+                onViewableItemsChanged={onViewableItemsChanged}
+                viewabilityConfig={{
+                  viewAreaCoveragePercentThreshold: 60,
                 }}
-                pointerEvents="box-none"
-              >
+                onScrollBeginDrag={(e) => {
+                  autoplayActionRef.current?.pause();
+
+                  flatListProps?.onScrollBeginDrag?.(e);
+                }}
+                onScrollEndDrag={(e) => {
+                  const slideWidth = e.nativeEvent.layoutMeasurement.width;
+                  const targetSlide = Math.round(
+                    e.nativeEvent.targetContentOffset?.x! / slideWidth,
+                  );
+
+                  startAutoplay(targetSlide);
+
+                  flatListProps?.onScrollEndDrag?.(e);
+
+                  allowLastSlideAutoplay.current = true;
+                }}
+                style={[{ marginBottom: spacing ?? 0 }, flatListProps?.style]}
+                contentContainerStyle={flatListProps?.contentContainerStyle}
+              />
+              {renderStaticLayout('slide')}
+            </>
+          )}
+
+          {(controls?.type === 'buttons' ||
+            controls?.type === 'fullscreen') && (
+            <View
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: spacing ?? 0,
+              }}
+            >
+              {controls.type === 'fullscreen' && (
                 <View
                   style={{
-                    position: 'relative',
-                    flex: 1,
+                    position: 'absolute',
+                    width: '100%',
+                    height: '100%',
                   }}
+                  pointerEvents="box-none"
+                >
+                  <View
+                    style={{
+                      position: 'relative',
+                      flex: 1,
+                    }}
+                  >
+                    <ControlButton
+                      onPress={() => {
+                        scrollToPrev();
+                      }}
+                      direction="left"
+                      style={{
+                        position: 'absolute',
+                        width: '50%',
+                        height: '100%',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
+                      slidesCount={slides.length}
+                    >
+                      {controls?.leftIcon}
+                    </ControlButton>
+                    <ControlButton
+                      onPress={() => {
+                        scrollToNext();
+                      }}
+                      direction="right"
+                      style={{
+                        position: 'absolute',
+                        width: '50%',
+                        height: '100%',
+                        right: 0,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
+                      slidesCount={slides.length}
+                    >
+                      {controls?.rightIcon}
+                    </ControlButton>
+                  </View>
+                </View>
+              )}
+
+              {controls.type === 'buttons' && (
+                <View
+                  style={{
+                    position: 'absolute',
+                    width: '100%',
+                    height: '100%',
+                    paddingHorizontal: controls?.buttonsOffset ?? scaleX(10),
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}
+                  pointerEvents="box-none"
                 >
                   <ControlButton
                     onPress={() => {
                       scrollToPrev();
                     }}
                     direction="left"
-                    style={{
-                      position: 'absolute',
-                      width: '50%',
-                      height: '100%',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}
                     slidesCount={slides.length}
                   >
                     {controls?.leftIcon}
                   </ControlButton>
+
+                  <View style={{ flex: 1 }} />
                   <ControlButton
                     onPress={() => {
                       scrollToNext();
                     }}
                     direction="right"
-                    style={{
-                      position: 'absolute',
-                      width: '50%',
-                      height: '100%',
-                      right: 0,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}
                     slidesCount={slides.length}
                   >
                     {controls?.rightIcon}
                   </ControlButton>
                 </View>
-              </View>
-            )}
-
-            {controls.type === 'buttons' && (
-              <View
-                style={{
-                  position: 'absolute',
-                  width: '100%',
-                  height: '100%',
-                  paddingHorizontal: controls?.buttonsOffset ?? scaleX(10),
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}
-                pointerEvents="box-none"
-              >
-                <ControlButton
-                  onPress={() => {
-                    scrollToPrev();
-                  }}
-                  direction="left"
-                  slidesCount={slides.length}
-                >
-                  {controls?.leftIcon}
-                </ControlButton>
-
-                <View style={{ flex: 1 }} />
-                <ControlButton
-                  onPress={() => {
-                    scrollToNext();
-                  }}
-                  direction="right"
-                  slidesCount={slides.length}
-                >
-                  {controls?.rightIcon}
-                </ControlButton>
-              </View>
-            )}
-          </View>
-        )}
+              )}
+            </View>
+          )}
+        </View>
+        {!!width && renderStaticLayout('bottom')}
       </View>
-      {!!width && renderStaticLayout('bottom')}
-    </View>
+    </Provider>
   );
 }
