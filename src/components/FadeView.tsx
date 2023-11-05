@@ -125,7 +125,6 @@ function InnerFadeView({
 }
 
 export function FadeView({
-  style,
   sides = { bottom: true },
   fadeDistance,
   ...props
