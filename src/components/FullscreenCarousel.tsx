@@ -253,7 +253,7 @@ export function FullscreenCarousel<
         </View>
       );
     },
-    [slideLayout],
+    [slideLayout, width],
   );
 
   const renderStaticLayout = (position: 'top' | 'slide' | 'bottom') => {
