@@ -14,6 +14,7 @@ import {
   Image,
   ImageProps,
   ImageSourcePropType,
+  TouchableOpacity,
 } from 'react-native';
 import Animated, {
   SharedValue,
@@ -21,7 +22,7 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 
-import { ControlledPromise } from 'index';
+import { ControlledPromise, scaleX } from 'index';
 import { AutoplayAction } from 'utils/AutoplayAction';
 
 import { Text, TextProps } from './Text';
@@ -93,6 +94,12 @@ export type FullscreenCarouselProps<
     sections: StaticLayoutSection[];
   };
   width?: number | 'auto' | 'screen';
+  controls: {
+    type: 'none' | 'buttons' | 'fullscreen';
+    buttonsOffset?: number;
+    leftIcon?: ReactNode;
+    rightIcon?: ReactNode;
+  };
   flatListProps?: Omit<FlatListProps<T>, 'data' | 'renderItem' | 'horizontal'>;
   autoplay?: {
     interval: number;
@@ -117,6 +124,7 @@ export function FullscreenCarousel<
   controlRef,
   slides,
   spacing = 0,
+  controls,
   progressValue,
   edgeOffset = 0,
   autoplay,
@@ -473,6 +481,86 @@ export function FullscreenCarousel<
             />
             {renderStaticLayout('slide')}
           </>
+        )}
+
+        {controls?.type === 'fullscreen' && (
+          <View
+            style={{
+              position: 'absolute',
+              width: '100%',
+              height: '100%',
+            }}
+            pointerEvents="box-none"
+          >
+            <View
+              style={{
+                position: 'relative',
+                flex: 1,
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => {
+                  scrollToPrev();
+                }}
+                style={{
+                  position: 'absolute',
+                  width: '50%',
+                  height: '100%',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                {controls?.leftIcon}
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  scrollToPrev();
+                }}
+                style={{
+                  position: 'absolute',
+                  width: '50%',
+                  height: '100%',
+                  right: 0,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                {controls?.rightIcon}
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
+        {controls?.type === 'buttons' && (
+          <View
+            style={{
+              position: 'absolute',
+              width: '100%',
+              height: '100%',
+              paddingHorizontal: controls?.buttonsOffset ?? scaleX(10),
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}
+            pointerEvents="box-none"
+          >
+            <TouchableOpacity
+              hitSlop={scaleX(20)}
+              onPress={() => {
+                scrollToPrev();
+              }}
+            >
+              {controls?.leftIcon}
+            </TouchableOpacity>
+            <View style={{ flex: 1 }} />
+            <TouchableOpacity
+              hitSlop={scaleX(20)}
+              onPress={() => {
+                scrollToNext();
+              }}
+            >
+              {controls?.rightIcon}
+            </TouchableOpacity>
+          </View>
         )}
       </View>
       {!!width && renderStaticLayout('bottom')}
