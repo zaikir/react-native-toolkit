@@ -97,13 +97,12 @@ function ControlButton({
     (direction === 'left' && slideIndex <= 0) ||
     (direction === 'right' && slideIndex >= slidesCount - 1);
 
+  if (isDisabled) {
+    return null;
+  }
+
   return (
-    <TouchableOpacity
-      {...props}
-      hitSlop={scaleX(20)}
-      disabled={isDisabled}
-      style={[props.style, isDisabled && { opacity: 0.3 }]}
-    />
+    <TouchableOpacity {...props} hitSlop={scaleX(20)} disabled={isDisabled} />
   );
 }
 
