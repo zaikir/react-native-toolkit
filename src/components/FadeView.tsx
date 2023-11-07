@@ -13,12 +13,16 @@ const DEFAULT_FADE = scaleY(10);
 export type FadeViewProps = ViewProps & {
   sides?: Partial<Record<Side, boolean>>;
   fadeDistance?: number | Partial<Record<Side, number>>;
+  fadeStart?: number | Partial<Record<Side, number>>;
+  fadeEnd?: number | Partial<Record<Side, number>>;
 };
 
 function InnerFadeView({
   style,
   sides,
   fadeDistance,
+  fadeStart,
+  fadeEnd,
   direction,
   ...props
 }: FadeViewProps & { direction: 'vertical' | 'horizontal' }) {
@@ -45,8 +49,15 @@ function InnerFadeView({
             >
               {(sides?.top ?? false) && (
                 <LinearGradient
-                  start={{ x: 0.5, y: 0 }}
-                  end={{ x: 0.5, y: 1 }}
+                  start={{
+                    x: 0.5,
+                    y:
+                      (typeof fadeStart === 'number' ? 0 : fadeStart?.top) ?? 0,
+                  }}
+                  end={{
+                    x: 0.5,
+                    y: (typeof fadeEnd === 'number' ? 0 : fadeEnd?.top) ?? 1,
+                  }}
                   colors={['rgba(0,0,0,0.0)', 'rgba(0,0,0,1)']}
                   style={{
                     height:
@@ -60,8 +71,16 @@ function InnerFadeView({
               <View style={{ flex: 1, backgroundColor: 'white' }} />
               {(sides?.bottom ?? true) && (
                 <LinearGradient
-                  start={{ x: 0.5, y: 0 }}
-                  end={{ x: 0.5, y: 1 }}
+                  start={{
+                    x: 0.5,
+                    y:
+                      (typeof fadeStart === 'number' ? 0 : fadeStart?.bottom) ??
+                      0,
+                  }}
+                  end={{
+                    x: 0.5,
+                    y: (typeof fadeEnd === 'number' ? 0 : fadeEnd?.bottom) ?? 1,
+                  }}
                   colors={['rgba(0,0,0,1)', 'rgba(0,0,0,0.0)']}
                   style={{
                     height:
@@ -89,8 +108,16 @@ function InnerFadeView({
             >
               {(sides?.left ?? false) && (
                 <LinearGradient
-                  start={{ x: 0, y: 0.5 }}
-                  end={{ x: 1, y: 0.5 }}
+                  start={{
+                    x:
+                      (typeof fadeStart === 'number' ? 0 : fadeStart?.left) ??
+                      0,
+                    y: 0.5,
+                  }}
+                  end={{
+                    x: (typeof fadeEnd === 'number' ? 0 : fadeEnd?.left) ?? 1,
+                    y: 0.5,
+                  }}
                   colors={['rgba(0,0,0,0.0)', 'rgba(0,0,0,1)']}
                   style={{
                     width:
@@ -104,8 +131,16 @@ function InnerFadeView({
               <View style={{ flex: 1, backgroundColor: 'white' }} />
               {(sides?.right ?? false) && (
                 <LinearGradient
-                  start={{ x: 0, y: 0.5 }}
-                  end={{ x: 1, y: 0.5 }}
+                  start={{
+                    x:
+                      (typeof fadeStart === 'number' ? 0 : fadeStart?.right) ??
+                      0,
+                    y: 0.5,
+                  }}
+                  end={{
+                    x: (typeof fadeEnd === 'number' ? 0 : fadeEnd?.right) ?? 1,
+                    y: 0.5,
+                  }}
                   colors={['rgba(0,0,0,1)', 'rgba(0,0,0,0.0)']}
                   style={{
                     width:
