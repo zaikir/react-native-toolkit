@@ -3,20 +3,23 @@ import { useCallback, useContext } from 'react';
 import { AlertsContext } from 'contexts/AlertsContext';
 import { Alert } from 'theme';
 
-export function useAlert(name: Alert) {
+export function useAlert() {
   const { showAlert: showAlertBase, hideAlert: hideAlertBase } =
     useContext(AlertsContext);
 
   const showAlert = useCallback(
-    (props?: any) => {
+    (name: Alert, props?: any) => {
       return showAlertBase(name, props);
     },
-    [name, showAlertBase],
+    [showAlertBase],
   );
 
-  const hideAlert = useCallback(() => {
-    return hideAlertBase(name);
-  }, [name, hideAlertBase]);
+  const hideAlert = useCallback(
+    (name: Alert) => {
+      return hideAlertBase(name);
+    },
+    [hideAlertBase],
+  );
 
   return {
     showAlert,

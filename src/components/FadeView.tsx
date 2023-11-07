@@ -12,7 +12,7 @@ const DEFAULT_FADE = scaleY(10);
 
 export type FadeViewProps = ViewProps & {
   sides?: Partial<Record<Side, boolean>>;
-  fadeDistance?: number | Record<Side, number>;
+  fadeDistance?: number | Partial<Record<Side, number>>;
 };
 
 function InnerFadeView({
