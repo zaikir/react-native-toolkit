@@ -37,6 +37,24 @@ export type AlertComponentProps = {
 
 type ThemeAlertConfigData =
   | {
+      type?: 'alert' | 'action-sheet';
+      title?: string;
+      message?: string;
+      cancelable?: boolean;
+      buttons: {
+        text: string;
+        style?: 'default' | 'cancel' | 'destructive';
+        onPress?: (
+          resolve: AlertComponentProps['resolve'],
+          reject: AlertComponentProps['reject'],
+        ) => void;
+      }[];
+      onDismiss?: (
+        resolve: AlertComponentProps['resolve'],
+        reject: AlertComponentProps['reject'],
+      ) => void;
+    }
+  | {
       type?: 'alert';
       title: string;
       message: string;

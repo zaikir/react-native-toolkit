@@ -7,7 +7,13 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Alert, Platform, TouchableOpacity, View } from 'react-native';
+import {
+  ActionSheetIOS,
+  Alert,
+  Platform,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Modal from 'react-native-modal';
 
 import { BlurView } from 'components/BlurView';
@@ -63,8 +69,16 @@ export function AlertsProvider({ children }: AlertsProviderProps) {
         }
 
         if (!('component' in activeAlertRef.current)) {
-          // @ts-ignore
-          Alert.alert(activeAlertRef.current.systemAlertProps);
+          if (
+            'type' in activeAlertRef.current &&
+            activeAlertRef.current.type === 'action-sheet'
+          ) {
+            // @ts-ignore
+            ActionSheetIOS.showActionSheetWithOptions(...alertProps);
+          } else {
+            // @ts-ignore
+            Alert.alert(...activeAlertRef.current.systemAlertProps);
+          }
         } else {
           if (
             !activeAlertRef.current.type ||
@@ -106,38 +120,68 @@ export function AlertsProvider({ children }: AlertsProviderProps) {
           typeof alert === 'function' ? alert(props ?? {}) : alert;
 
         if (!('component' in alertDefinition)) {
-          const alertProps = [
-            alertDefinition.title,
-            alertDefinition.message,
-            alertDefinition.buttons.map((button) => ({
-              style: button.style,
-              text: button.text,
-              onPress: () => {
-                if (
-                  !button.onPress &&
-                  (!button.style ||
-                    button.style === 'default' ||
-                    button.style === 'destructive')
-                ) {
-                  resolve(true);
-                  dequeueAlert(alertDefinition, id);
-                  return;
-                }
+          const onButtonPress = (
+            button: (typeof alertDefinition.buttons)[number],
+          ) => {
+            if (
+              !button.onPress &&
+              (!button.style ||
+                button.style === 'default' ||
+                button.style === 'destructive')
+            ) {
+              resolve(true);
+              dequeueAlert(alertDefinition, id);
+              return;
+            }
 
-                if (!button.onPress && button.style === 'cancel') {
-                  resolve(false);
-                  dequeueAlert(alertDefinition, id);
-                  return;
-                }
+            if (!button.onPress && button.style === 'cancel') {
+              resolve(false);
+              dequeueAlert(alertDefinition, id);
+              return;
+            }
 
-                button?.onPress?.(resolve, reject);
-                dequeueAlert(alertDefinition, id);
-              },
-            })) ?? [],
-            {
-              cancelable: false,
-            },
-          ] as const;
+            button?.onPress?.(resolve, reject);
+            dequeueAlert(alertDefinition, id);
+          };
+
+          const alertProps =
+            alertDefinition.type === 'action-sheet'
+              ? ([
+                  {
+                    title: alertDefinition.title,
+                    message: alertDefinition.message,
+                    options: alertDefinition.buttons.map((x) => x.text),
+                    cancelButtonIndex: (() => {
+                      const index = alertDefinition.buttons.findIndex(
+                        (x) => x.style === 'cancel',
+                      );
+                      return index === -1 ? undefined : index;
+                    })(),
+                    destructiveButtonIndex: (() => {
+                      const index = alertDefinition.buttons.findIndex(
+                        (x) => x.style === 'destructive',
+                      );
+                      return index === -1 ? undefined : index;
+                    })(),
+                  },
+                  (buttonIndex: number) => {
+                    onButtonPress(alertDefinition.buttons[buttonIndex]);
+                  },
+                ] as const)
+              : ([
+                  alertDefinition.title,
+                  alertDefinition.message,
+                  alertDefinition.buttons.map((button) => ({
+                    style: button.style,
+                    text: button.text,
+                    onPress: () => {
+                      onButtonPress(button);
+                    },
+                  })) ?? [],
+                  {
+                    cancelable: false,
+                  },
+                ] as const);
 
           alertsStack.current = [
             ...alertsStack.current,
@@ -151,7 +195,13 @@ export function AlertsProvider({ children }: AlertsProviderProps) {
           activeAlertRef.current =
             alertsStack.current[alertsStack.current.length - 1];
 
-          Alert.alert(...alertProps);
+          if (alertDefinition.type === 'action-sheet') {
+            // @ts-ignore
+            ActionSheetIOS.showActionSheetWithOptions(...alertProps);
+          } else {
+            // @ts-ignore
+            Alert.alert(...alertProps);
+          }
         } else {
           if (!alertDefinition.type || alertDefinition.type === 'modal') {
             alertsStack.current = [
