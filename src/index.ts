@@ -8,6 +8,7 @@ export {
   type FullscreenCarouselRef,
   type FullscreenCarouselContext,
 } from './components/FullscreenCarousel';
+export { Grid, type GridProps } from './components/Grid';
 export {
   AutoplayCarouselProgressBar,
   type AutoplayCarouselProgressBarProps,
