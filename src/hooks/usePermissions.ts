@@ -23,7 +23,7 @@ export function usePermissions() {
       );
 
       if (grantedPermissions.length === permissions.length) {
-        return { status: 'granted' };
+        return { status: 'granted' as const };
       }
 
       const blockedPermissions = statuses.filter(
@@ -32,7 +32,7 @@ export function usePermissions() {
 
       if (blockedPermissions.length) {
         return {
-          status: 'blocked',
+          status: 'blocked' as const,
           permissions: blockedPermissions.map((x) => x.permission),
         };
       }
@@ -41,7 +41,7 @@ export function usePermissions() {
 
       if (!request) {
         return {
-          status: 'blocked',
+          status: 'blocked' as const,
           permissions: deniedPermissions.map((x) => x.permission),
         };
       }
@@ -62,7 +62,7 @@ export function usePermissions() {
       // ToDo: await limited image picker here
 
       if (newGrantedPermissions.length === deniedPermissions.length) {
-        return { status: 'granted' };
+        return { status: 'granted' as const };
       }
 
       const newBlockedPermissions = newStatuses.filter(
@@ -70,7 +70,7 @@ export function usePermissions() {
       );
 
       return {
-        status: 'blocked',
+        status: 'blocked' as const,
         permissions: newBlockedPermissions.map((x) => x.permission),
       };
     },
