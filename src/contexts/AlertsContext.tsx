@@ -171,13 +171,22 @@ export function AlertsProvider({ children }: AlertsProviderProps) {
               : ([
                   alertDefinition.title,
                   alertDefinition.message,
-                  alertDefinition.buttons.map((button) => ({
-                    style: button.style,
-                    text: button.text,
-                    onPress: () => {
-                      onButtonPress(button);
-                    },
-                  })) ?? [],
+                  alertDefinition.buttons?.length
+                    ? alertDefinition.buttons.map((button) => ({
+                        style: button.style,
+                        text: button.text,
+                        onPress: () => {
+                          onButtonPress(button);
+                        },
+                      }))
+                    : [
+                        {
+                          text: 'OK',
+                          onPress: () => {
+                            onButtonPress({ text: 'OK' });
+                          },
+                        },
+                      ],
                   {
                     cancelable: false,
                   },
