@@ -74,7 +74,7 @@ export function AppBootstrapper({
 
       const initializePlugin = async (
         plugin: PluginDef,
-        bundle: PluginsBundle,
+        getBundle: () => PluginsBundle,
         group: string | null,
         id: number,
       ) => {
@@ -96,7 +96,7 @@ export function AppBootstrapper({
         try {
           if ('useValue' in plugin) {
             await timeout(
-              plugin.useValue.initialize(bundle),
+              plugin.useValue.initialize(getBundle()),
               plugin.timeout === null
                 ? null
                 : plugin.timeout ?? plugin.useValue.initializationTimeout,
@@ -108,14 +108,14 @@ export function AppBootstrapper({
             });
           } else if ('useFactory' in plugin) {
             const initializedPlugin = await timeout(
-              plugin.useFactory(bundle),
+              plugin.useFactory(getBundle()),
               plugin.timeout === null ? null : plugin.timeout,
               `${plugin.name} timeout error`,
             );
 
             if (initializedPlugin) {
               await timeout(
-                initializedPlugin.initialize(bundle),
+                initializedPlugin.initialize(getBundle()),
                 plugin.timeout === null
                   ? null
                   : plugin.timeout ?? initializedPlugin.initializationTimeout,
@@ -132,7 +132,7 @@ export function AppBootstrapper({
 
             const initializedPlugin = await timeout(
               plugin.useDeferredFactory(
-                bundle,
+                getBundle(),
                 promise.resolve,
                 promise.reject,
               ),
@@ -142,7 +142,7 @@ export function AppBootstrapper({
 
             const [, additionalData] = await timeout(
               Promise.all([
-                initializedPlugin?.initialize(bundle),
+                initializedPlugin?.initialize(getBundle()),
                 promise.wait(),
               ]),
               plugin.timeout === null
@@ -223,10 +223,6 @@ export function AppBootstrapper({
         }
 
         try {
-          const bundle = new PluginsBundle(
-            initializedPlugins.current.map((x) => x.plugin),
-          );
-
           if ('group' in plugin && plugin.group && async) {
             if (!asyncQueue[plugin.group]) {
               asyncQueue[plugin.group] = new PQueue({ concurrency: 1 });
@@ -236,7 +232,15 @@ export function AppBootstrapper({
 
             queue.add(async () => {
               try {
-                await initializePlugin(plugin, bundle, plugin.group!, id);
+                await initializePlugin(
+                  plugin,
+                  () =>
+                    new PluginsBundle(
+                      initializedPlugins.current.map((x) => x.plugin),
+                    ),
+                  plugin.group!,
+                  id,
+                );
               } catch {
                 // no-op
               }
@@ -252,7 +256,15 @@ export function AppBootstrapper({
             continue;
           }
 
-          await initializePlugin(plugin, bundle, null, id);
+          await initializePlugin(
+            plugin,
+            () =>
+              new PluginsBundle(
+                initializedPlugins.current.map((x) => x.plugin),
+              ),
+            null,
+            id,
+          );
         } catch (err) {
           if ('optional' in plugin && plugin.optional) {
             continue;
