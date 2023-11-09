@@ -491,9 +491,11 @@ export function FullscreenCarousel<
                 onScroll={onScroll}
                 scrollEventThrottle={flatListProps?.scrollEventThrottle ?? 16}
                 onViewableItemsChanged={onViewableItemsChanged}
-                viewabilityConfig={{
-                  viewAreaCoveragePercentThreshold: 60,
-                }}
+                viewabilityConfig={
+                  flatListProps?.viewabilityConfig ?? {
+                    viewAreaCoveragePercentThreshold: 60,
+                  }
+                }
                 onScrollBeginDrag={(e) => {
                   autoplayActionRef.current?.pause();
 
