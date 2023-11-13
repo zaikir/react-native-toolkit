@@ -68,7 +68,13 @@ function InnerFadeView({
                   locations={[0, 1]}
                 />
               )}
-              <View style={{ flex: 1, backgroundColor: 'white' }} />
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: 'white',
+                  marginVertical: -2,
+                }}
+              />
               {(sides?.bottom ?? true) && (
                 <LinearGradient
                   start={{
@@ -128,7 +134,13 @@ function InnerFadeView({
                   locations={[0, 1]}
                 />
               )}
-              <View style={{ flex: 1, backgroundColor: 'white' }} />
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: 'white',
+                  marginHorizontal: -2,
+                }}
+              />
               {(sides?.right ?? false) && (
                 <LinearGradient
                   start={{
