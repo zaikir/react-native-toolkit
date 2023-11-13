@@ -149,6 +149,7 @@
     "react-native-adapty": "^2.6.0",
     "react-native-appsflyer": "^6.9.4",
     "react-native-bootsplash": "^4.4.0",
+    "react-native-branch": "^5.9.2",
     "react-native-builder-bob": "^0.20.3",
     "react-native-fbsdk-next": "^12.1.0",
     "react-native-iap": "^12.4.14",
