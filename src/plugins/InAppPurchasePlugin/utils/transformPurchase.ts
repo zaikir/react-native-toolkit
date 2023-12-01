@@ -1,6 +1,6 @@
 import type { Purchase as IapPurchase } from 'react-native-iap';
 
-import type { Purchase } from 'plugins/types';
+import type { Purchase } from '../../types';
 
 export function transformPurchase(purchase: IapPurchase): Purchase {
   return {

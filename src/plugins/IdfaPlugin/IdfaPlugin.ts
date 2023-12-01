@@ -2,9 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ReactNativeIdfaAaid from '@sparkfabrik/react-native-idfa-aaid';
 import { AppState, NativeEventSubscription } from 'react-native';
 
-import { Plugin, PluginFeature } from 'plugins/Plugin';
-
 import { wait } from '../../utils/promise/wait';
+import { Plugin, PluginFeature } from '../Plugin';
 
 export class IdfaPlugin extends Plugin {
   readonly name = 'IdfaPlugin';

@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 import type { ProductAndroid, ProductIOS } from 'react-native-iap';
 
-import { Product } from 'plugins/types';
+import { Product } from '../../types';
 
 export function transformProduct(
   product: ProductIOS | ProductAndroid,

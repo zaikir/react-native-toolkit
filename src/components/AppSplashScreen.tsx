@@ -9,7 +9,7 @@ import React, {
 import { Animated } from 'react-native';
 import { hide as hideNativeSplash } from 'react-native-bootsplash';
 
-import { ControlledPromise } from 'index';
+import { ControlledPromise } from '../index';
 
 export type AppSplashScreenProps = PropsWithChildren<{
   visible: boolean;

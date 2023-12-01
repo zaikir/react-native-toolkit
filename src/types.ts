@@ -1,7 +1,7 @@
 import { FunctionComponent } from 'react';
 import { LinearGradientProps } from 'react-native-linear-gradient';
 
-import { RadialGradientProps } from 'components/RadialGradient';
+import { RadialGradientProps } from './components/RadialGradient';
 
 export type GradientProps =
   | FunctionComponent

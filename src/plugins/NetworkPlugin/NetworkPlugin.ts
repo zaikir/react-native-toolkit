@@ -1,4 +1,4 @@
-import { Plugin, PluginFeature } from 'plugins/Plugin';
+import { Plugin, PluginFeature } from '../Plugin';
 
 export class NetworkPlugin extends Plugin {
   readonly name = 'NetworkPlugin';

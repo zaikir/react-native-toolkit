@@ -6,7 +6,7 @@ import React, {
   useState,
 } from 'react';
 
-import SyncStorage, { CSyncStorage } from 'utils/SyncStorage';
+import SyncStorage, { CSyncStorage } from '../utils/SyncStorage';
 
 export type StorageContextType = {
   storage: CSyncStorage;

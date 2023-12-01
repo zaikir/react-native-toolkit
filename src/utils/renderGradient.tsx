@@ -1,8 +1,9 @@
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 
-import { RadialGradient } from 'components/RadialGradient';
 import { GradientProps } from 'types';
+
+import { RadialGradient } from '../components/RadialGradient';
 
 export const renderGradient = (gradients: GradientProps[]) => {
   return (

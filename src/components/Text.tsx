@@ -6,11 +6,11 @@ import type {
   TextStyle as TextStyleBase,
 } from 'react-native';
 
-import { View, useTheme } from 'index';
-import type { FontFamily, TextVariant } from 'theme/augmented';
-import { GradientProps } from 'types';
-import { getFontWeightName } from 'utils/getFontWeightName';
-import { textStyleKeys } from 'utils/styles';
+import { View, useTheme } from '../index';
+import type { FontFamily, TextVariant } from '../theme/augmented';
+import { GradientProps } from '../types';
+import { getFontWeightName } from '../utils/getFontWeightName';
+import { textStyleKeys } from '../utils/styles';
 
 export type TextStyle = TextStyleBase & {
   fontFamily?: FontFamily;

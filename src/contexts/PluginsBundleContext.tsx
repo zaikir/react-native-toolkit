@@ -1,6 +1,6 @@
 import React, { createContext, PropsWithChildren, useMemo } from 'react';
 
-import type { PluginsBundle } from 'plugins/Plugin';
+import type { PluginsBundle } from '../plugins/Plugin';
 
 export type PluginsBundleContextType = {
   bundle: PluginsBundle;

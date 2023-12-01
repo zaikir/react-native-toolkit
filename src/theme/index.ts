@@ -1,10 +1,9 @@
 import { FunctionComponent } from 'react';
 import { ModalProps } from 'react-native-modal';
 
-import { BlurViewProps } from 'components/BlurView';
-import { UseTheme } from 'contexts/ThemeContext';
-
 import { Theme } from './augmented';
+import { BlurViewProps } from '../components/BlurView';
+import { UseTheme } from '../contexts/ThemeContext';
 export * from './augmented';
 export { createTheme } from './createTheme';
 

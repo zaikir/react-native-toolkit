@@ -6,9 +6,8 @@ import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated';
 
-import { scaleX } from 'index';
-
 import { FullscreenCarouselContext } from './FullscreenCarousel';
+import { scaleX } from '../index';
 
 export type AutoplayCarouselProgressBarItemProps = {
   index: number;

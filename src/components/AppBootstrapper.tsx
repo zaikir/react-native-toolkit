@@ -4,11 +4,11 @@ import React, { useCallback, useRef, useState } from 'react';
 import { Alert, Button, StatusBar, Text, View } from 'react-native';
 import { useAsyncEffect } from 'use-async-effect';
 
-import { AppSplashScreen } from 'components/AppSplashScreen';
-import type { AppSplashScreenProps } from 'components/AppSplashScreen';
-import { DropDownProvider } from 'contexts/DropDownContext';
-import { InAppPurchaseProvider } from 'contexts/InAppPurchaseContext';
-import { PluginsBundleProvider } from 'contexts/PluginsBundleContext';
+import type { AppSplashScreenProps } from '../components/AppSplashScreen';
+import { AppSplashScreen } from '../components/AppSplashScreen';
+import { DropDownProvider } from '../contexts/DropDownContext';
+import { InAppPurchaseProvider } from '../contexts/InAppPurchaseContext';
+import { PluginsBundleProvider } from '../contexts/PluginsBundleContext';
 import {
   AlertsProvider,
   ControlledPromise,
@@ -16,8 +16,8 @@ import {
   scaleX,
   scaleY,
   timeout,
-} from 'index';
-import { Plugin, PluginFactoryOptions, PluginsBundle } from 'plugins/Plugin';
+} from '../index';
+import { Plugin, PluginFactoryOptions, PluginsBundle } from '../plugins/Plugin';
 
 const chalkCtx = new chalk.Instance({ level: 3 });
 

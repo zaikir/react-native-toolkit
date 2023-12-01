@@ -16,8 +16,8 @@ import {
 } from 'react-native';
 import Modal from 'react-native-modal';
 
-import { BlurView } from 'components/BlurView';
-import { ControlledPromise, ThemeAlertConfig, useTheme } from 'index';
+import { BlurView } from '../components/BlurView';
+import { ControlledPromise, ThemeAlertConfig, useTheme } from '../index';
 
 export type AlertsContextType = {
   showAlert: (name: string, props?: any) => Promise<any>;

@@ -2,9 +2,8 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 
-import { scaleY } from 'index';
-
 import { View, ViewProps } from './View';
+import { scaleY } from '../index';
 
 type Side = 'left' | 'right' | 'bottom' | 'top';
 

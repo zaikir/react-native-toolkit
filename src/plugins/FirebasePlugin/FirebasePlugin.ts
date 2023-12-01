@@ -3,13 +3,13 @@ import initializeRemoteConfig, {
   FirebaseRemoteConfigTypes,
 } from '@react-native-firebase/remote-config';
 
-import { timeout } from 'index';
-import { Plugin, PluginFeature } from 'plugins/Plugin';
+import { timeout } from '../../index';
+import { Plugin, PluginFeature } from '../Plugin';
 import type {
   IAnalyticsProvider,
   IRemoteConfigPlugin,
   RemoteConfig,
-} from 'plugins/types';
+} from '../types';
 
 export class FirebasePlugin
   extends Plugin

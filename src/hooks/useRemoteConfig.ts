@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 
-import { PluginsBundleContext } from 'contexts/PluginsBundleContext';
-import type { IRemoteConfigPlugin, RemoteConfig } from 'plugins/types';
+import { PluginsBundleContext } from '../contexts/PluginsBundleContext';
+import type { IRemoteConfigPlugin, RemoteConfig } from '../plugins/types';
 
 export function useRemoteConfig() {
   const { bundle } = useContext(PluginsBundleContext);

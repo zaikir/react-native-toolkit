@@ -2,7 +2,7 @@ import { CaptureConsole } from '@sentry/integrations';
 import * as Sentry from '@sentry/react-native';
 import type { ReactNativeOptions } from '@sentry/react-native';
 
-import { Plugin, PluginFeature } from 'plugins/Plugin';
+import { Plugin, PluginFeature } from '../Plugin';
 
 export class SentryPlugin extends Plugin {
   readonly name = 'SentryPlugin';

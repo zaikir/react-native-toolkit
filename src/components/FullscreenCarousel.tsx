@@ -25,11 +25,10 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 
-import { ControlledPromise, scaleX } from 'index';
-import { AutoplayAction } from 'utils/AutoplayAction';
-
 import { Text, TextProps } from './Text';
 import { View, ViewProps } from './View';
+import { ControlledPromise, scaleX } from '../index';
+import { AutoplayAction } from '../utils/AutoplayAction';
 
 export type FullscreenCarouselContext = {
   progress: SharedValue<number>;

@@ -9,17 +9,16 @@ import React, {
   useRef,
 } from 'react';
 
+import { PluginsBundleContext } from './PluginsBundleContext';
 import {
   IAppPurchasePlugin,
   Product,
   Purchase,
   PurchasedSubscriptionInfo,
   Subscription,
-} from 'plugins/types';
-import { waitUntil } from 'utils/promise/waitUntil';
-import type { FunctionWrapper, GenericFunction } from 'utils/types';
-
-import { PluginsBundleContext } from './PluginsBundleContext';
+} from '../plugins/types';
+import { waitUntil } from '../utils/promise/waitUntil';
+import type { FunctionWrapper, GenericFunction } from '../utils/types';
 
 export type InAppPurchaseContextType = {
   products: Product[];

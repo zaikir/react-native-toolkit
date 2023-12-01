@@ -1,7 +1,7 @@
 import * as Amplitude from '@amplitude/analytics-react-native';
 
-import { Plugin, PluginFeature } from 'plugins/Plugin';
-import type { IAnalyticsProvider } from 'plugins/types';
+import { Plugin, PluginFeature } from '../Plugin';
+import type { IAnalyticsProvider } from '../types';
 
 export class AmplitudePlugin extends Plugin implements IAnalyticsProvider {
   readonly name = 'AmplitudePlugin';

@@ -16,14 +16,14 @@ import {
   withTiming,
 } from 'react-native-reanimated';
 
-import { useColorScheme } from 'hooks/useColorScheme';
-import { ViewStyle } from 'index';
+import { useColorScheme } from '../hooks/useColorScheme';
+import { ViewStyle } from '../index';
 import type {
   Theme,
   ThemeAlertConfig,
   ThemeColor,
   ThemeGradientValue,
-} from 'theme';
+} from '../theme';
 
 type ColorData = ConstructorParameters<typeof Color>[0];
 type ColorModel = ConstructorParameters<typeof Color>[1];

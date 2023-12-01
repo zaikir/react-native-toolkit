@@ -1,7 +1,7 @@
 import AppMetrica, { AppMetricaConfig } from '@kirz/react-native-appmetrica';
 
-import { Plugin, PluginFeature } from 'plugins/Plugin';
-import type { IAnalyticsProvider } from 'plugins/types';
+import { Plugin, PluginFeature } from '../Plugin';
+import type { IAnalyticsProvider } from '../types';
 
 export class BranchPlugin extends Plugin implements IAnalyticsProvider {
   readonly name = 'BranchPlugin';

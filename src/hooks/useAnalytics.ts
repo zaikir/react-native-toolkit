@@ -1,7 +1,6 @@
 import { useCallback, useContext, useMemo } from 'react';
 
-import { PluginsBundleContext } from 'contexts/PluginsBundleContext';
-
+import { PluginsBundleContext } from '../contexts/PluginsBundleContext';
 import type { IAnalyticsProvider } from '../plugins/types';
 
 export function useAnalytics() {

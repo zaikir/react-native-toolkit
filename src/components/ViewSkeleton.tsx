@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { ViewProps } from 'react-native';
 import Animated from 'react-native-reanimated';
 
-import { ThemeContext } from 'contexts/ThemeContext';
+import { ThemeContext } from '../contexts/ThemeContext';
 
 export type ViewSkeletonProps = ViewProps;
 

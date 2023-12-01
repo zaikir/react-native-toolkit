@@ -1,7 +1,6 @@
 import { useContext } from 'react';
 
-import { PluginsBundleContext } from 'contexts/PluginsBundleContext';
-
+import { PluginsBundleContext } from '../contexts/PluginsBundleContext';
 import type { Plugin } from '../plugins/Plugin';
 
 export function usePlugin<T extends Plugin>(name: string) {

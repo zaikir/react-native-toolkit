@@ -1,13 +1,12 @@
 import React from 'react';
 
-import { scaleX, scaleY } from 'index';
-
 import {
   AutoplayCarouselProgressBarItem,
   AutoplayCarouselProgressBarItemProps,
 } from './AutoplayCarouselProgressBarItem';
 import { FullscreenCarouselContext } from './FullscreenCarousel';
 import { View, ViewProps } from './View';
+import { scaleX, scaleY } from '../index';
 
 export type AutoplayCarouselProgressBarProps = {
   activeColor?: string;

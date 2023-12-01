@@ -1,7 +1,7 @@
 import appsFlyer, { InitSDKOptions } from 'react-native-appsflyer';
 
-import { Plugin, PluginFeature } from 'plugins/Plugin';
-import type { IAnalyticsProvider } from 'plugins/types';
+import { Plugin, PluginFeature } from '../Plugin';
+import type { IAnalyticsProvider } from '../types';
 
 export class AppsFlyerPlugin extends Plugin implements IAnalyticsProvider {
   readonly name = 'AppsFlyerPlugin';

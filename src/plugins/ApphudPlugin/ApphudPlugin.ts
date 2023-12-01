@@ -1,12 +1,12 @@
 import ApphudSdk, { type StartProperties } from '@kirz/react-native-apphud';
 import { Platform } from 'react-native';
 
-import { Plugin, PluginFeature } from 'plugins/Plugin';
+import { Plugin, PluginFeature } from '../Plugin';
 import type {
   IReceiptValidator,
   PurchasedProductInfo,
   PurchasedSubscriptionInfo,
-} from 'plugins/types';
+} from '../types';
 
 export class ApphudPlugin extends Plugin implements IReceiptValidator {
   readonly name = 'ApphudPlugin';

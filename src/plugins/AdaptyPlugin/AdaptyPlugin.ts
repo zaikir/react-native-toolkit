@@ -5,14 +5,14 @@ import {
   adapty,
 } from 'react-native-adapty';
 
-import { Plugin, PluginFeature } from 'plugins/Plugin';
+import { Plugin, PluginFeature } from '../Plugin';
 import type {
   IReceiptValidator,
   IRemoteConfigPlugin,
   PurchasedProductInfo,
   PurchasedSubscriptionInfo,
   RemoteConfig,
-} from 'plugins/types';
+} from '../types';
 
 export class AdaptyPlugin
   extends Plugin

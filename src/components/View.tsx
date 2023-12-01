@@ -8,12 +8,11 @@ import {
   ViewStyle as ViewStyleBase,
 } from 'react-native';
 
-import { GradientProps, InsetShadowProps } from 'types';
-import { renderGradient } from 'utils/renderGradient';
-
 import { BlurView, BlurViewProps } from './BlurView';
 import { ViewInsetShadow } from './ViewInsetShadow';
 import { ViewSkeleton } from './ViewSkeleton';
+import { GradientProps, InsetShadowProps } from '../types';
+import { renderGradient } from '../utils/renderGradient';
 
 export type ViewStyle = ViewStyleBase & {
   backgroundGradient?: GradientProps | GradientProps[];

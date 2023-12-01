@@ -7,19 +7,18 @@ import {
   SubscriptionAndroid,
 } from 'react-native-iap';
 
-import { Plugin, PluginFeature, PluginsBundle } from 'plugins/Plugin';
+import { transformProduct } from './utils/transformProduct';
+import { transformPurchase } from './utils/transformPurchase';
+import { transformSubscription } from './utils/transformSubscription';
+import { ControlledPromise } from '../../utils/promise/control';
+import { Plugin, PluginFeature, PluginsBundle } from '../Plugin';
 import {
   IAppPurchasePlugin,
   IReceiptValidator,
   Product,
   Purchase,
   Subscription,
-} from 'plugins/types';
-import { ControlledPromise } from 'utils/promise/control';
-
-import { transformProduct } from './utils/transformProduct';
-import { transformPurchase } from './utils/transformPurchase';
-import { transformSubscription } from './utils/transformSubscription';
+} from '../types';
 
 export class InAppPurchasePlugin extends Plugin implements IAppPurchasePlugin {
   readonly name = 'InAppPurchasePlugin';

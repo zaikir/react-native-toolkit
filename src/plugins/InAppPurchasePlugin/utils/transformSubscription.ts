@@ -5,9 +5,8 @@ import type {
   SubscriptionIOS,
 } from 'react-native-iap';
 
-import { Subscription } from 'plugins/types';
-
 import { parseIso8601Period } from './parseIso8601Period';
+import { Subscription } from '../../types';
 
 // eslint-disable-next-line max-len
 export function transformSubscription(
