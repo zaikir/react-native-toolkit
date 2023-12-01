@@ -1,6 +1,6 @@
 {
   "name": "@kirz/react-native-toolkit",
-  "version": "1.3.8",
+  "version": "1.3.9",
   "license": "MIT",
   "description": "Toolkit to speed up React Native development",
   "author": "Kirill Zaidulin <zaidulinkirill@gmail.com>",
@@ -38,7 +38,6 @@
   "module": "lib/module/index.js",
   "types": "lib/typescript/index.d.ts",
   "react-native": "src/index.tsx",
-  "source": "src/index.tsx",
   "exports": {
     ".": {
       "types": "./lib/typescript/index.d.ts",
