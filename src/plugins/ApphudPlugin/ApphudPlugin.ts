@@ -7,6 +7,7 @@ import type {
   PurchasedProductInfo,
   PurchasedSubscriptionInfo,
 } from '../types';
+import { PromiseUtils } from 'index';
 
 export class ApphudPlugin extends Plugin implements IReceiptValidator {
   readonly name = 'ApphudPlugin';
@@ -22,9 +23,13 @@ export class ApphudPlugin extends Plugin implements IReceiptValidator {
   }
 
   async isTrialAvailable(subscriptionId: string): Promise<boolean> {
-    return await ApphudSdk.checkEligibilitiesForIntroductoryOffer(
-      subscriptionId,
-    );
+    try {
+      return await PromiseUtils.timeout(ApphudSdk.checkEligibilitiesForIntroductoryOffer(
+        subscriptionId,
+      ), 5000)
+    } catch {
+      return false
+    }
   }
 
   async hasPremiumAccess(): Promise<boolean> {
