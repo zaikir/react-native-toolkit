@@ -21,6 +21,10 @@ export function Grid({
   const numberOfRows = Math.ceil(childrenNodes.length / columns);
   const restCells = childrenNodes.length % columns;
 
+  if (!numberOfRows) {
+    return null;
+  }
+
   return (
     <View style={style}>
       {[...new Array(numberOfRows).keys()].map((rowId) => (
