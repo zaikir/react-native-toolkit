@@ -32,7 +32,7 @@ import { AutoplayAction } from '../utils/AutoplayAction';
 
 export type FullscreenCarouselContext = {
   progress: SharedValue<number>;
-  slideIndex: number;
+  getActiveSlideIndex: () => number;
   slidesCount: number;
 };
 
@@ -310,7 +310,7 @@ export function FullscreenCarousel<
             const ctx: FullscreenCarouselContext = {
               progress: autoplay ? autoplayProgress : slideProgress,
               slidesCount: slides.length,
-              slideIndex: store.get(SelectedSlideIndexAtom),
+              getActiveSlideIndex: () => store.get(SelectedSlideIndexAtom),
             };
 
             if (section.type === 'indicator') {
