@@ -383,11 +383,14 @@ export function FullscreenCarousel<
     [],
   );
 
-  const onScroll = useAnimatedScrollHandler((event) => {
-    slideProgress.value = event.contentOffset.x / width!;
+  const onScroll = useAnimatedScrollHandler(
+    (event) => {
+      slideProgress.value = event.contentOffset.x / width!;
 
-    flatListProps?.onScroll?.(event as any);
-  }, []);
+      flatListProps?.onScroll?.(event as any);
+    },
+    [width],
+  );
 
   const onViewableItemsChanged = useCallback<
     NonNullable<FlatListProps<T>['onViewableItemsChanged']>
