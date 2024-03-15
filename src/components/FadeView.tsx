@@ -44,7 +44,14 @@ function InnerFadeView({
       <View
         style={[
           style,
-          { position: 'absolute', left: 0, right: 0, bottom: 0, top: 0 },
+          {
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            top: 0,
+            pointerEvents: 'none',
+          },
         ]}
       >
         {(sides?.top ?? false) && (
@@ -106,6 +113,7 @@ function InnerFadeView({
             right: 0,
             bottom: 0,
             top: 0,
+            pointerEvents: 'none',
           },
         ]}
       >
@@ -158,6 +166,15 @@ function InnerFadeView({
         )}
       </View>
     );
+
+  if (fadeColor) {
+    return (
+      <View {...props} style={style}>
+        {props.children}
+        {maskElement}
+      </View>
+    );
+  }
 
   return <MaskedView {...props} style={style} maskElement={maskElement} />;
 }
