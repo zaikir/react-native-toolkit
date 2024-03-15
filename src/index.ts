@@ -85,6 +85,7 @@ export { AutoplayAction } from './utils/AutoplayAction';
 export { ControlledPromise } from './utils/promise/control';
 export { PromiseUtils } from './utils/promise/utils';
 export { MathUtils } from './utils/math';
+export { StringUtils } from './utils/string';
 export { ScaleReference, scaleX, scaleY } from './utils/scale';
 export { timeout } from './utils/promise/timeout';
 export { wait } from './utils/promise/wait';
