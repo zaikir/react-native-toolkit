@@ -28,8 +28,16 @@ function InnerFadeView({
   ...props
 }: FadeViewProps & { direction: 'vertical' | 'horizontal' }) {
   const theme = useTheme();
-  const minFadeColor = fadeColor ?? 'rgba(0,0,0,1)';
-  const maxFadeColor = theme.parseColor(minFadeColor).fade(1).hexa();
+  let minFadeColor = '';
+  let maxFadeColor = '';
+
+  if (fadeColor) {
+    maxFadeColor = fadeColor ?? 'rgba(0,0,0,1)';
+    minFadeColor = theme.parseColor(maxFadeColor).fade(1).hexa();
+  } else {
+    minFadeColor = fadeColor ?? 'rgba(0,0,0,1)';
+    maxFadeColor = theme.parseColor(minFadeColor).fade(1).hexa();
+  }
 
   if (direction === 'vertical' && !sides?.bottom && !sides?.top) {
     return props.children as JSX.Element;
