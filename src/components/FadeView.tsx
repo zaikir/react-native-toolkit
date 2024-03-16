@@ -1,5 +1,6 @@
 import MaskedView from '@react-native-masked-view/masked-view';
-import React from 'react';
+import React, { useMemo } from 'react';
+import { easeGradient } from 'react-native-easing-gradient';
 import LinearGradient from 'react-native-linear-gradient';
 
 import { View, ViewProps } from './View';
@@ -25,20 +26,14 @@ function InnerFadeView({
   fadeEnd,
   direction,
   fadeColor,
+  colors,
+  locations,
   ...props
-}: FadeViewProps & { direction: 'vertical' | 'horizontal' }) {
-  const theme = useTheme();
-  let minFadeColor = '';
-  let maxFadeColor = '';
-
-  if (fadeColor) {
-    maxFadeColor = fadeColor ?? 'rgba(0,0,0,1)';
-    minFadeColor = theme.parseColor(maxFadeColor).fade(1).hexa();
-  } else {
-    minFadeColor = fadeColor ?? 'rgba(0,0,0,1)';
-    maxFadeColor = theme.parseColor(minFadeColor).fade(1).hexa();
-  }
-
+}: FadeViewProps & {
+  direction: 'vertical' | 'horizontal';
+  colors: string[];
+  locations: number[];
+}) {
   if (direction === 'vertical' && !sides?.bottom && !sides?.top) {
     return props.children as JSX.Element;
   }
@@ -72,14 +67,14 @@ function InnerFadeView({
               x: 0.5,
               y: (typeof fadeEnd === 'number' ? 0 : fadeEnd?.top) ?? 1,
             }}
-            colors={[maxFadeColor, minFadeColor]}
             style={{
               height:
                 (typeof fadeDistance === 'number'
                   ? fadeDistance
                   : fadeDistance?.top) ?? DEFAULT_FADE,
             }}
-            locations={[0, 1]}
+            colors={colors}
+            locations={locations.toReversed()}
           />
         )}
         <View
@@ -99,14 +94,14 @@ function InnerFadeView({
               x: 0.5,
               y: (typeof fadeEnd === 'number' ? 0 : fadeEnd?.bottom) ?? 1,
             }}
-            colors={[minFadeColor, maxFadeColor]}
             style={{
               height:
                 (typeof fadeDistance === 'number'
                   ? fadeDistance
                   : fadeDistance?.bottom) ?? DEFAULT_FADE,
             }}
-            locations={[0, 1]}
+            colors={colors}
+            locations={locations}
           />
         )}
       </View>
@@ -135,14 +130,14 @@ function InnerFadeView({
               x: (typeof fadeEnd === 'number' ? 0 : fadeEnd?.left) ?? 1,
               y: 0.5,
             }}
-            colors={[maxFadeColor, minFadeColor]}
             style={{
               width:
                 (typeof fadeDistance === 'number'
                   ? fadeDistance
                   : fadeDistance?.left) ?? DEFAULT_FADE,
             }}
-            locations={[0, 1]}
+            colors={colors}
+            locations={locations.toReversed()}
           />
         )}
         <View
@@ -162,14 +157,14 @@ function InnerFadeView({
               x: (typeof fadeEnd === 'number' ? 0 : fadeEnd?.right) ?? 1,
               y: 0.5,
             }}
-            colors={[minFadeColor, maxFadeColor]}
             style={{
               width:
                 (typeof fadeDistance === 'number'
                   ? fadeDistance
                   : fadeDistance?.right) ?? DEFAULT_FADE,
             }}
-            locations={[0, 1]}
+            colors={colors}
+            locations={locations}
           />
         )}
       </View>
@@ -193,6 +188,21 @@ export function FadeView({
   fadeColor,
   ...props
 }: FadeViewProps) {
+  const { colors, locations } = useMemo(() => {
+    const { colors, locations } = easeGradient({
+      colorStops: {
+        0: {
+          color: fadeColor ?? 'white',
+        },
+        1: {
+          color: 'transparent',
+        },
+      },
+    });
+
+    return { colors, locations };
+  }, [fadeColor]);
+
   return (
     <InnerFadeView
       sides={sides}
@@ -200,6 +210,8 @@ export function FadeView({
       {...props}
       direction="vertical"
       fadeColor={fadeColor}
+      colors={colors}
+      locations={locations}
     >
       <InnerFadeView
         sides={sides}
@@ -207,6 +219,8 @@ export function FadeView({
         {...props}
         direction="horizontal"
         fadeColor={fadeColor}
+        colors={colors}
+        locations={locations}
       />
     </InnerFadeView>
   );
