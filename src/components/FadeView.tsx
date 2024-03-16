@@ -4,7 +4,7 @@ import { easeGradient } from 'react-native-easing-gradient';
 import LinearGradient from 'react-native-linear-gradient';
 
 import { View, ViewProps } from './View';
-import { scaleY, useTheme } from '../index';
+import { scaleY } from '../index';
 
 type Side = 'left' | 'right' | 'bottom' | 'top';
 
@@ -74,7 +74,7 @@ function InnerFadeView({
                   : fadeDistance?.top) ?? DEFAULT_FADE,
             }}
             colors={colors}
-            locations={locations.toReversed()}
+            locations={[...locations].reverse()}
           />
         )}
         <View
@@ -137,7 +137,7 @@ function InnerFadeView({
                   : fadeDistance?.left) ?? DEFAULT_FADE,
             }}
             colors={colors}
-            locations={locations.toReversed()}
+            locations={[...locations].reverse()}
           />
         )}
         <View
