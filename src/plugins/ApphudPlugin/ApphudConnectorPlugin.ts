@@ -11,14 +11,6 @@ export class ApphudConnectorPlugin extends Plugin {
   readonly features: PluginFeature[] = ['IAPReceiptValidator'];
   readonly initializationTimeout = 15000;
 
-  constructor(
-    readonly connections: {
-      appsflyer: object;
-    },
-  ) {
-    super();
-  }
-
   async initialize(bundle: PluginsBundle) {
     // Connect AppsFlyer to AppHud
     (async () => {
