@@ -94,6 +94,33 @@ export function View({
       flattenStyle.borderTopWidth ?? flattenStyle.borderWidth ?? 0,
   };
 
+  const innerBorderRadiusStyle: ViewStyle | undefined = insetShadow && {
+    borderBottomLeftRadius:
+      (borderRadiusStyle.borderBottomLeftRadius as number) -
+      (Math.max(
+        borderWidthStyle.borderLeftWidth!,
+        borderWidthStyle.borderBottomWidth!,
+      ) ?? 0),
+    borderBottomRightRadius:
+      (borderRadiusStyle.borderBottomRightRadius as number) -
+      (Math.max(
+        borderWidthStyle.borderRightWidth!,
+        borderWidthStyle.borderBottomWidth!,
+      ) ?? 0),
+    borderTopLeftRadius:
+      (borderRadiusStyle.borderTopLeftRadius as number) -
+      (Math.max(
+        borderWidthStyle.borderLeftWidth!,
+        borderWidthStyle.borderTopWidth!,
+      ) ?? 0),
+    borderTopRightRadius:
+      (borderRadiusStyle.borderTopRightRadius as number) -
+      (Math.max(
+        borderWidthStyle.borderRightWidth!,
+        borderWidthStyle.borderTopWidth!,
+      ) ?? 0),
+  };
+
   const borderColorStyle: ViewStyle = {
     borderLeftColor: flattenStyle.borderLeftColor ?? flattenStyle.borderColor,
     borderRightColor: flattenStyle.borderRightColor ?? flattenStyle.borderColor,
@@ -185,25 +212,26 @@ export function View({
         )}
 
       {/* Render inset shadow */}
-      {insetShadow &&
-        renderAbsolute(
-          <ViewBase
-            style={[
-              baseStyle,
-              borderColorStyle,
-              borderRadiusStyle,
-              borderWidthStyle,
-            ]}
-          >
-            <ViewInsetShadow
-              {...insetShadow}
-              wrapperProps={{
-                style: [baseStyle, borderWidthNegativeStyle],
-              }}
-              style={[baseStyle, borderRadiusStyle]}
-            />
-          </ViewBase>,
-        )}
+      {insetShadow && (
+        <ViewInsetShadow
+          {...insetShadow}
+          wrapperProps={{
+            style: [
+              {
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                overflow: 'hidden',
+              },
+              innerBorderRadiusStyle,
+            ],
+          }}
+          style={[baseStyle]}
+          innerBorderRadiusStyle={innerBorderRadiusStyle!}
+        />
+      )}
 
       {/* Render default border */}
       {backgroundGradients.length > 0 &&
