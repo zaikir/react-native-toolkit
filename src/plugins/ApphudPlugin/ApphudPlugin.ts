@@ -1,13 +1,14 @@
 import ApphudSdk, { type StartProperties } from '@kirz/react-native-apphud';
 import { Platform } from 'react-native';
 
+import { PromiseUtils } from 'index';
+
 import { Plugin, PluginFeature } from '../Plugin';
 import type {
   IReceiptValidator,
   PurchasedProductInfo,
   PurchasedSubscriptionInfo,
 } from '../types';
-import { PromiseUtils } from 'index';
 
 export class ApphudPlugin extends Plugin implements IReceiptValidator {
   readonly name = 'ApphudPlugin';
@@ -24,11 +25,12 @@ export class ApphudPlugin extends Plugin implements IReceiptValidator {
 
   async isTrialAvailable(subscriptionId: string): Promise<boolean> {
     try {
-      return await PromiseUtils.timeout(ApphudSdk.checkEligibilitiesForIntroductoryOffer(
-        subscriptionId,
-      ), 5000)
+      return await PromiseUtils.timeout(
+        ApphudSdk.checkEligibilitiesForIntroductoryOffer(subscriptionId),
+        5000,
+      );
     } catch {
-      return false
+      return false;
     }
   }
 
@@ -42,9 +44,6 @@ export class ApphudPlugin extends Plugin implements IReceiptValidator {
 
   async getPurchasedSubscriptions(): Promise<PurchasedSubscriptionInfo[]> {
     const subscriptions = await ApphudSdk.subscriptions();
-    // Platform.OS === 'ios'
-    //   ? [await ApphudSdk.subscription()]
-    //   : await ApphudSdk.subscriptions();
 
     return subscriptions.map((x) => {
       if (Platform.OS === 'ios') {

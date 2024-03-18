@@ -22,6 +22,10 @@ export class FirebasePlugin
   _remoteConfig: RemoteConfig;
   _firebaseConfig: FirebaseRemoteConfigTypes.ConfigSettings;
 
+  get instance() {
+    return { analytics: analytics() };
+  }
+
   get remoteValues() {
     return this._remoteConfig;
   }
