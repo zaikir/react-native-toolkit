@@ -40,8 +40,18 @@ export type ListViewLayoutProps<T extends ListViewItem = ListViewItem> = Pick<
 > & {
   sectionHeaderSize?: SectionSize<T>;
   sectionFooterSize?: SectionSize<T>;
-  wrapperTotalPaddingSize: number;
-  wrapperTotalBorderSize: number;
+  wrapperTotalPaddingSize:
+    | ((
+        props: ListViewLayoutProps<T> &
+          Pick<ListViewProps<T>, 'items' | 'sections'>,
+      ) => number)
+    | number;
+  wrapperTotalBorderSize:
+    | ((
+        props: ListViewLayoutProps<T> &
+          Pick<ListViewProps<T>, 'items' | 'sections'>,
+      ) => number)
+    | number;
 };
 
 function groupItems<T extends ListViewItem>({
@@ -404,8 +414,20 @@ function computeSize<T extends ListViewItem>({
 
   return (
     contentSize +
-    (props.wrapperTotalPaddingSize ?? 0) +
-    (props.wrapperTotalBorderSize ?? 0)
+    (typeof props.wrapperTotalPaddingSize === 'function'
+      ? props.wrapperTotalPaddingSize({
+          sections: passedSections,
+          items: passedItems,
+          ...props,
+        })
+      : props.wrapperTotalPaddingSize ?? 0) +
+    (typeof props.wrapperTotalBorderSize === 'function'
+      ? props.wrapperTotalBorderSize({
+          sections: passedSections,
+          items: passedItems,
+          ...props,
+        })
+      : props.wrapperTotalBorderSize ?? 0)
   );
 }
 
