@@ -22,6 +22,10 @@ export { CircleView, type CircleViewProps } from './components/CircleView';
 export { FadeView, type FadeViewProps } from './components/FadeView';
 export { BlurView, type BlurViewProps } from './components/BlurView';
 export {
+  SnapCarousel,
+  type SnapCarouselProps,
+} from './components/SnapCarousel';
+export {
   RefreshControl,
   type RefreshControlProps,
 } from './components/RefreshControl';
