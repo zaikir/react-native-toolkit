@@ -1,6 +1,6 @@
 {
   "name": "@kirz/react-native-toolkit",
-  "version": "1.6.3",
+  "version": "1.6.4-1",
   "license": "MIT",
   "description": "Toolkit to speed up React Native development",
   "author": "Kirill Zaidulin <zaidulinkirill@gmail.com>",
@@ -97,7 +97,8 @@
       "types": "./lib/typescript/plugins/AmplitudePlugin/index.d.ts",
       "import": "./lib/module/plugins/AppMetricaAmplitudePluginPlugin/index.js",
       "default": "./lib/commonjs/plugins/AmplitudePlugin/index.js"
-    }
+    },
+    "./scripts": "./scripts/index.js"
   },
   "scripts": {
     "typescript": "tsc --noEmit",
