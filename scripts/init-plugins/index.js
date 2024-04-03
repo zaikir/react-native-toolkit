@@ -10,7 +10,7 @@ const allPluginNames = Object.keys(PluginsDef);
 const workingPath = process.cwd();
 const packageJsonPath = path.join(workingPath, 'package.json');
 // eslint-disable-next-line no-undef
-const pluginsFilename = path.join(workingPath, 'rnt.json');
+const pluginsFilename = path.join(workingPath, '.rnt.json');
 const rootFilename = path.join(workingPath, 'src', 'Root.tsx');
 
 module.exports = () => {
