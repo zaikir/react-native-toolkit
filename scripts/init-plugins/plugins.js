@@ -395,21 +395,6 @@ module.exports = {
           }
         });
       });
-
-      updatePlist(`ios/${appName}/Info.plist`, (plist) => {
-        plist['CFBundleURLTypes'] = plist['CFBundleURLTypes'] || [];
-        links.forEach((link) => {
-          if (
-            !plist['com.apple.developer.associated-domains'].includes(
-              `applinks:${link}`,
-            )
-          ) {
-            plist['com.apple.developer.associated-domains'].push(
-              `applinks:${link}`,
-            );
-          }
-        });
-      });
     },
     delete(appName) {
       const links = [

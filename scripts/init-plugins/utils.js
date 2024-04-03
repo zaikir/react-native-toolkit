@@ -154,7 +154,7 @@ const removeFromEnv = (variables) => {
     const newContent = lines
       .filter(
         (line) =>
-          !!variables.find((variable) => line.startsWith(`${variable.name}:`)),
+          !variables.find((variable) => line.startsWith(`${variable.name}:`)),
       )
       .join('\n');
 
