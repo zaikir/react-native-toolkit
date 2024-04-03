@@ -138,7 +138,7 @@ const addToEnv = (variables) => {
 
     variables.forEach((variable) => {
       if (!content.includes(`${variable.name}:`)) {
-        content += `${variable.name}: ${variable.default || ''}`;
+        content += `${variable.name}: ${variable.default || "''"}\n`;
       }
     });
 
