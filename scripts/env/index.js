@@ -80,6 +80,12 @@ function copyGoogleServices(env) {
   fs.writeFileSync(filename, plistFileContent, 'utf-8');
 }
 
+function addGeneratedEnv(env) {
+  env['APP_BUNDLE_URL_SCHEME'] =
+    env['APP_BUNDLE_URL_SCHEME'] ||
+    env['APP_BUNDLE_ID'].replace(/[^a-zA-Z0-9]/g, '');
+}
+
 module.exports = {
   async processEnv(env) {
     // patch android/app/proguard-rules.pro
@@ -87,6 +93,9 @@ module.exports = {
 
     // copy GoogleService-Info.plist and Google-Services.json
     copyGoogleServices(env);
+
+    // add generated env variables
+    addGeneratedEnv(env);
 
     return env;
   },

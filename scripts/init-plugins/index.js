@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const PluginsDef = require('./plugins');
+const { updatePlist } = require('./utils');
 const { devDependencies } = require('../../package.json');
 
 const allPluginNames = Object.keys(PluginsDef);
@@ -38,6 +39,34 @@ module.exports = () => {
   const pluginsToAdd = currentPlugins.filter(
     (name) => !installedPlugins.includes(name),
   );
+
+  // update Info.plist
+  updatePlist(`ios/${appName}/Info.plist`, (plist) => {
+    plist['CFBundleURLTypes'] = plist['CFBundleURLTypes'] || [];
+    if (!plist['CFBundleURLTypes'].length) {
+      plist['CFBundleURLTypes'].push({
+        CFBundleURLSchemes: [],
+        CFBundleTypeRole: 'Editor',
+        CFBundleURLName: '$(APP_BUNDLE_ID)',
+      });
+    }
+
+    plist['CFBundleURLTypes'][0]['CFBundleTypeRole'] =
+      plist['CFBundleURLTypes'][0]['CFBundleTypeRole'] || 'Editor';
+    plist['CFBundleURLTypes'][0]['CFBundleURLName'] =
+      plist['CFBundleURLTypes'][0]['CFBundleURLName'] || '$(APP_BUNDLE_ID)';
+    plist['CFBundleURLTypes'][0]['CFBundleURLSchemes'] =
+      plist['CFBundleURLTypes'][0]['CFBundleURLSchemes'] || [];
+    if (
+      !plist['CFBundleURLTypes'][0]['CFBundleURLSchemes'].includes(
+        '$(APP_BUNDLE_URL_SCHEME)',
+      )
+    ) {
+      plist['CFBundleURLTypes'][0]['CFBundleURLSchemes'].push(
+        '$(APP_BUNDLE_URL_SCHEME)',
+      );
+    }
+  });
 
   // for every deleted plugin:
   const dependenciesToDelete = [];
