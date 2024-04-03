@@ -9,7 +9,7 @@ const allPluginNames = Object.keys(PluginsDef);
 const workingPath = process.cwd();
 const packageJsonPath = path.join(workingPath, 'package.json');
 // eslint-disable-next-line no-undef
-const pluginsFilename = path.join(__dirname, 'plugins.json');
+const pluginsFilename = path.join(workingPath, 'rnt.json');
 const rootFilename = path.join(workingPath, 'src', 'Root.tsx');
 
 module.exports = () => {
@@ -20,7 +20,7 @@ module.exports = () => {
   // fetch names of previously installed plugins (from temp folder in node_modules)
   let installedPlugins = [];
   if (fs.existsSync(pluginsFilename)) {
-    installedPlugins = JSON.parse(fs.readFileSync(pluginsFilename));
+    installedPlugins = JSON.parse(fs.readFileSync(pluginsFilename)).plugins;
   }
 
   // find list of current plugins
@@ -107,5 +107,8 @@ module.exports = () => {
 
   // save plugins to a file
   const resultPluginsList = currentPlugins;
-  fs.writeFileSync(pluginsFilename, JSON.stringify(resultPluginsList));
+  fs.writeFileSync(
+    pluginsFilename,
+    JSON.stringify({ plugins: resultPluginsList }),
+  );
 };
