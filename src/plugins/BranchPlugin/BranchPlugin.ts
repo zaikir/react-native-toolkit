@@ -1,4 +1,4 @@
-import AppMetrica, { AppMetricaConfig } from '@kirz/react-native-appmetrica';
+import * as Branch from 'react-native-branch';
 
 import { Plugin, PluginFeature } from '../Plugin';
 import type { IAnalyticsProvider } from '../types';
@@ -9,22 +9,12 @@ export class BranchPlugin extends Plugin implements IAnalyticsProvider {
   readonly initializationTimeout = 5000;
 
   get instance() {
-    return AppMetrica;
+    return Branch;
   }
 
-  constructor(readonly options: AppMetricaConfig) {
-    super();
-  }
-
-  async initialize() {
-    AppMetrica.activate({
-      firstActivationAsUpdate: true,
-      sessionTimeout: 120,
-      ...this.options,
-    });
-  }
+  async initialize() {}
 
   async logEvent(event: string, parameters?: Record<string, any> | undefined) {
-    AppMetrica.reportEvent(event, parameters);
+    await new Branch.BranchEvent(event, undefined, parameters).logEvent();
   }
 }

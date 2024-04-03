@@ -51,14 +51,11 @@ module.exports = () => {
     // // add dependencies to delete list
     dependenciesToDelete.push(...(pluginInfo.dependencies || []));
 
-    // // execute "delete" action
-    console.log(`⏳ [${name}] removing...`);
-
     if (pluginInfo.delete) {
       pluginInfo.delete(appName);
     }
 
-    console.log(`❌ [${name}] done`);
+    console.log(`❌ [${name}] removed`);
   });
 
   // for every added plugin:
@@ -73,14 +70,11 @@ module.exports = () => {
     // // add dependencies to add list
     dependenciesToAdd.push(...(pluginInfo.dependencies || []));
 
-    // // execute "add" action
-    console.log(`⏳ [${name}] preparing...`);
-
     if (pluginInfo.add) {
       pluginInfo.add(appName);
     }
 
-    console.log(`✅ [${name}] done`);
+    console.log(`✅ [${name}] added`);
   });
 
   const { dependencies: projectDependencies } = JSON.parse(

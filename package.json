@@ -31,7 +31,8 @@
     "iap",
     "idfa",
     "appmetrica",
-    "amplitude"
+    "amplitude",
+    "branch"
   ],
   "sideEffects": false,
   "main": "lib/commonjs/index.js",
@@ -95,8 +96,13 @@
     },
     "./amplitude": {
       "types": "./lib/typescript/plugins/AmplitudePlugin/index.d.ts",
-      "import": "./lib/module/plugins/AppMetricaAmplitudePluginPlugin/index.js",
+      "import": "./lib/module/plugins/AmplitudePlugin/index.js",
       "default": "./lib/commonjs/plugins/AmplitudePlugin/index.js"
+    },
+    "./branch": {
+      "types": "./lib/typescript/plugins/BranchPlugin/index.d.ts",
+      "import": "./lib/module/plugins/BranchPlugin/index.js",
+      "default": "./lib/commonjs/plugins/BranchPlugin/index.js"
     },
     "./scripts": "./scripts/index.js"
   },

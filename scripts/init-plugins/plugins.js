@@ -34,6 +34,7 @@ const placeholders = {
       didFinishLaunchingWithOptions: {
         start: 'didFinishLaunchingWithOptions/start',
       },
+      openURL: 'openURL',
     },
   },
 };
@@ -111,31 +112,35 @@ const updatePlist = (filename, values) => {
   const content = fs.readFileSync(pathToFile, 'utf-8');
 
   const parsed = plist.parse(content);
-  values.forEach(({ key, value }) => {
-    if (key === 'url-scheme-add') {
-      const arr = parsed['CFBundleURLTypes'][0]['CFBundleURLSchemes'];
-      if (!arr.includes(value)) {
-        arr.push(value);
+  if (typeof values === 'function') {
+    values(parsed);
+  } else {
+    values.forEach(({ key, value }) => {
+      if (key === 'url-scheme-add') {
+        const arr = parsed['CFBundleURLTypes'][0]['CFBundleURLSchemes'];
+        if (!arr.includes(value)) {
+          arr.push(value);
+        }
+
+        return;
       }
 
-      return;
-    }
-
-    if (key === 'url-scheme-delete') {
-      const arr = parsed['CFBundleURLTypes'][0]['CFBundleURLSchemes'];
-      if (arr.includes(value)) {
-        arr.splice(arr.indexOf(value));
+      if (key === 'url-scheme-delete') {
+        const arr = parsed['CFBundleURLTypes'][0]['CFBundleURLSchemes'];
+        if (arr.includes(value)) {
+          arr.splice(arr.indexOf(value));
+        }
+        return;
       }
-      return;
-    }
 
-    if (parsed[key] && !value) {
-      delete parsed[key];
-      return;
-    }
+      if (parsed[key] && !value) {
+        delete parsed[key];
+        return;
+      }
 
-    parsed[key] = value;
-  });
+      parsed[key] = value;
+    });
+  }
 
   fs.writeFileSync(
     pathToFile,
@@ -423,7 +428,6 @@ module.exports = {
     dependencies: ['@sparkfabrik/react-native-idfa-aaid'],
     add(appName) {
       // iOS
-
       updatePlist(`ios/${appName}/Info.plist`, [
         {
           key: 'NSUserTrackingUsageDescription',
@@ -450,5 +454,125 @@ module.exports = {
     dependencies: ['@amplitude/analytics-react-native'],
     add(appName) {},
     delete(appName) {},
+  },
+  BrunchPlugin: {
+    dependencies: ['react-native-branch'],
+    add(appName) {
+      const links = [
+        `$(BRANCH_LINK_DOMAIN).app.link`,
+        `$(BRANCH_LINK_DOMAIN)-alternate.app.link`,
+        `$(BRANCH_LINK_DOMAIN).test-app.link`,
+        `$(BRANCH_LINK_DOMAIN)-alternate.test-app.link`,
+      ];
+
+      // iOS
+      addLines(
+        `ios/${appName}/AppDelegate.mm`,
+        placeholders.ios.appDelegate.import,
+        `#import <RNBranch/RNBranch.h>`,
+      );
+      addLines(
+        `ios/${appName}/AppDelegate.mm`,
+        placeholders.ios.appDelegate.didFinishLaunchingWithOptions.start,
+        `#ifdef DEBUG // BranchPlugin\n  [RNBranch useTestInstance];\n#endif // BranchPlugin\n  if (@available(iOS 16.0, *)) { } else if (@available(iOS 15.0, *)) { [[Branch getInstance] checkPasteboardOnInstall]; }\n  [RNBranch initSessionWithLaunchOptions:launchOptions isReferrable:YES]`,
+      );
+      addLines(
+        `ios/${appName}/AppDelegate.mm`,
+        placeholders.ios.appDelegate.continueUserActivity,
+        `  [RNBranch continueUserActivity:userActivity];`,
+      );
+      addLines(
+        `ios/${appName}/AppDelegate.mm`,
+        placeholders.ios.appDelegate.openURL,
+        `  [RNBranch application:app openURL:url options:options];`,
+      );
+      updatePlist(`ios/${appName}/Info.plist`, [
+        {
+          key: 'branch_universal_link_domains',
+          value: links,
+        },
+        {
+          key: 'branch_key',
+          value: {
+            test: `$(BRANCH_TEST_KEY)`,
+            live: `$(BRANCH_LIVE_KEY)`,
+          },
+        },
+      ]);
+
+      updatePlist(`ios/${appName}/${appName}.entitlements`, (plist) => {
+        plist['com.apple.developer.associated-domains'] =
+          plist['com.apple.developer.associated-domains'] || [];
+        links.forEach((link) => {
+          if (
+            !plist['com.apple.developer.associated-domains'].includes(
+              `applinks:${link}`,
+            )
+          ) {
+            plist['com.apple.developer.associated-domains'].push(
+              `applinks:${link}`,
+            );
+          }
+        });
+      });
+    },
+    delete(appName) {
+      const links = [
+        `$(BRANCH_LINK_DOMAIN).app.link`,
+        `$(BRANCH_LINK_DOMAIN)-alternate.app.link`,
+        `$(BRANCH_LINK_DOMAIN).test-app.link`,
+        `$(BRANCH_LINK_DOMAIN)-alternate.test-app.link`,
+      ];
+
+      // iOS
+      deleteLines(
+        `ios/${appName}/AppDelegate.mm`,
+        placeholders.ios.appDelegate.import,
+        `#import <RNBranch/RNBranch.h>`,
+      );
+      deleteLines(
+        `ios/${appName}/AppDelegate.mm`,
+        placeholders.ios.appDelegate.didFinishLaunchingWithOptions.start,
+        [
+          `#ifdef DEBUG // BranchPlugin`,
+          `[RNBranch useTestInstance];`,
+          `#endif // BranchPlugin`,
+          'if (@available(iOS 16.0, *)) { } else if (@available(iOS 15.0, *)) { [[Branch getInstance] checkPasteboardOnInstall]; }',
+          '[RNBranch initSessionWithLaunchOptions:launchOptions isReferrable:YES]',
+        ],
+      );
+      deleteLines(
+        `ios/${appName}/AppDelegate.mm`,
+        placeholders.ios.appDelegate.continueUserActivity,
+        [`[RNBranch continueUserActivity:userActivity];`],
+      );
+      deleteLines(
+        `ios/${appName}/AppDelegate.mm`,
+        placeholders.ios.appDelegate.openURL,
+        [`[RNBranch application:app openURL:url options:options];`],
+      );
+      updatePlist(`ios/${appName}/Info.plist`, [
+        {
+          key: 'branch_universal_link_domains',
+        },
+        {
+          key: 'branch_key',
+        },
+      ]);
+
+      updatePlist(`ios/${appName}/${appName}.entitlements`, (plist) => {
+        plist['com.apple.developer.associated-domains'] =
+          plist['com.apple.developer.associated-domains'] || [];
+        links.forEach((link) => {
+          plist['com.apple.developer.associated-domains'] = plist[
+            'com.apple.developer.associated-domains'
+          ].filter((link) => !links.includes(link.replace('applinks:', '')));
+        });
+
+        if (!plist['com.apple.developer.associated-domains'].length) {
+          delete plist['com.apple.developer.associated-domains'];
+        }
+      });
+    },
   },
 };
