@@ -336,7 +336,7 @@ module.exports = {
     add(appName) {},
     delete(appName) {},
   },
-  BrunchPlugin: {
+  BranchPlugin: {
     dependencies: ['react-native-branch'],
     add(appName) {
       const links = [
