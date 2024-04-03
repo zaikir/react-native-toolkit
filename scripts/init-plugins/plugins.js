@@ -99,6 +99,12 @@ module.exports = {
         `  [FIRApp configure];`,
       );
     },
+    env: [
+      { name: 'FIREBASE_API_KEY' },
+      { name: 'FIREBASE_GCM_SENDER_ID' },
+      { name: 'FIREBASE_PROJECT_ID' },
+      { name: 'FIREBASE_GOOGLE_APP_ID' },
+    ],
   },
   FacebookPlugin: {
     dependencies: ['react-native-fbsdk-next'],
@@ -185,6 +191,7 @@ module.exports = {
         ],
       );
     },
+    env: [{ name: 'FACEBOOK_APP_ID' }, { name: 'FACEBOOK_CLIENT_TOKEN' }],
   },
   AppsFlyerPlugin: {
     dependencies: ['react-native-appsflyer'],
@@ -462,5 +469,10 @@ module.exports = {
         }
       });
     },
+    env: [
+      { name: 'BRANCH_TEST_KEY' },
+      { name: 'BRANCH_LIVE_KEY' },
+      { name: 'BRANCH_LINK_DOMAIN' },
+    ],
   },
 };

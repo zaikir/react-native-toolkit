@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const PluginsDef = require('./plugins');
-const { updatePlist } = require('./utils');
+const { updatePlist, addToEnv, removeFromEnv } = require('./utils');
 const { devDependencies } = require('../../package.json');
 
 const allPluginNames = Object.keys(PluginsDef);
@@ -82,6 +82,10 @@ module.exports = () => {
 
     if (pluginInfo.delete) {
       pluginInfo.delete(appName);
+
+      if (pluginInfo.env) {
+        removeFromEnv(pluginInfo.env);
+      }
     }
 
     console.log(`❌ [${name}] removed`);
@@ -101,6 +105,10 @@ module.exports = () => {
 
     if (pluginInfo.add) {
       pluginInfo.add(appName);
+
+      if (pluginInfo.env) {
+        addToEnv(pluginInfo.env);
+      }
     }
 
     console.log(`✅ [${name}] added`);

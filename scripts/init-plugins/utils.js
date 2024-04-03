@@ -131,9 +131,42 @@ const setGradleMinSdkVersion = (version) => {
   }
 };
 
+const addToEnv = (variables) => {
+  ['dev', 'prod'].forEach((type) => {
+    const pathToFile = path.join(workingPath, `.env-${type}.yml`);
+    let content = fs.readFileSync(pathToFile, 'utf-8');
+
+    variables.forEach((variable) => {
+      if (!content.includes(`${variable.name}:`)) {
+        content += `${variable.name}: ${variable.default || ''}`;
+      }
+    });
+
+    fs.writeFileSync(pathToFile, content, 'utf-8');
+  });
+};
+
+const removeFromEnv = (variables) => {
+  ['dev', 'prod'].forEach((type) => {
+    const pathToFile = path.join(workingPath, `.env-${type}.yml`);
+    const content = fs.readFileSync(pathToFile, 'utf-8');
+    const lines = content.split('\n');
+    const newContent = lines
+      .filter(
+        (line) =>
+          !!variables.find((variable) => line.startsWith(`${variable.name}:`)),
+      )
+      .join('\n');
+
+    fs.writeFileSync(pathToFile, newContent, 'utf-8');
+  });
+};
+
 module.exports = {
   addLines,
   deleteLines,
   updatePlist,
   setGradleMinSdkVersion,
+  addToEnv,
+  removeFromEnv,
 };
