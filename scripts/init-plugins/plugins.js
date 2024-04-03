@@ -340,10 +340,10 @@ module.exports = {
     dependencies: ['react-native-branch'],
     add(appName) {
       const links = [
-        `$(BRANCH_LINK_DOMAIN).app.link`,
-        `$(BRANCH_LINK_DOMAIN)-alternate.app.link`,
-        `$(BRANCH_LINK_DOMAIN).test-app.link`,
-        `$(BRANCH_LINK_DOMAIN)-alternate.test-app.link`,
+        `$(BRANCH_SUBDOMAIN).app.link`,
+        `$(BRANCH_SUBDOMAIN)-alternate.app.link`,
+        `$(BRANCH_SUBDOMAIN).test-app.link`,
+        `$(BRANCH_SUBDOMAIN)-alternate.test-app.link`,
       ];
 
       // iOS
@@ -398,10 +398,10 @@ module.exports = {
     },
     delete(appName) {
       const links = [
-        `$(BRANCH_LINK_DOMAIN).app.link`,
-        `$(BRANCH_LINK_DOMAIN)-alternate.app.link`,
-        `$(BRANCH_LINK_DOMAIN).test-app.link`,
-        `$(BRANCH_LINK_DOMAIN)-alternate.test-app.link`,
+        `$(BRANCH_SUBDOMAIN).app.link`,
+        `$(BRANCH_SUBDOMAIN)-alternate.app.link`,
+        `$(BRANCH_SUBDOMAIN).test-app.link`,
+        `$(BRANCH_SUBDOMAIN)-alternate.test-app.link`,
       ];
 
       // iOS
@@ -457,7 +457,7 @@ module.exports = {
     env: [
       { name: 'BRANCH_TEST_KEY' },
       { name: 'BRANCH_LIVE_KEY' },
-      { name: 'BRANCH_LINK_DOMAIN' },
+      { name: 'BRANCH_SUBDOMAIN' },
     ],
   },
 };
