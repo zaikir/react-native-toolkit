@@ -24,22 +24,6 @@ function copyGoogleServices(env) {
     return;
   }
 
-  if (!env.FIREBASE_API_KEY) {
-    throw new Error('FIREBASE_API_KEY env variable required');
-  }
-
-  if (!env.FIREBASE_GCM_SENDER_ID) {
-    throw new Error('FIREBASE_GCM_SENDER_ID env variable required');
-  }
-
-  if (!env.FIREBASE_PROJECT_ID) {
-    throw new Error('FIREBASE_PROJECT_ID env variable required');
-  }
-
-  if (!env.FIREBASE_GOOGLE_APP_ID) {
-    throw new Error('FIREBASE_GOOGLE_APP_ID env variable required');
-  }
-
   if (!fs.existsSync(`ios/GoogleService-Info.plist`)) {
     throw new Error(`File ios/GoogleService-Info.plist not found`);
   }
