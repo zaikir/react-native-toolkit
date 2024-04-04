@@ -55,10 +55,6 @@ function copyGoogleServices(env) {
     return;
   }
 
-  if (!fs.existsSync(`ios/GoogleService-Info.plist`)) {
-    throw new Error(`File ios/GoogleService-Info.plist not found`);
-  }
-
   const filename = 'ios/GoogleService-Info.plist';
 
   const plistFileContent = GoogleServicePlist.replace(
