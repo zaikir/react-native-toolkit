@@ -1,0 +1,5 @@
+{
+  "main": "../lib/commonjs/plugins/OneSignalPlugin/index.js",
+  "module": "../lib/module/plugins/OneSignalPlugin/index.js",
+  "types": "../lib/typescript/plugins/OneSignalPlugin/index.d.ts"
+}

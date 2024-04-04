@@ -1,0 +1,1 @@
+export { OneSignalPlugin } from './OneSignalPlugin';

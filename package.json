@@ -32,7 +32,8 @@
     "idfa",
     "appmetrica",
     "amplitude",
-    "branch"
+    "branch",
+    "onesignal"
   ],
   "sideEffects": false,
   "main": "lib/commonjs/index.js",
@@ -104,6 +105,11 @@
       "import": "./lib/module/plugins/BranchPlugin/index.js",
       "default": "./lib/commonjs/plugins/BranchPlugin/index.js"
     },
+    "./onesignal": {
+      "types": "./lib/typescript/plugins/OneSignalPlugin/index.d.ts",
+      "import": "./lib/module/plugins/OneSignalPlugin/index.js",
+      "default": "./lib/commonjs/plugins/OneSignalPlugin/index.js"
+    },
     "./scripts": "./scripts/index.js"
   },
   "scripts": {
@@ -164,6 +170,7 @@
     "react-native-fbsdk-next": "^12.1.0",
     "react-native-iap": "^12.4.14",
     "react-native-linear-gradient": "^2.8.3",
+    "react-native-onesignal": "^5.1.0",
     "react-native-permissions": "^3.9.3",
     "react-native-purchases": "^5.4.0",
     "react-native-reanimated": "^3.5.4",

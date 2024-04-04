@@ -460,4 +460,36 @@ module.exports = {
       { name: 'BRANCH_SUBDOMAIN' },
     ],
   },
+  OneSignalPlugin: {
+    dependencies: ['react-native-onesignal'],
+    add(appName) {
+      // iOS
+      updatePlist(`ios/${appName}/${appName}.entitlements`, (plist) => {
+        plist['aps-environment'] = 'development';
+      });
+      updatePlist(`ios/${appName}/Info.plist`, (plist) => {
+        plist['UIBackgroundModes'] = plist['UIBackgroundModes'] || [];
+        if (!plist['UIBackgroundModes'].includes('remote-notification')) {
+          plist['UIBackgroundModes'].push('remote-notification');
+        }
+      });
+    },
+    delete(appName) {
+      // iOS
+      updatePlist(`ios/${appName}/${appName}.entitlements`, (plist) => {
+        delete plist['aps-environment'];
+      });
+      updatePlist(`ios/${appName}/Info.plist`, (plist) => {
+        plist['UIBackgroundModes'] = plist['UIBackgroundModes'] || [];
+        plist['UIBackgroundModes'] = plist['UIBackgroundModes'].filter(
+          (x) => x !== 'remote-notification',
+        );
+
+        if (!plist['UIBackgroundModes'].length) {
+          delete plist['UIBackgroundModes'];
+        }
+      });
+    },
+    env: [{ name: 'ONESIGNAL_APP_ID' }],
+  },
 };
