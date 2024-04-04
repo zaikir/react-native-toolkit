@@ -5,7 +5,7 @@ import { Plugin, PluginFeature } from '../Plugin';
 export class OneSignalPlugin extends Plugin {
   readonly name = 'OneSignalPlugin';
   readonly features: PluginFeature[] = ['PushNotification'];
-  readonly initializationTimeout = 5000;
+  readonly initializationTimeout = null;
 
   get instance() {
     return OneSignal;
