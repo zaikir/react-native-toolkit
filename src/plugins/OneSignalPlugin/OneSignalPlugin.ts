@@ -23,7 +23,7 @@ export class OneSignalPlugin extends Plugin {
   async initialize() {
     OneSignal.initialize(this.appId);
     if (this.options?.requestPermission ?? true) {
-      OneSignal.Notifications.requestPermission(false);
+      await OneSignal.Notifications.requestPermission(false);
     }
   }
 }
