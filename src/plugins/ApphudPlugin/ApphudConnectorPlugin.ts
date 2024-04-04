@@ -96,7 +96,7 @@ export class ApphudConnectorPlugin extends Plugin {
       }
 
       const deviceId = await ApphudSdk.userId();
-      branch.setIdentity(deviceId);
+      branch.default.setIdentity(deviceId);
     })();
 
     // Connect Firebase to AppHud
