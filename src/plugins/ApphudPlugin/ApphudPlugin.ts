@@ -1,8 +1,7 @@
 import ApphudSdk, { type StartProperties } from '@kirz/react-native-apphud';
 import { Platform } from 'react-native';
 
-import { PromiseUtils } from 'index';
-
+import { PromiseUtils } from '../../index';
 import { Plugin, PluginFeature } from '../Plugin';
 import type {
   IReceiptValidator,
