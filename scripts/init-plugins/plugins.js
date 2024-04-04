@@ -355,7 +355,7 @@ module.exports = {
       addLines(
         `ios/${appName}/AppDelegate.mm`,
         placeholders.ios.appDelegate.didFinishLaunchingWithOptions.start,
-        `#ifdef DEBUG // BranchPlugin\n  [RNBranch useTestInstance];\n#endif // BranchPlugin\n  if (@available(iOS 16.0, *)) { } else if (@available(iOS 15.0, *)) { [[Branch getInstance] checkPasteboardOnInstall]; }\n  [RNBranch initSessionWithLaunchOptions:launchOptions isReferrable:YES]`,
+        `#ifdef DEBUG // BranchPlugin\n  [RNBranch useTestInstance];\n#endif // BranchPlugin\n  if (@available(iOS 16.0, *)) { } else if (@available(iOS 15.0, *)) { [[Branch getInstance] checkPasteboardOnInstall]; }\n  [RNBranch initSessionWithLaunchOptions:launchOptions isReferrable:YES];`,
       );
       addLines(
         `ios/${appName}/AppDelegate.mm`,
@@ -418,7 +418,7 @@ module.exports = {
           `[RNBranch useTestInstance];`,
           `#endif // BranchPlugin`,
           'if (@available(iOS 16.0, *)) { } else if (@available(iOS 15.0, *)) { [[Branch getInstance] checkPasteboardOnInstall]; }',
-          '[RNBranch initSessionWithLaunchOptions:launchOptions isReferrable:YES]',
+          '[RNBranch initSessionWithLaunchOptions:launchOptions isReferrable:YES];',
         ],
       );
       deleteLines(
