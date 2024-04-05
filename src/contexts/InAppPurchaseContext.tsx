@@ -21,6 +21,7 @@ import { waitUntil } from '../utils/promise/waitUntil';
 import type { FunctionWrapper, GenericFunction } from '../utils/types';
 
 export type InAppPurchaseContextType = {
+  isInitialized: boolean;
   products: Product[];
   subscriptions: Subscription[];
   hasPremiumAccess: boolean;
@@ -36,6 +37,7 @@ export const InAppPurchaseContext = createContext<InAppPurchaseContextType>(
 );
 
 export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
+  const [isInitialized, setIsInitialized] = useState(false);
   const { bundle } = useContext(PluginsBundleContext);
   const iapPurchasePlugin = useMemo(() => {
     return bundle.getByFeature<IAppPurchasePlugin>('InAppPurchase');
@@ -77,6 +79,8 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
           }
         : null,
     );
+
+    setIsInitialized(true);
 
     lastUserDataFetchTimestamp.current = new Date().valueOf();
 
@@ -159,6 +163,7 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
 
   const contextData = useMemo<InAppPurchaseContextType>(
     () => ({
+      isInitialized,
       hasPremiumAccess,
       activeSubscription,
       products: iapPurchasePlugin?.products ?? [],
@@ -169,6 +174,7 @@ export function InAppPurchaseProvider({ children }: PropsWithChildren<object>) {
       premiumAccess,
     }),
     [
+      isInitialized,
       iapPurchasePlugin,
       hasPremiumAccess,
       activeSubscription,
