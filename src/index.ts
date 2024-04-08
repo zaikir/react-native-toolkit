@@ -22,6 +22,13 @@ export { CircleView, type CircleViewProps } from './components/CircleView';
 export { FadeView, type FadeViewProps } from './components/FadeView';
 export { BlurView, type BlurViewProps } from './components/BlurView';
 export {
+  TinderPhotoSwiper,
+  type TinderPhoto,
+  type TinderPhotoSwiperProps,
+  type TinderPhotoSwiperRef,
+  type TinderDecision,
+} from './components/TinderPhotoSwiper';
+export {
   SnapCarousel,
   type SnapCarouselProps,
 } from './components/SnapCarousel';
