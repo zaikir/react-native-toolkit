@@ -29,13 +29,14 @@ export function useStoredState<T>(
       if (typeof newValue === 'function') {
         // @ts-ignore
         const resultValue = newValue(value);
-        setValue(resultValue);
         storage.setItem(key, resultValue);
+        listeners.get(key)?.forEach((listener) => {
+          listener(resultValue);
+        });
         return;
       }
 
       storage.setItem(key, newValue);
-
       listeners.get(key)?.forEach((listener) => {
         listener(newValue);
       });
