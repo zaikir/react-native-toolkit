@@ -1,3 +1,4 @@
+import { PortalHost } from '@gorhom/portal';
 import chalk from 'chalk';
 import PQueue from 'p-queue';
 import React, { useCallback, useRef, useState } from 'react';
@@ -366,7 +367,21 @@ export function AppBootstrapper({
         >
           <AlertsProvider>
             <DropDownProvider>
-              <InAppPurchaseProvider>{children}</InAppPurchaseProvider>
+              <InAppPurchaseProvider>
+                {children}
+                <View
+                  pointerEvents="box-none"
+                  style={{
+                    position: 'absolute',
+                    left: 0,
+                    top: 0,
+                    bottom: 0,
+                    right: 0,
+                  }}
+                >
+                  <PortalHost name="ModalHost" />
+                </View>
+              </InAppPurchaseProvider>
             </DropDownProvider>
           </AlertsProvider>
         </PluginsBundleProvider>

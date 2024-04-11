@@ -38,6 +38,12 @@ export {
 } from './components/RefreshControl';
 export { Text, type TextProps, type TextStyle } from './components/Text';
 export {
+  Menu,
+  MenuList,
+  type MenuProps,
+  type MenuListProps,
+} from './components/Menu';
+export {
   ListView,
   type ListViewProps,
   type ListViewLayoutProps,
@@ -90,6 +96,7 @@ export { useSplashScreen } from './hooks/useSplashScreen';
 export { usePurchases } from './hooks/usePurchases';
 export { usePlugin } from './hooks/usePlugin';
 export { useAppActivityEffect } from './hooks/useAppActivityEffect';
+export { useMenu } from './hooks/useMenu';
 
 // other
 export { default as SyncStorage } from './utils/SyncStorage';
