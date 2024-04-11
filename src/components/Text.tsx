@@ -28,6 +28,7 @@ export type TextProps = Omit<TextPropsBase, 'style'> & {
 
 export function Text({
   style,
+  color: initialColor,
   fontSize: initialFontSize,
   fontWeight: initialFontWeight,
   fontFamily: initialFontFamily,
@@ -128,7 +129,7 @@ export function Text({
         }
         style={[
           {
-            color: theme.colors.text,
+            color: initialColor ?? theme.colors.text,
             ...variant,
             fontSize: initialFontSize,
             fontWeight: initialFontWeight,
