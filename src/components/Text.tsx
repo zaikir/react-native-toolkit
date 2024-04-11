@@ -131,6 +131,7 @@ export function Text({
             color: theme.colors.text,
             ...variant,
             fontSize: initialFontSize,
+            fontWeight: initialFontWeight,
             ...textStyle,
             ...(fontAssetName && { fontFamily: fontAssetName }),
           },
