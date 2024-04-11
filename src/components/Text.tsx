@@ -20,9 +20,19 @@ export type TextStyle = TextStyleBase & {
 export type TextProps = Omit<TextPropsBase, 'style'> & {
   variant?: 'default' | TextVariant;
   style?: StyleProp<TextStyle>;
+  fontSize?: TextStyle['fontSize'];
+  fontWeight?: TextStyle['fontWeight'];
+  fontFamily?: TextStyle['fontFamily'];
+  color?: TextStyle['color'];
 };
 
-export function Text({ style, ...props }: TextProps) {
+export function Text({
+  style,
+  fontSize: initialFontSize,
+  fontWeight: initialFontWeight,
+  fontFamily: initialFontFamily,
+  ...props
+}: TextProps) {
   const theme = useTheme();
 
   const {
@@ -67,12 +77,16 @@ export function Text({ style, ...props }: TextProps) {
     ? gradientProp
     : [gradientProp];
 
-  const { fontFamily, fontWeight } = textStyle;
+  const { fontFamily: styleFontFamily, fontWeight: styleFontWeight } =
+    textStyle;
 
   // @ts-ignore
   const variant = theme.typography[props.variant ?? 'default'] as TextStyle;
 
   const fontAssetName = useMemo(() => {
+    const fontFamily = styleFontFamily ?? initialFontFamily;
+    const fontWeight = styleFontWeight ?? initialFontWeight;
+
     const font = fontFamily ?? variant?.fontFamily;
     if (!font) {
       return null;
@@ -94,7 +108,15 @@ export function Text({ style, ...props }: TextProps) {
     }
 
     return `${font}-${name}`;
-  }, [fontFamily, fontWeight, theme.fonts, variant]);
+  }, [
+    styleFontWeight,
+    styleFontWeight,
+    theme.fonts,
+    variant,
+    initialFontFamily,
+    initialFontSize,
+    initialFontWeight,
+  ]);
 
   const renderTextNode = (otherProps: TextProps) => {
     return (
@@ -108,6 +130,7 @@ export function Text({ style, ...props }: TextProps) {
           {
             color: theme.colors.text,
             ...variant,
+            fontSize: initialFontSize,
             ...textStyle,
             ...(fontAssetName && { fontFamily: fontAssetName }),
           },
