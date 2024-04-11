@@ -5,19 +5,17 @@ import { Menu, MenuProps } from './Menu';
 import { MenuListItem } from './MenuListItem';
 import { TextProps } from '../Text';
 
-export type MenuListProps<T extends { text: string }> = Omit<
-  MenuProps,
-  'children'
-> & {
-  items: T[];
-  itemStyle?: TouchableOpacityProps['style'];
-  itemTextStyle?: TextProps['style'];
-  renderItem?: (item: T, index: number) => ReactNode;
-  renderSeparator?: (item: T, index: number) => ReactNode;
-  keyExtractor?: (item: T, index: number) => React.Key;
-};
+export type MenuListProps<T extends { text: string; onPress: () => void }> =
+  Omit<MenuProps, 'children'> & {
+    items: T[];
+    itemStyle?: TouchableOpacityProps['style'];
+    itemTextStyle?: TextProps['style'];
+    renderItem?: (item: T, index: number) => ReactNode;
+    renderSeparator?: (item: T, index: number) => ReactNode;
+    keyExtractor?: (item: T, index: number) => React.Key;
+  };
 
-export function MenuList<T extends { text: string }>({
+export function MenuList<T extends { text: string; onPress: () => void }>({
   items,
   itemStyle,
   itemTextStyle,

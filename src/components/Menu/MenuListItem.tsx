@@ -6,13 +6,13 @@ import { useMenu } from 'hooks/useMenu';
 import { scaleX, scaleY } from '../../utils/scale';
 import { Text, TextProps } from '../Text';
 
-export type MenuListItemProps<T extends { text: string }> =
+export type MenuListItemProps<T extends { text: string; onPress: () => void }> =
   TouchableOpacityProps & {
     item: T;
     textStyle?: TextProps['style'];
   };
 
-export function MenuListItem<T extends { text: string }>({
+export function MenuListItem<T extends { text: string; onPress: () => void }>({
   item,
   textStyle,
   ...props
@@ -24,8 +24,8 @@ export function MenuListItem<T extends { text: string }>({
       {...props}
       onPress={(e) => {
         closeMenu();
-
         props?.onPress?.(e);
+        item.onPress();
       }}
       style={[
         {
