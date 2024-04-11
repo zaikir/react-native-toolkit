@@ -1,4 +1,4 @@
-import { PortalHost } from '@gorhom/portal';
+import { PortalHost, PortalProvider } from '@gorhom/portal';
 import chalk from 'chalk';
 import PQueue from 'p-queue';
 import React, { useCallback, useRef, useState } from 'react';
@@ -361,30 +361,32 @@ export function AppBootstrapper({
   return (
     <AppSplashScreen visible={!isInitialized} {...splashScreenProps}>
       {!initializationError ? (
-        <PluginsBundleProvider
-          bundle={pluginsBundle}
-          retryInitialization={retryInitialization}
-        >
-          <AlertsProvider>
-            <DropDownProvider>
-              <InAppPurchaseProvider>
-                {children}
-                <View
-                  pointerEvents="box-none"
-                  style={{
-                    position: 'absolute',
-                    left: 0,
-                    top: 0,
-                    bottom: 0,
-                    right: 0,
-                  }}
-                >
-                  <PortalHost name="ModalHost" />
-                </View>
-              </InAppPurchaseProvider>
-            </DropDownProvider>
-          </AlertsProvider>
-        </PluginsBundleProvider>
+        <PortalProvider>
+          <PluginsBundleProvider
+            bundle={pluginsBundle}
+            retryInitialization={retryInitialization}
+          >
+            <AlertsProvider>
+              <DropDownProvider>
+                <InAppPurchaseProvider>
+                  {children}
+                  <View
+                    pointerEvents="box-none"
+                    style={{
+                      position: 'absolute',
+                      left: 0,
+                      top: 0,
+                      bottom: 0,
+                      right: 0,
+                    }}
+                  >
+                    <PortalHost name="ModalHost" />
+                  </View>
+                </InAppPurchaseProvider>
+              </DropDownProvider>
+            </AlertsProvider>
+          </PluginsBundleProvider>
+        </PortalProvider>
       ) : (
         renderError()
       )}
