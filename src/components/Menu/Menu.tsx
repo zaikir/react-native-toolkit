@@ -80,11 +80,11 @@ export function Menu({
       }}
       pointerEvents="none"
       onLayout={() => {
-        if (buttonLayoutRef.current) {
+        if (buttonLayoutRef.current || !buttonRef.current) {
           return;
         }
 
-        buttonRef.current!.measureInWindow(
+        buttonRef.current.measureInWindow(
           (left: number, top: number, width: number, height: number) => {
             buttonLayoutRef.current = { x: left, y: top, width, height };
           },
@@ -207,11 +207,11 @@ export function Menu({
               <Animated.View
                 ref={menuRef}
                 onLayout={() => {
-                  if (menuLayoutRef.current) {
+                  if (menuLayoutRef.current || !menuRef.current) {
                     return;
                   }
 
-                  menuRef.current!.measureInWindow(
+                  menuRef.current.measureInWindow(
                     (
                       left: number,
                       top: number,
