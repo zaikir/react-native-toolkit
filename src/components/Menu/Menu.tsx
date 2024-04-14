@@ -212,7 +212,10 @@ export function Menu({
             }}
           >
             <Animated.View
-              style={[{ flex: 1 }, animatedOverlayStyle]}
+              style={[
+                { position: 'absolute', left: 0, right: 0, bottom: 0, top: 0 },
+                animatedOverlayStyle,
+              ]}
               pointerEvents={isOpened ? 'auto' : 'none'}
             >
               <Animated.View
