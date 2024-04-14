@@ -79,17 +79,17 @@ export function Menu({
         top: 0,
       }}
       pointerEvents="none"
-      onLayout={() => {
-        if (buttonLayoutRef.current || !buttonRef.current) {
-          return;
-        }
+      // onLayout={() => {
+      //   if (buttonLayoutRef.current || !buttonRef.current) {
+      //     return;
+      //   }
 
-        buttonRef.current.measureInWindow(
-          (left: number, top: number, width: number, height: number) => {
-            buttonLayoutRef.current = { x: left, y: top, width, height };
-          },
-        );
-      }}
+      //   buttonRef.current.measureInWindow(
+      //     (left: number, top: number, width: number, height: number) => {
+      //       buttonLayoutRef.current = { x: left, y: top, width, height };
+      //     },
+      //   );
+      // }}
     />
   );
 
@@ -97,7 +97,18 @@ export function Menu({
     children: originalButton.props.children?.length
       ? [...originalButton.props.children, layoutView]
       : [originalButton.props.children, layoutView],
-    onPress: (...args: any) => {
+    onPress: async (...args: any) => {
+      if (!buttonLayoutRef.current) {
+        await new Promise<void>((resolve) => {
+          buttonRef.current.measureInWindow(
+            (left: number, top: number, width: number, height: number) => {
+              buttonLayoutRef.current = { x: left, y: top, width, height };
+              resolve();
+            },
+          );
+        });
+      }
+
       originalButton?.props?.onPress?.(...args);
       setIsOpened((x) => !x);
     },

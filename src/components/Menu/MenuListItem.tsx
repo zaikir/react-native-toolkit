@@ -6,17 +6,22 @@ import { useMenu } from 'hooks/useMenu';
 import { scaleX, scaleY } from '../../utils/scale';
 import { Text, TextProps } from '../Text';
 
-export type MenuListItemProps<T extends { text: string; onPress: () => void }> =
-  TouchableOpacityProps & {
-    item: T;
-    textStyle?: TextProps['style'];
-  };
+export type MenuListItemProps<
+  T extends { text: string; onPress: () => void } = {
+    text: string;
+    onPress: () => void;
+  },
+> = TouchableOpacityProps & {
+  item: T;
+  textStyle?: TextProps['style'];
+};
 
-export function MenuListItem<T extends { text: string; onPress: () => void }>({
-  item,
-  textStyle,
-  ...props
-}: MenuListItemProps<T>) {
+export function MenuListItem<
+  T extends { text: string; onPress: () => void } = {
+    text: string;
+    onPress: () => void;
+  },
+>({ item, textStyle, ...props }: MenuListItemProps<T>) {
   const { closeMenu } = useMenu();
 
   return (

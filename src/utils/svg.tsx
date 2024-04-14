@@ -91,15 +91,24 @@ export const SvgUtils = {
       radius: number;
       width: number;
     },
+    start: 'left' | 'top' | 'right' | 'bottom',
+    clockwise?: boolean,
   ) {
     'worklet';
 
     const borderWidth = border.width;
     const innerBorderRadius = border.radius;
-    const innerButtonWidth = rect.width;
+    const [innerButtonWidth, innerButtonHeigth] = [rect.width, rect.height];
+    const [svgButtonWidth, svgButtonHeigth] =
+      start === 'bottom' || start === 'top'
+        ? [rect.width, rect.height]
+        : [rect.height, rect.width];
+
     const outerButtonWidth = innerButtonWidth + borderWidth * 2;
-    const innerButtonHeigth = rect.height;
     const outerButtonHeigth = innerButtonHeigth + borderWidth * 2;
+
+    const outerSvgButtonWidth = svgButtonWidth + borderWidth * 2;
+    const outerSvgButtonHeigth = svgButtonHeigth + borderWidth * 2;
 
     const r = innerBorderRadius;
     const R = r + borderWidth / 2;
@@ -112,21 +121,21 @@ export const SvgUtils = {
     };
 
     const L0 = 0;
-    const L1 = innerButtonWidth / 2 - r;
+    const L1 = svgButtonWidth / 2 - r;
     const L2 = L1 + r * 2;
-    const L3 = L2 + innerButtonHeigth - r * 2;
+    const L3 = L2 + svgButtonHeigth - r * 2;
     const L4 = L3 + r * 2;
-    const L5 = L4 + innerButtonWidth - r * 2;
+    const L5 = L4 + svgButtonWidth - r * 2;
     const L6 = L5 + r * 2;
-    const L7 = L6 + innerButtonHeigth - r * 2;
+    const L7 = L6 + svgButtonHeigth - r * 2;
     const L8 = L7 + r * 2;
-    const L9 = L8 + innerButtonWidth / 2 - r;
+    const L9 = L8 + svgButtonWidth / 2 - r;
     const l = L9 * k;
 
-    return [
-      `M${outerButtonWidth / 2} ${outerButtonHeigth - borderWidth / 2}`,
+    const path = [
+      `M${outerSvgButtonWidth / 2} ${outerSvgButtonHeigth - borderWidth / 2}`,
       `h${
-        -(innerButtonWidth / 2 - r) *
+        -(svgButtonWidth / 2 - r) *
         interpolate(l, [L0, L1], [0, 1], Extrapolation.CLAMP)
       }`,
       drawCorner(
@@ -140,7 +149,7 @@ export const SvgUtils = {
         -R,
       ),
       `v${
-        -(innerButtonHeigth - r * 2) *
+        -(svgButtonHeigth - r * 2) *
         interpolate(l, [L2, L3], [0, 1], Extrapolation.CLAMP)
       }`,
       drawCorner(
@@ -154,7 +163,7 @@ export const SvgUtils = {
         0,
       ),
       `h${
-        (innerButtonWidth - r * 2) *
+        (svgButtonWidth - r * 2) *
         interpolate(l, [L4, L5], [0, 1], Extrapolation.CLAMP)
       }`,
       drawCorner(
@@ -168,7 +177,7 @@ export const SvgUtils = {
         R,
       ),
       `v${
-        (innerButtonHeigth - r * 2) *
+        (svgButtonHeigth - r * 2) *
         interpolate(l, [L6, L7], [0, 1], Extrapolation.CLAMP)
       }`,
       drawCorner(
@@ -182,9 +191,41 @@ export const SvgUtils = {
         0,
       ),
       `h${
-        -(innerButtonWidth / 2 - r) *
+        -(svgButtonWidth / 2 - r) *
         interpolate(l, [L8, L9], [0, 1], Extrapolation.CLAMP)
       }`,
     ].join(' ');
+
+    return {
+      pathProps: {
+        d: path,
+        strokeWidth: borderWidth,
+        strokeDashoffset:
+          L9 * (clockwise ?? true ? 1 : -1) * (start === 'left' ? -1 : 1),
+        ...(start === 'left'
+          ? {
+              transform: `rotate(-90, ${outerButtonHeigth}, ${0}) scale(1, -1) translate(0, ${
+                -outerButtonWidth + outerButtonHeigth
+              })`,
+            }
+          : start === 'right'
+          ? {
+              transform: `rotate(-90, ${outerButtonHeigth}, ${0}) translate(0, ${-outerButtonHeigth})`,
+            }
+          : start === 'top'
+          ? {
+              transform: `rotate(180, ${outerButtonWidth / 2}, ${
+                outerButtonHeigth / 2
+              })`,
+            }
+          : {}),
+      },
+      path,
+      pathLength: L9,
+      svgProps: {
+        viewBox: `0 0 ${outerButtonWidth} ${outerButtonHeigth}`,
+        preserveAspectRatio: 'none',
+      },
+    };
   },
 };
