@@ -10,7 +10,14 @@ export class ScaleReference {
   static height = 812;
 }
 
-export const scaleX = (size: number) =>
-  (shortDimension / ScaleReference.width) * size;
-export const scaleY = (size: number) =>
-  (longDimension / ScaleReference.height) * size;
+export const scaleX = (size: number) => {
+  'worklet';
+
+  return (shortDimension / ScaleReference.width) * size;
+};
+
+export const scaleY = (size: number) => {
+  'worklet';
+
+  return (longDimension / ScaleReference.height) * size;
+};
