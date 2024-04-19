@@ -203,7 +203,7 @@ export function Menu({
 
   return (
     <>
-      {button}
+      <MenuContext.Provider value={menuData}>{button}</MenuContext.Provider>
       <Portal hostName="ModalHost">
         <MenuContext.Provider value={menuData}>
           <TouchableWithoutFeedback
