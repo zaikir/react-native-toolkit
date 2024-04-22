@@ -12,7 +12,6 @@ import React, {
 import {
   LayoutRectangle,
   TouchableWithoutFeedback,
-  View,
   ViewProps,
 } from 'react-native';
 import Animated, {
@@ -67,25 +66,8 @@ export function Menu({
   const menuLayoutRef = useRef<LayoutRectangle>();
   const menuRef = useRef<any>();
 
-  const layoutView = (
-    <View
-      key="unique"
-      ref={buttonRef}
-      style={{
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        bottom: 0,
-        top: 0,
-      }}
-      pointerEvents="none"
-    />
-  );
-
   const button = cloneElement(originalButton, {
-    children: originalButton.props.children?.length
-      ? [...originalButton.props.children, layoutView]
-      : [originalButton.props.children, layoutView],
+    ref: buttonRef,
     onPress: async (...args: any) => {
       if (!buttonLayoutRef.current && buttonRef.current) {
         await new Promise<void>((resolve) => {
