@@ -80,7 +80,9 @@ function InnerFadeView({
         <View
           style={{
             flex: 1,
-            backgroundColor: 'white',
+            ...(!fadeColor && {
+              backgroundColor: 'white',
+            }),
             marginVertical: -2,
           }}
         />
@@ -192,10 +194,10 @@ export function FadeView({
     const { colors, locations } = easeGradient({
       colorStops: {
         0: {
-          color: fadeColor ?? 'white',
+          color: fadeColor ? 'transparent' : 'white',
         },
         1: {
-          color: 'transparent',
+          color: fadeColor ?? 'transparent',
         },
       },
     });
