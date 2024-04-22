@@ -4,7 +4,7 @@ import { easeGradient } from 'react-native-easing-gradient';
 import LinearGradient from 'react-native-linear-gradient';
 
 import { View, ViewProps } from './View';
-import { scaleY } from '../index';
+import { scaleY, useTheme } from '../index';
 
 type Side = 'left' | 'right' | 'bottom' | 'top';
 
@@ -190,11 +190,15 @@ export function FadeView({
   fadeColor,
   ...props
 }: FadeViewProps) {
+  const theme = useTheme();
+
   const { colors, locations } = useMemo(() => {
     const { colors, locations } = easeGradient({
       colorStops: {
         0: {
-          color: fadeColor ? 'transparent' : 'white',
+          color: fadeColor
+            ? theme.parseColor(fadeColor).fade(1).hexa()
+            : 'white',
         },
         1: {
           color: fadeColor ?? 'transparent',
