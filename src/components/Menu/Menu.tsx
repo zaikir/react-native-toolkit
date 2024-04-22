@@ -79,17 +79,6 @@ export function Menu({
         top: 0,
       }}
       pointerEvents="none"
-      // onLayout={() => {
-      //   if (buttonLayoutRef.current || !buttonRef.current) {
-      //     return;
-      //   }
-
-      //   buttonRef.current.measureInWindow(
-      //     (left: number, top: number, width: number, height: number) => {
-      //       buttonLayoutRef.current = { x: left, y: top, width, height };
-      //     },
-      //   );
-      // }}
     />
   );
 
@@ -98,7 +87,7 @@ export function Menu({
       ? [...originalButton.props.children, layoutView]
       : [originalButton.props.children, layoutView],
     onPress: async (...args: any) => {
-      if (!buttonLayoutRef.current) {
+      if (!buttonLayoutRef.current && buttonRef.current) {
         await new Promise<void>((resolve) => {
           buttonRef.current.measureInWindow(
             (left: number, top: number, width: number, height: number) => {
@@ -221,7 +210,11 @@ export function Menu({
               <Animated.View
                 ref={menuRef}
                 onLayout={() => {
-                  if (menuLayoutRef.current || !menuRef.current) {
+                  if (
+                    menuLayoutRef.current ||
+                    !menuRef.current ||
+                    !menuRef.current
+                  ) {
                     return;
                   }
 
