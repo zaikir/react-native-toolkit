@@ -1,6 +1,6 @@
 {
   "name": "@kirz/react-native-toolkit",
-  "version": "1.7.8-3",
+  "version": "1.8.0",
   "license": "MIT",
   "description": "Toolkit to speed up React Native development",
   "author": "Kirill Zaidulin <zaidulinkirill@gmail.com>",
@@ -139,7 +139,7 @@
     "@amplitude/analytics-react-native": "^1.1.7",
     "@babel/core": "^7.16.10",
     "@babel/runtime": "^7.12.5",
-    "@kirz/react-native-apphud": "^1.0.6",
+    "@kirz/react-native-apphud": "^2.0.1",
     "@kirz/react-native-appmetrica": "^2.1.0",
     "@kirz/react-native-blur": "^1.0.0",
     "@react-native-async-storage/async-storage": "^1.17.11",

@@ -12,6 +12,16 @@ export class ApphudConnectorPlugin extends Plugin {
   readonly initializationTimeout = 15000;
 
   async initialize(bundle: PluginsBundle) {
+    // ApphudSdk.setAdvertisingIdentifier(true);
+
+    // Send IDFA to Apphud
+    (async () => {
+      const idfaPlugin = bundle.get('IdfaPlugin') as any;
+      if (idfaPlugin?.idfa) {
+        ApphudSdk.setAdvertisingIdentifier(idfaPlugin.idfa);
+      }
+    })();
+
     // Connect AppsFlyer to AppHud
     (async () => {
       const appsFlyer = (bundle.get('AppsFlyerPlugin') as any)?.instance;
