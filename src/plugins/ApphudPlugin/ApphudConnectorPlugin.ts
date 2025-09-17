@@ -8,7 +8,7 @@ import { Plugin, PluginFeature, PluginsBundle } from '../Plugin';
 
 export class ApphudConnectorPlugin extends Plugin {
   readonly name = 'ApphudPlugin';
-  readonly features: PluginFeature[] = ['IAPReceiptValidator'];
+  readonly features: PluginFeature[] = [];
   readonly initializationTimeout = 15000;
 
   async initialize(bundle: PluginsBundle) {
